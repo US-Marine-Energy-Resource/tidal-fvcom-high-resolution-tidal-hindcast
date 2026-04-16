@@ -6,18 +6,20 @@ import re
 
 from src.gis_colors_registry import GIS_COLORS_REGISTRY
 
-DOCUMENTATION_LINKS_REGISTRY = {
-    "github_pages_base_url": "https://us-marine-energy-resource.github.io",
-    "tidal_hindcast_docs_path": "tidal/high-resolution-hindcast",
-    "tidal_var": "tidal/high-resolution-hindcast/",
-}
+_GITHUB_PAGES_BASE = "https://us-marine-energy-resource.github.io"
+_TIDAL_HINDCAST_PATH = "tidal/high-resolution-hindcast"
+
+
+def docs_url(*parts: str) -> str:
+    """Build a documentation URL by joining path segments onto the base URL."""
+    segments = [_GITHUB_PAGES_BASE, *parts]
+    return "/".join(s.strip("/") for s in segments)
+
 
 docs = {
-    "base": DOCUMENTATION_LINKS_REGISTRY["github_pages_base_url"],
-    "tidal": DOCUMENTATION_LINKS_REGISTRY["github_pages_base_url"]
-    + DOCUMENTATION_LINKS_REGISTRY["tidal_hindcast_docs_path"],
-    "var": DOCUMENTATION_LINKS_REGISTRY["github_pages_base_url"]
-    + DOCUMENTATION_LINKS_REGISTRY["tidal_var"],
+    "base": docs_url(),
+    "tidal": docs_url(_TIDAL_HINDCAST_PATH),
+    "var": docs_url(_TIDAL_HINDCAST_PATH) + "/",
 }
 
 DOCUMENTATION_REGISTRY = {
