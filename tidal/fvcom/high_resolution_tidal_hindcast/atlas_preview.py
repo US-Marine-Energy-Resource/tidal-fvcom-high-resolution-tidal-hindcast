@@ -39,7 +39,7 @@ VIZ_OUTPUT_DIR = Path(
 # VIZ_OUTPUT_DIR = Path(
 #     "/projects/hindcastra/Tidal/simms_nlr_dev/high_resolution_tidal_hindcast"
 # )
-VIZ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+# VIZ_OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
 SEA_WATER_SPEED_CBAR_MAX = 1.5
 SEA_WATER_SPEED_CBAR_MIN = 0.0
@@ -2092,6 +2092,31 @@ def generate_markdown_specification(
 
     polygon_set = set(POLYGON_COLUMNS)
 
+    # ── Display Name Details ──
+    mapping_rows = ["| Column Name | Display Name |", "|---|---|"]
+    skip_from = "face_id"
+    skip = False
+    for col, spec in atlas_var_spec.items():
+        if col == skip_from:
+            skip = True
+        units = (spec.get("color_spec", {}).get("units") if not skip else spec.get("units"))
+        label = spec["display_name"]
+        if units:
+            label = f"{label} [{units}]"
+        mapping_rows.append(f"| `{col}` | {label} |")
+
+    md_content.extend(
+        [
+            "",
+            "## Display Name Details",
+            "",
+            "Quick reference mapping between column names and display names.",
+            "",
+            *mapping_rows,
+            "",
+        ]
+    )
+
     # ── Section 1: Color Layer Details (VIZ_SPECS key order) ──
     md_content.extend(
         [
@@ -2218,9 +2243,7 @@ def generate_markdown_specification(
     # Add color mapping details — use runtime color_level_data if available,
     # otherwise fall back to color_spec embedded in atlas_variable_spec.json.
     _has_runtime_colors = bool(color_level_data)
-    _has_json_colors = any(
-        "color_spec" in entry for entry in atlas_var_spec.values()
-    )
+    _has_json_colors = any("color_spec" in entry for entry in atlas_var_spec.values())
 
     if _has_runtime_colors or _has_json_colors:
         md_content.extend(
@@ -2278,11 +2301,13 @@ def generate_markdown_specification(
                                 range_str = f"{bin_min:.2f} - {bin_max:.2f}"
                             else:
                                 range_str = f"{bin_min:.2f} - {bin_max:.2f}"
-                        colors_info.append({
-                            "range": f"{range_str} [{units}]",
-                            "hex": hex_color,
-                            "rgb": f"rgb({r}, {g}, {b})",
-                        })
+                        colors_info.append(
+                            {
+                                "range": f"{range_str} [{units}]",
+                                "hex": hex_color,
+                                "rgb": f"rgb({r}, {g}, {b})",
+                            }
+                        )
                 elif json_categories:
                     colors_info = []
                     for cat_key, cat in json_categories.items():
@@ -2291,11 +2316,13 @@ def generate_markdown_specification(
                         r = int(hex_clean[0:2], 16)
                         g = int(hex_clean[2:4], 16)
                         b = int(hex_clean[4:6], 16)
-                        colors_info.append({
-                            "range": f"{cat['label']} [{units}]",
-                            "hex": hex_color,
-                            "rgb": f"rgb({r}, {g}, {b})",
-                        })
+                        colors_info.append(
+                            {
+                                "range": f"{cat['label']} [{units}]",
+                                "hex": hex_color,
+                                "rgb": f"rgb({r}, {g}, {b})",
+                            }
+                        )
 
             if not colors_info:
                 continue
