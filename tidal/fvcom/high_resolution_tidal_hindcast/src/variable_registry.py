@@ -753,8 +753,8 @@ dataset_info = (
 
 def _html_link(text, href):
     if href.startswith("mailto:"):
-        return f'<a href="{href}">{text}</a>'
-    return f'<a href="{href}" target="_blank" rel="noopener noreferrer">{text}</a>'
+        return f"<a href='{href}'>{text}</a>"
+    return f"<a href='{href}' target='_blank' rel='noopener noreferrer'>{text}</a>"
 
 
 _LINK_FORMATTERS = {
