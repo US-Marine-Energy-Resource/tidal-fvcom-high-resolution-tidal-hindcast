@@ -522,10 +522,11 @@ class FVCOMStandardizer:
         utm_zone = None
         if location["coordinates"]["system"] == "utm":
             utm_zone = location["coordinates"]["zone"]
+        epsg = location["coordinates"].get("epsg")
 
-        print(f"Standardizing using utm zone {utm_zone}")
+        print(f"Standardizing using utm zone {utm_zone}, epsg {epsg}")
 
-        coords = coord_manager.standardize_fvcom_coords(ds, utm_zone)
+        coords = coord_manager.standardize_fvcom_coords(ds, utm_zone, epsg)
 
         lat_center_max = np.max(coords["lat_centers"])
         lat_center_min = np.min(coords["lat_centers"])
