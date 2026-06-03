@@ -15,13 +15,26 @@ OUTPUT_COORDINATE_REFERENCE_SYSTEM = pyproj.CRS(
 )
 
 
-def create_transformer(coord_system: str, coord_projection: str, utm_zone: int = None):
+def create_transformer(
+    coord_system: str, coord_projection: str, utm_zone: int = None, epsg: int = None
+):
     """Create transformer based on netCDF attributes"""
     # Do not alter existing gps coordinates, aleutian_islands, cook_inlet
     if coord_system == "GeoReferenced":
         return None
 
     output_crs = OUTPUT_COORDINATE_REFERENCE_SYSTEM
+
+    # For datasets that specify an explicit source EPSG code in config, southeast_alaska.
+    # southeast_alaska
+    # CoordinateSystem	Cartesian
+    # CoordinateProjection	none
+    # The source files store lon/lat as all-zeros and do not encode the projection, so
+    # the EPSG is supplied from config (NAD83(NSRS2007) / Alaska zone 1 -> EPSG:3468).
+    if epsg:
+        source_crs = pyproj.CRS(f"EPSG:{epsg}")
+        print(f"Using explicit source CRS EPSG:{epsg}")
+        return pyproj.Transformer.from_crs(source_crs, output_crs, always_xy=True)
 
     # For custom projections, piscatqua_river, and western_passage
     # piscataqua_river
@@ -223,13 +236,14 @@ def verify_centers_in_faces(centers, face_vertices):
     return True
 
 
-def standardize_fvcom_coords(ds, utm_zone=None):
+def standardize_fvcom_coords(ds, utm_zone=None, epsg=None):
     """
     Standardize FVCOM coordinates, handling cases where geometries cross the international date line.
 
     Args:
         ds: xarray Dataset containing FVCOM grid data
         utm_zone: Optional UTM zone number for coordinate conversion
+        epsg: Optional explicit source EPSG code for coordinate conversion
 
     Returns:
         dict: Standardized coordinate information
@@ -253,7 +267,9 @@ def standardize_fvcom_coords(ds, utm_zone=None):
         original_utm_y_centers = ds["yc"].values
         original_utm_x_nodes = ds["x"].values
         original_utm_y_nodes = ds["y"].values
-        transformer = create_transformer(coord_system, coord_projection, utm_zone)
+        transformer = create_transformer(
+            coord_system, coord_projection, utm_zone, epsg
+        )
         if transformer:
             lon_centers, lat_centers = transformer.transform(
                 original_utm_x_centers, original_utm_y_centers
