@@ -16,6 +16,47 @@ def standardize_fvcom_time(ds):
     }
 
 
+def synthesize_fvcom_time(ds, reference_date_utc, start_offset_steps, delta_t_seconds):
+    """Synthesize a continuous time axis for FVCOM output that lacks usable time.
+
+    Some FVCOM runs (e.g. Southeast Alaska) are split into independent files whose
+    numeric time variables ("days since 0.0", ``time_zone=none``) restart at 0 in every
+    file and which have no ``Times`` string variable. We therefore build a single
+    continuous, uniformly spaced axis anchored at ``reference_date_utc`` (the run's first
+    timestamp) and assign each file a contiguous slice of it based on how many timesteps
+    precede it across all earlier (chronologically sorted) files.
+
+    Returns the same dict shape as ``standardize_fvcom_time`` so downstream code is
+    unchanged.
+
+    Parameters
+    ----------
+    ds : xarray.Dataset
+        A single raw FVCOM file (already opened).
+    reference_date_utc : str
+        First timestamp of the whole run (the "days since 0.0" origin).
+    start_offset_steps : int
+        Number of timesteps that precede this file across all earlier files.
+    delta_t_seconds : int
+        Uniform time step in seconds.
+    """
+    n_steps = ds.sizes["time"]
+    start = pd.Timestamp(reference_date_utc, tz="UTC") + pd.Timedelta(
+        seconds=start_offset_steps * delta_t_seconds
+    )
+    std_datetimes = pd.date_range(
+        start=start,
+        periods=n_steps,
+        freq=pd.Timedelta(seconds=delta_t_seconds),
+        tz="UTC",
+    )
+    return {
+        "original": ds["time"].values,
+        "Timestamp": std_datetimes,
+        "datetime64[ns]": std_datetimes.values,
+    }
+
+
 def does_time_always_increase(time_array):
     this_series = pd.Series(time_array)
     return this_series.is_monotonic_increasing
