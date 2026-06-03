@@ -14,9 +14,23 @@ class TimeVerifier:
         self.pandas_time = []
         self.unix_ns_time = []
         self.source_file = []
+        # Running count of timesteps seen so far, used to anchor synthesized time for
+        # datasets that lack a usable time variable (see synthesize_fvcom_time).
+        self.synth_offset_steps = 0
 
-    def verify_individual_dataset(self, ds, expected_delta_t_seconds, filepath):
-        this_times = time_manager.standardize_fvcom_time(ds)
+    def verify_individual_dataset(
+        self, ds, expected_delta_t_seconds, filepath, location=None
+    ):
+        if location is not None and location.get("synthesize_time"):
+            this_times = time_manager.synthesize_fvcom_time(
+                ds,
+                location["time_reference_date_utc"],
+                self.synth_offset_steps,
+                expected_delta_t_seconds,
+            )
+            self.synth_offset_steps += ds.sizes["time"]
+        else:
+            this_times = time_manager.standardize_fvcom_time(ds)
 
         for key in this_times.keys():
             time_array = this_times[key]
@@ -215,7 +229,7 @@ class DatasetStructureEqualityVerifier:
         return True
 
 
-def model_specification_verifier(config, ds, filepath):
+def model_specification_verifier(config, ds, filepath, location=None):
     # Dictionary of attributes to verify
     verifications = {
         "source": {
@@ -240,6 +254,17 @@ def model_specification_verifier(config, ds, filepath):
 
     # Verify required variables
     required_vars = config["model_specification"]["required_original_variables"]
+
+    # Datasets with no usable time (synthesize_time) have no `Times` string variable and
+    # a numeric `time` of "days since 0.0" / time_zone=none, both of which would fail the
+    # checks below. Their time axis is synthesized separately, so skip those two vars.
+    if location is not None and location.get("synthesize_time"):
+        required_vars = {
+            name: spec
+            for name, spec in required_vars.items()
+            if name not in ("time", "Times")
+        }
+
     for var_name, var_spec in required_vars.items():
         # Check if variable exists
         try:
@@ -330,9 +355,9 @@ def verify_dataset(config, location, nc_files, skip_if_verified=True):
         # ds = nc_manager.nc_open(nc_file, config, decode_times=False)
         ds = xr.open_dataset(nc_file, decode_times=False)
 
-        model_specification_verifier(config, ds, nc_file)
+        model_specification_verifier(config, ds, nc_file, location)
         time_verifier.verify_individual_dataset(
-            ds, location["expected_delta_t_seconds"], nc_file
+            ds, location["expected_delta_t_seconds"], nc_file, location
         )
         coord_system_verifier.verify_individual_dataset(ds, location)
         global_attr_equal_verifier.verify_individual_dataset(ds, location)
