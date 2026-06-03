@@ -781,6 +781,60 @@ Elhwa2 ;
 	:Surface_PrecipEvap_Forcing = SURFACE PRECIPITATION FORCING IS OFF ;
             """,
         },
+        "southeast_alaska": {
+            "label": "Southeast, Alaska",
+            "output_name": "AK_southeast",
+            "base_dir": "AK_southeast",
+            "files": [
+                "*.nc",
+            ],
+            "start_date_utc": "2008-01-01 00:00:00",
+            # This dataset is missing one day because of the leap year! 2008 is a leap
+            # year, so the run stops at 2008-12-31 00:00 instead of 23:30. December 2007 is
+            # spin-up and is dropped by the start_date_utc slice. The trailing day is
+            # NaN-filled only in the H5/HSDS output (same convention as Puget Sound) by the
+            # generic full-year axis logic in the stitch script; nc + parquet contain a
+            # clean 365 days / 17,520 steps.
+            "end_date_utc": "2008-12-30 23:30:00",
+            "expected_delta_t_seconds": 1800,  # 30 min
+            "temporal_resolution": "half-hourly",
+            # No usable time in the source files: there is no `Times` string variable, and
+            # the numeric `time`/`Itime`/`Itime2` are "days since 0.0" (time_zone=none) that
+            # restart at 0 in each ~5-day file. Time is therefore synthesized as a single
+            # continuous 30-min axis anchored at the reference below (the run's first
+            # timestamp), assigned positionally across the chronologically sorted files.
+            "synthesize_time": True,
+            "time_reference_date_utc": "2007-12-01 00:00:00",
+            # NAD83(NSRS2007) / Alaska zone 1. The source files store geographic lon/lat
+            # as all-zeros with CoordinateProjection=none, so coordinates are reprojected
+            # to WGS84 from the projected x/y (meters) using this EPSG code.
+            "coordinates": {"system": "cartesian", "epsg": 3468},
+            "partition_frequency": "5D",
+            "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
+            "face_count": 1133134,
+            "citation": format_references(
+                [
+                    "ak_southeast_brand_2025_tidal",
+                ]
+            ),
+            "original_attrs": """
+// global attributes:
+	:title = WPS CASE ;
+	:institution = School for Marine Science and Technology ;
+	:source = FVCOM_4.3.1 ;
+	:history = model started at: 28/10/2025   15:53 ;
+	:references = http://fvcom.smast.umassd.edu, http://codfish.smast.umassd.edu ;
+	:Conventions = CF-1.0 ;
+	:CoordinateSystem = Cartesian ;
+	:CoordinateProjection = none ;
+	:Tidal_Forcing = Tidal Forcing Time Series Title: run2008 ;
+	:River_Forcing = THERE ARE NO RIVERS IN THIS MODEL ;
+	:GroundWater_Forcing = GROUND WATER FORCING IS OFF! ;
+	:Surface_Heat_Forcing = SURFACE HEAT FORCING IS OFF ;
+	:Surface_Wind_Forcing = SURFACE WIND FORCING IS OFF ;
+	:Surface_PrecipEvap_Forcing = SURFACE PRECIPITATION FORCING IS OFF ;
+            """,
+        },
         "western_passage": {
             "label": "Western Passage, Maine",
             "output_name": "ME_western_passage",
