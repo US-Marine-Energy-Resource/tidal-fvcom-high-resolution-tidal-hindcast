@@ -32,7 +32,7 @@ def get_output_dirs(config, location, use_temp_base_path=False, omit_base_path=F
     output_dirs = config["dir"]["output"]
 
     if use_temp_base_path:
-        # https://nrel.github.io/HPC/Documentation/Systems/Kestrel/Running/example_sbatch/
+        # https://natlabrockies.github.io/HPC/Documentation/Systems/Kestrel/Running/example_sbatch/
         kestrel_tmp_dir = os.getenv("TMPDIR")
         temp_dir = Path(kestrel_tmp_dir).resolve()
         print(f"Temporary directory resolved to: {temp_dir}...")

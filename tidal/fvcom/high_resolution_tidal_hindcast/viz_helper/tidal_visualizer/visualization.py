@@ -598,7 +598,7 @@ class TidalVisualizer:
 
         # Add title, including date line note if applicable
         plt.title(
-            f"WPTO High Resolution Tidal Hindcast{date_line_note}\n{display_name}\n{long_name}",
+            f"H2O High Resolution Tidal Hindcast{date_line_note}\n{display_name}\n{long_name}",
             fontsize=16 * self.font_scale,
             pad=20,
         )
