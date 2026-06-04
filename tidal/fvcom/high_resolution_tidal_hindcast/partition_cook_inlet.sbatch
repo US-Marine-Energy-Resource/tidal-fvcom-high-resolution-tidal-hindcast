@@ -3,7 +3,7 @@
 #SBATCH --output=part_cook%A_%a.out
 #SBATCH --job-name=part_cook
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=12:00:00
 # Faces 392002
 # Time Interval: Hourly

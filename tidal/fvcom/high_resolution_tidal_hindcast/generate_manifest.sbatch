@@ -3,7 +3,7 @@
 #SBATCH --output=generate_manifest_%j.out
 #SBATCH --job-name=generate_manifest
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 ##SBATCH --time=8:00:00
 ##SBATCH --partition=shared
 ##SBATCH --mem=64G

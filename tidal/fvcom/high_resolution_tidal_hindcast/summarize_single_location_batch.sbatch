@@ -2,7 +2,7 @@
 #SBATCH --account=hindcastra
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=12:00:00
 #SBATCH --partition=standard
 ##SBATCH --ntasks=1

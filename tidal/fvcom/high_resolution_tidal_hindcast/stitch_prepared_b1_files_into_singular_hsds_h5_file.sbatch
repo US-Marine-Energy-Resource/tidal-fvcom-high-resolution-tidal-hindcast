@@ -3,7 +3,7 @@
 #SBATCH --output=stitch_hsds_%j.out
 #SBATCH --job-name=stitch_hsds
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --partition=standard
 #SBATCH --time=47:00:00
 ##SBATCH --partition=debug

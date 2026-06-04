@@ -4,7 +4,7 @@
 #SBATCH --job-name=extract_point
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 ##SBATCH --time=2870 # 2 days, 23 hours, 50 minutes
 ##SBATCH --partition=standard
 #SBATCH --time=59 # 59 minutes

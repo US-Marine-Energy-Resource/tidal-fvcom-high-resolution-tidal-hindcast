@@ -2,7 +2,7 @@
 #SBATCH --account=hindcastra
 #SBATCH --output=sum_cook_test_%j.out
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=59
 #SBATCH --partition=debug
 

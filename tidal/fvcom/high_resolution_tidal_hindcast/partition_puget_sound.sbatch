@@ -3,7 +3,7 @@
 #SBATCH --output=part_puget_%A_%a.out
 #SBATCH --job-name=part_puget
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=1:00:00
 #SBATCH --partition=standard
 # There are 1734765 faces

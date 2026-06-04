@@ -5,7 +5,7 @@
 #SBATCH --job-name=atlas_preview
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 ##SBATCH --time=59
 ##SBATCH --partition=debug
 #SBATCH --time=3:59:59

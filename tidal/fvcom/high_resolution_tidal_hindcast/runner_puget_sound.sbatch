@@ -4,7 +4,7 @@
 #SBATCH --job-name=runner_puget_sound
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 ##SBATCH --time=120:00:00 # 5 days
 ##SBATCH --time=47:00:00 # Max for standard job
 ##SBATCH --partition=standard

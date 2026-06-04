@@ -3,7 +3,7 @@
 #SBATCH --output=part_west_%A_%a.out
 #SBATCH --job-name=part_west
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=6:00:00
 #SBATCH --partition=standard
 ##SBATCH --mem=128G

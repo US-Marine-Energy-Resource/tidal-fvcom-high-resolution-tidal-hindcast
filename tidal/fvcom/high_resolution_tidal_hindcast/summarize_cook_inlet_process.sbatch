@@ -3,7 +3,7 @@
 #SBATCH --output=sum_cook_process_%A_%a.out
 #SBATCH --job-name=sum_cook_process
 #SBATCH --mail-type=FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=2:00:00
 #SBATCH --partition=shared
 #SBATCH --ntasks=1

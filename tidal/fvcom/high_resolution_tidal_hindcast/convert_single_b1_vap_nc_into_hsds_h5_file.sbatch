@@ -3,7 +3,7 @@
 #SBATCH --output=convert_b1_hsds_%A_%a.out
 #SBATCH --job-name=convert_b1_hsds
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --partition=shared
 #SBATCH --mem=128GB
 #SBATCH --time=4:00:00

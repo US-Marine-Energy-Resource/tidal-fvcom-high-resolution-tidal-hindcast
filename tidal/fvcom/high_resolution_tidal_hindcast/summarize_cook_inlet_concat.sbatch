@@ -3,7 +3,7 @@
 #SBATCH --output=sum_cook_concat_%j.out
 #SBATCH --job-name=sum_cook_concat
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=59
 #SBATCH --partition=debug
 

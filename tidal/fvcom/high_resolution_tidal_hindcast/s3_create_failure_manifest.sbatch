@@ -1,7 +1,7 @@
 #!/bin/bash
 #SBATCH --account=hindcastra
 #SBATCH --mail-type=BEGIN,END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --output=s3_failure_manifest_%j.out
 #SBATCH --job-name=s3_failure_manifest
 #SBATCH --nodes=1

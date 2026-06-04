@@ -4,7 +4,7 @@
 #SBATCH --job-name=runner_western_passage
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 ##SBATCH --time=12:00:00
 ##SBATCH --partition=standard
 #SBATCH --time=2:00:00

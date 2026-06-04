@@ -4,7 +4,7 @@
 #SBATCH --job-name=verify_s3_puget
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-type=END,FAIL
-#SBATCH --mail-user=andrew.simms@nrel.gov
+#SBATCH --mail-user=andrew.simms@nlr.gov
 #SBATCH --time=24:00:00
 #SBATCH --partition=shared
 #SBATCH --mem=64G
