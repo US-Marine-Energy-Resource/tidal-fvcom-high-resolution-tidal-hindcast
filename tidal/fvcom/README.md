@@ -4,7 +4,7 @@
 
 What is this data in two sentences
 
-Original model output is stored in NREL managed long term storage for a period of X years
+Original model output is stored in NLR managed long term storage for a period of X years
 
 Standardized data transforms raw model output data into a common format and includes:
 
@@ -23,8 +23,8 @@ Standardized data transforms raw model output data into a common format and incl
   conventions, and other relevant information
 * Unified variable is all datasets including units, name, and descriptions
 
-The development of this dataset was funded by the U.S. Department of Energy,
-Office of Energy Efficiency & Renewable Energy, Water Power Technologies Office
+The development of this dataset was funded by the U.S. Department of Energy's
+Hydropower and Hydrokinetic Office (H2O)
 to improve our understanding of the U.S. tidal energy resource and to provide
 critical information for tidal energy project development and tidal energy
 converter design.
@@ -124,9 +124,9 @@ The following variables are included in each dataset:
 Example scripts to extract tidal data are.
 
 The easiest way to access and extract data from the Resource eXtraction tool
-[`rex`](https://github.com/nrel/rex)
+[`rex`](https://github.com/NatLabRockies/rex)
 
-To use `rex` with [`HSDS`](https://github.com/NREL/hsds-examples) you will need
+To use `rex` with [`HSDS`](https://github.com/NatLabRockies/hsds-examples) you will need
 to install `h5pyd`:
 
 ```
@@ -142,13 +142,13 @@ hsconfigure
 and enter at the prompt:
 
 ```
-hs_endpoint = https://developer.nrel.gov/api/hsds
+hs_endpoint = https://developer.nlr.gov/api/hsds
 hs_username =
 hs_password =
 hs_api_key = 3K3JQbjZmWctY0xmIfSYvYgtIcM3CN0cb1Y2w9bf
 ```
 
-**IMPORTANT: The example API key here is for demonstation and is rate-limited per IP. To get your own API key, visit https://developer.nrel.gov/signup/**
+**IMPORTANT: The example API key here is for demonstation and is rate-limited per IP. To get your own API key, visit https://developer.nlr.gov/signup/**
 
 You can also add the above contents to a configuration file at `~/.hscfg`
 
@@ -245,7 +245,7 @@ Please cite the most relevant publication below when referencing this dataset:
 
 ## Disclaimer and Attribution
 
-The National Renewable Energy Laboratory (“NREL”) is operated for the U.S.
+The National Laboratory of the Rockies (“NLR”) is operated for the U.S.
 Department of Energy (“DOE”) by the Alliance for Sustainable Energy, LLC
 ("Alliance"). Pacific Northwest National Laboratory (PNNL) is managed and
 operated by Battelle Memorial Institute ("Battelle") for DOE. As such the
@@ -258,19 +258,19 @@ FROM ANY EXPRESS OR IMPLIED WARRANTY OF ANY KIND, INCLUDING BUT NOT LIMITED TO
 ANY IMPLIED WARRANTIES SUCH AS MERCHANTABILITY AND/OR FITNESS FOR ANY
 PARTICULAR PURPOSE. Furthermore, NEITHER THE UNITED STATES GOVERNMENT NOR ANY
 OF ITS ASSOCITED ENTITES OR CONTRACTORS INCLUDING BUT NOT LIMITED TO THE
-DOE/PNNL/NREL/BATTELLE/ALLIANCE ASSUME ANY LEGAL LIABILITY OR RESPONSIBILITY
+DOE/PNNL/NLR/BATTELLE/ALLIANCE ASSUME ANY LEGAL LIABILITY OR RESPONSIBILITY
 FOR THE ACCURACY, COMPLETENESS, OR USEFULNESS OF THE DATA, OR REPRESENT THAT
 ITS USE WOULD NOT INFRINGE PRIVATELY OWNED RIGHTS. NO ENDORSEMENT OF THE DATA
 OR ANY REPRESENTATIONS MADE IN CONNECTION WITH THE DATA IS PROVIDED. IN NO
 EVENT SHALL ANY PARTY BE LIABLE FOR ANY DAMAGES, INCLUDING BUT NOT LIMITED TO
 SPECIAL, INDIRECT OR CONSEQUENTIAL DAMAGES ARISING FROM THE PROVISION OF THIS
 DATA; TO THE EXTENT PERMITTED BY LAW USER AGREES TO INDEMNIFY
-DOE/PNNL/NREL/BATTELLE/ALLIANCE AND ITS SUBSIDIARIES, AFFILIATES, OFFICERS,
+DOE/PNNL/NLR/BATTELLE/ALLIANCE AND ITS SUBSIDIARIES, AFFILIATES, OFFICERS,
 AGENTS, AND EMPLOYEES AGAINST ANY CLAIM OR DEMAND RELATED TO USER'S USE OF THE
 DATA, INCLUDING ANY REASONABLE ATTORNEYS FEES INCURRED.
 
 The user is granted the right, without any fee or cost, to use or copy the
 Data, provided that this entire notice appears in all copies of the Data. In
 the event that user engages in any scientific or technical publication
-utilizing this data user agrees to credit DOE/PNNL/NREL/BATTELLE/ALLIANCE in
+utilizing this data user agrees to credit DOE/PNNL/NLR/BATTELLE/ALLIANCE in
 any such publication consistent with respective professional practice.

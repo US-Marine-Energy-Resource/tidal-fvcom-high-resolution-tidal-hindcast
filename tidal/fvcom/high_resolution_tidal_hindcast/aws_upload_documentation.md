@@ -29,17 +29,17 @@
 |  |  |
 |----|----|
 | **Contact Name** | Michael Lawson (NLR PI) |
-| **Contact Email** | <michael.lawson@nrel.gov> |
-| **Reporting Issues** | [US Tidal Dataset Issue Reporting](https://github.com/NLR/Marine_Energy_Resource_Characterization/issues) |
-| **Institution Names** | National Laboratory of the Rockies (NLR), Pacific Northwest National Laboratory (PNNL) , Water Power Technologies Office (WPTO) |
-| **Institution Websites** | [NLR Marine Energy Resource Characterizaion](https://www.nrel.gov/water/resource-characterization), [PNNL Coastal Sciences Division](https://www.pnnl.gov/coastal-sciences-division), [WPTO Marine Energy Resource Assessment and Characterization](https://www.energy.gov/eere/water/marine-energy-resource-assessment-and-characterization) |
+| **Contact Email** | <michael.lawson@nlr.gov> |
+| **Reporting Issues** | [US Tidal Dataset Issue Reporting](https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast/issues) |
+| **Institution Names** | National Laboratory of the Rockies (NLR), Pacific Northwest National Laboratory (PNNL) , Hydropower and Hydrokinetic Office (H2O) |
+| **Institution Websites** | [NLR Marine Energy Resource Characterizaion](https://www.nlr.gov/water/resource-characterization), [PNNL Coastal Sciences Division](https://www.pnnl.gov/coastal-sciences-division), [H2O Marine Energy Resource Assessment and Characterization](https://www.energy.gov/cmei/water/marine-energy-resource-assessment-and-characterization) |
 | **MHKDR Submission** | [High Resolution Tidal Hindcast (US Tidal)](https://mhkdr.openei.org/submissions/632) |
 
 # Dataset Information
 
 ## Dataset Name
 
-WPTO High Resolution Tidal Hindcast
+H2O High Resolution Tidal Hindcast
 
 <!--
 - **Brief description** (~200 words):
@@ -47,11 +47,12 @@ WPTO High Resolution Tidal Hindcast
 
 ## Description
 
-The WPTO High Resolution Tidal Hindcast dataset provides standardized
+The H2O High Resolution Tidal Hindcast dataset provides standardized
 tidal energy data for five strategically selected U.S. coastal locations
 with significant tidal energy potential. Developed collaboratively by
-Pacific Northwest National Laboratory (PNNL) and National Laboratory of the Rockies (NLR), this dataset is funded by the U.S. Department
-of Energy’s Water Power Technologies Office Marine Energy Resource
+Pacific Northwest National Laboratory (PNNL) and National Laboratory of
+the Rockies (NLR), this dataset is funded by the U.S. Department of
+Energy’s Hydropower and Hydrokinetic Office Marine Energy Resource
 Assessment and Characterization project.
 
 Generated using FVCOM 4.3.1 (Finite Volume Community Ocean Model) \[1\],
@@ -205,11 +206,11 @@ tidal energy techno-economic analysis.
 ### Documentation
 
 - [Marine Energy Resource Characterization Software
-  Development](https://github.com/NLR/Marine_Energy_Resource_Characterization)
+  Development](https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast)
 - [Marine Energy Atlas Dataset
-  Visualization](https://maps.nrel.gov/marine-energy-atlas/data-viewer/data-library/layers)
+  Visualization](https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers)
 - [High Resolution Tidal Hindcast Processing
-  Software](https://github.com/NLR/Marine_Energy_Resource_Characterization/tidal/fvcom/high_resolution_tidal_hindcast)
+  Software](https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast)
   (repository includes detailed methodology documentation)
 
 <!--
@@ -219,7 +220,7 @@ tidal energy techno-economic analysis.
 
 # Example
 
-WPTO Tidal Hindcast dataset is available in multiple data products,
+H2O Tidal Hindcast dataset is available in multiple data products,
 including point data for the duration of the model run. The python
 library `marine_energy_hindcast` provides a simple interface to download
 the data at a single point including the complete data for the 1 year
@@ -244,7 +245,7 @@ pip install marine_energy_hindcast
 This example demonstrates how to download the complete tidal hindcast
 data for a specific point. Users are expected to visit the Marine Energy
 Atlas [Data
-Library](https://maps.nrel.gov/marine-energy-atlas/data-viewer/data-library/layers)
+Library](https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers)
 to determine points of interest. The example below uses a point in Cook
 Inlet, Alaska, near Nikiski. Which is a known tidal energy site with
 significant potential for tidal energy development.
@@ -531,9 +532,8 @@ location in the dataset.
 
 \[4\] P. Spicer, Z. Yang, T. Wang, and M. Deb, “Spatially varying
 seasonal modulation to tidal stream energy potential due to mixed tidal
-regimes in the aleutian islands, AK,” *Renewable Energy*, p. 123564, May
-2025, doi:
-[10.1016/j.renene.2025.123564](https://doi.org/10.1016/j.renene.2025.123564).
+regimes in the aleutian islands, AK,” *Renewable Energy*, vol. 253, p.
+123564, 2025, doi: <https://doi.org/10.1016/j.renene.2025.123564>.
 
 ### Alaska, Cook Inlet
 
@@ -616,7 +616,8 @@ Geneva, Switzerland, IEC/TS 62600-201 Ed. 1.0, Apr. 2015. Available:
 
 <span class="csl-left-margin">\[3\]
 </span><span class="csl-right-inline">Z. Yang *et al.*, “High resolution
-tidal hindcast.” Marine and Hydrokinetic Data Repository, National Laboratory of the Rockies, https://mhkdr.openei.org/submissions/632,
+tidal hindcast.” Marine and Hydrokinetic Data Repository, National
+Laboratory of the Rockies, https://mhkdr.openei.org/submissions/632,
 2025. Available: <https://mhkdr.openei.org/submissions/632></span>
 
 </div>
@@ -627,8 +628,8 @@ tidal hindcast.” Marine and Hydrokinetic Data Repository, National Laboratory 
 </span><span class="csl-right-inline">P. Spicer, Z. Yang, T. Wang, and
 M. Deb, “Spatially varying seasonal modulation to tidal stream energy
 potential due to mixed tidal regimes in the aleutian islands, AK,”
-*Renewable Energy*, p. 123564, May 2025, doi:
-[10.1016/j.renene.2025.123564](https://doi.org/10.1016/j.renene.2025.123564).</span>
+*Renewable Energy*, vol. 253, p. 123564, 2025, doi:
+<https://doi.org/10.1016/j.renene.2025.123564>.</span>
 
 </div>
 

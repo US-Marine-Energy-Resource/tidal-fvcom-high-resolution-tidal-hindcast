@@ -1,6 +1,6 @@
-# H20 High Resolution Tidal Hindcast
+# H2O High Resolution Tidal Hindcast
 
-2026-04-16
+2026-06-04
 
 - [<span class="toc-section-number">1</span> Overview](#overview)
 - [<span class="toc-section-number">2</span> Versions](#versions)
@@ -41,13 +41,13 @@
 
 This repository contains the code and methodology for processing and
 visualizing the U.S. Department of Energy (DOE) Hydropower and
-Hydrokinetic Office (H20) high-resolution tidal hindcast data generated
+Hydrokinetic Office (H2O) high-resolution tidal hindcast data generated
 using the Finite Volume Community Ocean Model (FVCOM) at five
 strategically selected U.S. coastal locations. The project represents a
 collaborative effort between the [Pacific Northwest National
 Laboratory](https://www.pnnl.gov/marine-energy-resource-characterization)
 (PNNL) (data generation) and the [National Laboratory of the
-Rockies](https://www.nrel.gov/water/resource-characterization) (data
+Rockies](https://www.nlr.gov/water/resource-characterization) (data
 processing and visualization), to generate, standardize, and summarize
 original high resolution tidal data into accessible resource data for
 tidal resource characterization. Complete standardized and summarized
@@ -55,7 +55,7 @@ datasets can downloaded from the [AWS S3 Open Energy Data Initiative
 Marine Energy Data
 Lake](https://data.openei.org/s3_viewer?bucket=marine-energy-data), and
 summary data is visualized on the [Marine Energy
-Atlas](https://maps.nrel.gov/marine-energy-atlas/data-viewer/data-library/layers?vL=WavePowerMerged).
+Atlas](https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers?vL=WavePowerMerged).
 
 # Versions
 
@@ -89,6 +89,7 @@ Table 1: High Resolution Tidal Hindcast Overview
 | Cook Inlet, Alaska | 2005-01-01 00:00:00 | 2005-12-31 23:00:00 | Hourly | 392002 |
 | Piscataqua River, New Hampshire | 2007-01-01 00:00:00 | 2007-12-31 23:30:00 | Half-Hourly | 292927 |
 | Puget Sound, Washington | 2015-01-01 00:00:00 | 2015-12-30 23:30:00 | Half-Hourly | 1734765 |
+| Southeast, Alaska | 2008-01-01 00:00:00 | 2008-12-30 23:30:00 | Half-Hourly | 1133134 |
 | Western Passage, Maine | 2017-01-01 00:00:00 | 2017-12-31 23:30:00 | Half-Hourly | 231208 |
 
 </div>
@@ -248,6 +249,7 @@ Depth Average
 | Cook Inlet, Alaska | AK_cook_inlet | Cook_Inlet_PNNL |
 | Piscataqua River, New Hampshire | NH_piscataqua_river | PIR_full_year |
 | Puget Sound, Washington | WA_puget_sound | Puget_Sound_corrected |
+| Southeast, Alaska | AK_southeast | AK_southeast |
 | Western Passage, Maine | ME_western_passage | Western_Passage_corrected |
 
 </div>
@@ -268,6 +270,7 @@ Table 7: High Resolution Tidal Hindcast Available Locations
 | Cook Inlet, Alaska | 2005-01-01 00:00:00 | 2005-12-31 23:00:00 | Hourly | 8760 |
 | Piscataqua River, New Hampshire | 2007-01-01 00:00:00 | 2007-12-31 23:30:00 | Half-Hourly | 17520 |
 | Puget Sound, Washington | 2015-01-01 00:00:00 | 2015-12-30 23:30:00 | Half-Hourly | 17472 |
+| Southeast, Alaska | 2008-01-01 00:00:00 | 2008-12-30 23:30:00 | Half-Hourly | 17520 |
 | Western Passage, Maine | 2017-01-01 00:00:00 | 2017-12-31 23:30:00 | Half-Hourly | 17520 |
 
 </div>
@@ -1163,7 +1166,7 @@ sbatch runner_cook_inlet.sbatch
 | Label | Key | Value |
 |:---|:---|:---|
 | Conventions | Conventions | CF-1.10, ACDD-1.3, ME Data Pipeline-1.0 |
-| Acknowledgement | acknowledgement | This work was funded by the U.S. Department of Energy, Office of Energy Efficiency & Renewable Energy, Water Power Technologies Office. The authors gratefully acknowledge project support from Heather Spence and Jim McNally (U.S. Department of Energy Water Power Technologies Office) and Mary Serafin (National Laboratory of the Rockies). Technical guidance was provided by Levi Kilcher, Caroline Draxl, and Katie Peterson (National Laboratory of the Rockies). |
+| Acknowledgement | acknowledgement | This work was funded by the U.S. Department of Energy’s Hydropower and Hydrokinetic Office (H2O). The authors gratefully acknowledge project support from Heather Spence and Jim McNally (U.S. Department of Energy Hydropower and Hydrokinetic Office) and Mary Serafin (National Laboratory of the Rockies). Technical guidance was provided by Levi Kilcher, Caroline Draxl, and Katie Peterson (National Laboratory of the Rockies). |
 | Citation | citation | Yang, Zhaoqing, Mithun Deb, Taiping Wang, Preston Spicer, Andrew Simms, Ethan Young, and Mike Lawson. 2025. ‘High Resolution Tidal Hindcast’. |
 | Creator Country | creator_country | USA |
 | Creator Email | creator_email | zhaoqing.yang@pnnl.gov |
@@ -1177,21 +1180,21 @@ sbatch runner_cook_inlet.sbatch
 | Contributor Name | contributor_name | Mithun Deb, Preston Spicer, Taiping Wang, Levi Kilcher, Kevin Haas, Andrew Simms, Ethan Young, Michael Lawson |
 | Contributor Role | contributor_role | author, author, author, author, author, processor, processor, publisher |
 | Contributor Role Vocabulary | contributor_role_vocabulary | https://vocab.nerc.ac.uk/collection/G04/current/ |
-| Contributor Url | contributor_url | https://www.pnnl.gov, www.nrel.gov |
+| Contributor Url | contributor_url | https://www.pnnl.gov, www.nlr.gov |
 | Featuretype | featureType | timeSeries |
-| Infourl | infoURL | https://www.github.com/nrel/marine_energy_resource_characterization/tidal/fvcom/high_resolution_tidal_hindcast |
+| Infourl | infoURL | https://us-marine-energy-resource.github.io/tidal/high_resolution_hindcast/ |
 | Keywords | keywords | OCEAN TIDES, TIDAL ENERGY, VELOCITY, SPEED, DIRECTION, POWER DENSITY |
 | License | license | Freely Distributed |
-| Naming Authority | naming_authority | gov.nrel.water_power |
-| Program | program | U.S. Department of Energy (DOE) Water Power Technologies Office (WPTO) Marine Energy Resource Assessment and Characterization |
+| Naming Authority | naming_authority | gov.nlr.water_power |
+| Program | program | U.S. Department of Energy (DOE) Hydropower and Hydrokinetic Office (H2O) Marine Energy Resource Assessment and Characterization |
 | Project | project | High Resolution Tidal Hindcast |
 | Publisher Country | publisher_country | USA |
-| Publisher Email | publisher_email | michael.lawson@nrel.gov |
+| Publisher Email | publisher_email | michael.lawson@nlr.gov |
 | Publisher Institution | publisher_institution | National Laboratory of the Rockies (NLR) |
 | Publisher Name | publisher_name | Michael Lawson |
 | Publisher State | publisher_state | Colorado |
 | Publisher Type | publisher_type | institution |
-| Publisher Url | publisher_url | https://www.nrel.gov |
+| Publisher Url | publisher_url | https://www.nlr.gov |
 
 </div>
 
@@ -4496,13 +4499,13 @@ programmatically derived.*
 
 # Acknowledgement
 
-This work was funded by the U.S. Department of Energy, Office of Energy
-Efficiency & Renewable Energy, Water Power Technologies Office. The
-authors gratefully acknowledge project support from Heather Spence and
-Jim McNally (U.S. Department of Energy Water Power Technologies Office)
-and Mary Serafin (National Laboratory of the Rockies). Technical
-guidance was provided by Levi Kilcher, Caroline Draxl, and Katie
-Peterson (National Laboratory of the Rockies).
+This work was funded by the U.S. Department of Energy’s Hydropower and
+Hydrokinetic Office (H2O). The authors gratefully acknowledge project
+support from Heather Spence and Jim McNally (U.S. Department of Energy
+Hydropower and Hydrokinetic Office) and Mary Serafin (National
+Laboratory of the Rockies). Technical guidance was provided by Levi
+Kilcher, Caroline Draxl, and Katie Peterson (National Laboratory of the
+Rockies).
 
 # Citation
 
@@ -4527,8 +4530,8 @@ Peterson (National Laboratory of the Rockies).
 * Common metadata descriptions (`attrs`) in all files detailing data generation specifications,
   conventions, and other relevant information
 * Unified variable is all datasets including units, name, and descriptions
-&#10;The development of this dataset was funded by the U.S. Department of Energy,
-Office of Energy Efficiency & Renewable Energy, Water Power Technologies Office
+&#10;The development of this dataset was funded by the U.S. Department of Energy's
+Hydropower and Hydrokinetic Office (H2O)
 to improve our understanding of the U.S. tidal energy resource and to provide
 critical information for tidal energy project development and tidal energy
 converter design.
@@ -4607,8 +4610,8 @@ converter design.
 ## Python Examples
 &#10;Example scripts to extract tidal data are.
 &#10;The easiest way to access and extract data from the Resource eXtraction tool
-[`rex`](https://github.com/nlr/rex)
-&#10;To use `rex` with [`HSDS`](https://github.com/NLR/hsds-examples) you will need
+[`rex`](https://github.com/NatLabRockies/rex)
+&#10;To use `rex` with [`HSDS`](https://github.com/NatLabRockies/hsds-examples) you will need
 to install `h5pyd`:
 &#10;```
 pip install h5pyd
@@ -4619,12 +4622,12 @@ hsconfigure
 ```
 &#10;and enter at the prompt:
 &#10;```
-hs_endpoint = https://developer.nrel.gov/api/hsds
+hs_endpoint = https://developer.nlr.gov/api/hsds
 hs_username =
 hs_password =
 hs_api_key = 3K3JQbjZmWctY0xmIfSYvYgtIcM3CN0cb1Y2w9bf
 ```
-&#10;**IMPORTANT: The example API key here is for demonstation and is rate-limited per IP. To get your own API key, visit https://developer.nrel.gov/signup/**
+&#10;**IMPORTANT: The example API key here is for demonstation and is rate-limited per IP. To get your own API key, visit https://developer.nlr.gov/signup/**
 &#10;You can also add the above contents to a configuration file at `~/.hscfg`
 &#10;
 ```python

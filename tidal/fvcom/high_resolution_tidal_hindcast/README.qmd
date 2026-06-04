@@ -1,5 +1,5 @@
 ---
-title: H20 High Resolution Tidal Hindcast
+title: H2O High Resolution Tidal Hindcast
 subtitle: Marine Energy Resource Characterization
 date: today
 # author:
@@ -56,7 +56,7 @@ model = config['model_specification']
 # Overview
 
 This repository contains the code and methodology for processing and visualizing the U.S. Department
-of Energy (DOE) Hydropower and Hydrokinetic Office (H20) high-resolution tidal hindcast data generated
+of Energy (DOE) Hydropower and Hydrokinetic Office (H2O) high-resolution tidal hindcast data generated
 using the Finite Volume Community Ocean Model (FVCOM) at five strategically selected U.S. coastal
 locations. The project represents a collaborative effort between the [Pacific Northwest National
 Laboratory][pnnl_resource_char] (PNNL) (data generation) and the [National Laboratory of the Rockies][nlr_resource_char] (data processing and visualization), to generate, standardize, and
@@ -1182,8 +1182,8 @@ Standardized data transforms raw model output data into a common format and incl
   conventions, and other relevant information
 * Unified variable is all datasets including units, name, and descriptions
 
-The development of this dataset was funded by the U.S. Department of Energy,
-Office of Energy Efficiency & Renewable Energy, Water Power Technologies Office
+The development of this dataset was funded by the U.S. Department of Energy's
+Hydropower and Hydrokinetic Office (H2O)
 to improve our understanding of the U.S. tidal energy resource and to provide
 critical information for tidal energy project development and tidal energy
 converter design.
@@ -1283,9 +1283,9 @@ The following variables are included in each dataset:
 Example scripts to extract tidal data are.
 
 The easiest way to access and extract data from the Resource eXtraction tool
-[`rex`](https://github.com/nlr/rex)
+[`rex`](https://github.com/NatLabRockies/rex)
 
-To use `rex` with [`HSDS`](https://github.com/NLR/hsds-examples) you will need
+To use `rex` with [`HSDS`](https://github.com/NatLabRockies/hsds-examples) you will need
 to install `h5pyd`:
 
 ```
@@ -1301,13 +1301,13 @@ hsconfigure
 and enter at the prompt:
 
 ```
-hs_endpoint = https://developer.nrel.gov/api/hsds
+hs_endpoint = https://developer.nlr.gov/api/hsds
 hs_username =
 hs_password =
 hs_api_key = 3K3JQbjZmWctY0xmIfSYvYgtIcM3CN0cb1Y2w9bf
 ```
 
-**IMPORTANT: The example API key here is for demonstation and is rate-limited per IP. To get your own API key, visit https://developer.nrel.gov/signup/**
+**IMPORTANT: The example API key here is for demonstation and is rate-limited per IP. To get your own API key, visit https://developer.nlr.gov/signup/**
 
 You can also add the above contents to a configuration file at `~/.hscfg`
 
@@ -1437,9 +1437,9 @@ any such publication consistent with respective professional practice.
 
 
 [aws_tidal_data]: https://data.openei.org/s3_viewer?bucket=marine-energy-data
-[me_atlas]: https://maps.nrel.gov/marine-energy-atlas/data-viewer/data-library/layers?vL=WavePowerMerged
-[wpto_resource_char]: https://www.energy.gov/eere/water/marine-energy-resource-assessment-and-characterization
+[me_atlas]: https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers?vL=WavePowerMerged
+[wpto_resource_char]: https://www.energy.gov/cmei/water/marine-energy-resource-assessment-and-characterization
 [pnnl_resource_char]: https://www.pnnl.gov/marine-energy-resource-characterization
-[nlr_resource_char]: https://www.nrel.gov/water/resource-characterization
+[nlr_resource_char]: https://www.nlr.gov/water/resource-characterization
 [navd88]: https://en.wikipedia.org/wiki/North_American_Vertical_Datum_of_1988
-[this_repo]: https://github.com/NLR/Marine_Energy_Resource_Characterization
+[this_repo]: https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast

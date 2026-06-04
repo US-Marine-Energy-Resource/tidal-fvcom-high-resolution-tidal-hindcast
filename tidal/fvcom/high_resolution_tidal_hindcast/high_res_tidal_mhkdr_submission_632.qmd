@@ -1,5 +1,5 @@
 ---
-title: "MHKDR Submission: WPTO High Resolution Tidal Hindcast"
+title: "MHKDR Submission: H2O High Resolution Tidal Hindcast"
 subtitle: "High Resolution Tidal Hindcast Dataset"
 bibliography: references/references.bib
 csl: https://www.zotero.org/styles/ieee
@@ -19,10 +19,10 @@ filters:
 # Description
 
 
-The WPTO High Resolution Tidal Hindcast dataset provides standardized tidal energy data for
+The H2O High Resolution Tidal Hindcast dataset provides standardized tidal energy data for
 five strategically selected U.S. coastal locations with significant tidal energy potential.
-Developed collaboratively by Pacific Northwest National Laboratory (PNNL) and National Laboratory of the Rockies (NLR), this dataset is funded by the U.S. Department of Energy's Water Power
-Technologies Office Marine Energy Resource Assessment and Characterization project.
+Developed collaboratively by Pacific Northwest National Laboratory (PNNL) and National Laboratory of the Rockies (NLR), this dataset is funded by the U.S. Department of Energy's Hydropower and
+Hydrokinetic Office Marine Energy Resource Assessment and Characterization project.
 
 Generated using FVCOM 4.3.1 (Finite Volume Community Ocean Model) [@fvcom], the dataset contains one year of
 high-resolution tidal energy data including eastward and northward sea water velocities, surface
