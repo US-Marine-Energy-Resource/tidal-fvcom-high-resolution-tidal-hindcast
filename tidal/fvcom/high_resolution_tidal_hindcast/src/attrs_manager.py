@@ -174,7 +174,7 @@ def extract_git_repo_versioning(remote_name="public"):
         # Handle different URL formats
         if origin_url.startswith("git@"):
             # Convert SSH format to HTTPS
-            # Handles both github.com and custom domains like github.nrel.gov
+            # Handles both github.com and custom domains like github.nlr.gov
             ssh_parts = origin_url.split("@")[1].split(":")
             domain = ssh_parts[0]
             path = ssh_parts[1]
@@ -802,7 +802,7 @@ def standardize_dataset_global_attrs(
         #     f"""
         # High Resolution Tidal Hindcast (US_tidal) dataset for {location["label"]}, a strategically selected U.S. coastal location
         # with significant tidal energy potential, part of the standardized US Tidal hindcast dataset. Funded by the
-        # U.S. Department of Energy, Water Power Technologies Office (WPTO)
+        # U.S. Department of Energy, Hydropower and Hydrokinetic Office (H2O)
         # Marine Energy Resource Assessment and Characterization project and developed by Pacific Northwest National Laboratory (PNNL)
         # and National Laboratory of the Rockies (NLR) following IEC TC 114 best practices.
         # This dataset contains 1 year ({location["start_date_utc"]} to {location["end_date_utc"]}) of {location["temporal_resolution"]}
@@ -824,8 +824,8 @@ def standardize_dataset_global_attrs(
         # ),
         "description": textwrap.fill(
             f"""
-High-resolution tidal energy resource hindcast for {location["label"]}, developed under the U.S. Department of Energy Water Power
-Technologies Office Marine Energy Resource Assessment and Characterization project following {format_references(["iec_62600_201"])} This hindcast
+High-resolution tidal energy resource hindcast for {location["label"]}, developed under the U.S. Department of Energy Hydropower and
+Hydrokinetic Office Marine Energy Resource Assessment and Characterization project following {format_references(["iec_62600_201"])} This hindcast
 provides one year ({location["start_date_utc"]} to {location["end_date_utc"]}) of {location["temporal_resolution"]} resolved model output
 including eastward sea water velocity (u) [m/s], northward sea water velocity (v) [m/s], sea surface elevation [m] relative to NAVD88,
 sea water speed [m/s], sea water velocity to direction [degrees clockwise from true north], kinetic power density [W/m²], layer depths
@@ -1027,7 +1027,7 @@ grid resolution is under 500 meters, predominantly in areas of significant tidal
         # "summary": textwrap.fill(
         #     f"""
         # High Resolution Tidal Hindcast dataset for {location["label"]}, part of the standardized US Tidal hindcast
-        # dataset funded by the U.S. Department of Energy, Water Power Technologies Office (WPTO)
+        # dataset funded by the U.S. Department of Energy, Hydropower and Hydrokinetic Office (H2O)
         # Marine Energy Resource Assessment and Characterization project and developed by Pacific Northwest National Laboratory (PNNL)
         # and National Laboratory of the Rockies (NLR). This dataset
         # supports theoretical and technical resource potential assessments, providing foundational data for practical
@@ -1045,7 +1045,7 @@ grid resolution is under 500 meters, predominantly in areas of significant tidal
         "summary": textwrap.fill(
             f"""
 High-resolution tidal energy resource hindcast for {location["label"]}, developed by Pacific Northwest National Laboratory (PNNL)
-and National Laboratory of the Rockies (NLR) under the U.S. Department of Energy Water Power Technologies Office Marine Energy
+and National Laboratory of the Rockies (NLR) under the U.S. Department of Energy Hydropower and Hydrokinetic Office Marine Energy
 Resource Assessment and Characterization project. Provides one year ({location["start_date_utc"]} to {location["end_date_utc"]}) of
 {location["temporal_resolution"]} three-dimensional hindcast model results including velocity components (u, v) [m/s], surface
 elevation [m] from NAVD88, and derived quantities (speed, direction, power density) across 10 depth layers spanning the water column.
