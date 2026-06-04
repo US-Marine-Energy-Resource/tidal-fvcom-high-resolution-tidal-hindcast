@@ -39,14 +39,14 @@ from src.citation_manager import format_reference, format_citation
 from src.variable_registry import VARIABLE_REGISTRY
 
 # =============================================================================
-# NREL Template Configuration
+# NLR Template Configuration
 # =============================================================================
 
-# Path to NREL template (.dotx)
-NREL_TEMPLATE_PATH = Path(__file__).parent / "nrel-report-template (1).dotx"
+# Path to NLR template (.dotx)
+NLR_TEMPLATE_PATH = Path(__file__).parent / "nrel-report-template (1).dotx"
 
-# Style mappings: our generic names -> NREL style names
-NREL_STYLES = {
+# Style mappings: our generic names -> NLR style names
+NLR_STYLES = {
     "body": "NLR_Body_Text",
     "heading1": "NLR_Head_01",
     "heading2": "NLR_Head_02",
@@ -95,14 +95,14 @@ def convert_dotx_to_docx(dotx_path):
 def get_style(doc, style_key):
     """
     Get the appropriate style from the document.
-    Falls back to default styles if NREL styles not available.
+    Falls back to default styles if NLR styles not available.
     """
-    nrel_style = NREL_STYLES.get(style_key)
+    nlr_style = NLR_STYLES.get(style_key)
 
-    # Try NREL style first
-    if nrel_style:
+    # Try NLR style first
+    if nlr_style:
         try:
-            return doc.styles[nrel_style]
+            return doc.styles[nlr_style]
         except KeyError:
             pass
 
@@ -130,11 +130,11 @@ def get_style(doc, style_key):
 
 def add_body_paragraph(doc, text):
     """
-    Add a body paragraph with NREL body text style if available.
+    Add a body paragraph with NLR body text style if available.
     Falls back to Normal style if not.
     """
-    # Try NREL body text style first
-    body_style = NREL_STYLES.get("body", "Normal")
+    # Try NLR body text style first
+    body_style = NLR_STYLES.get("body", "Normal")
     try:
         return doc.add_paragraph(text, style=body_style)
     except KeyError:
@@ -144,9 +144,9 @@ def add_body_paragraph(doc, text):
 def get_reference_style(doc):
     """
     Get the appropriate reference style from the document.
-    Returns NREL reference style if available, otherwise Normal.
+    Returns NLR reference style if available, otherwise Normal.
     """
-    ref_style = NREL_STYLES.get("reference", "Normal")
+    ref_style = NLR_STYLES.get("reference", "Normal")
     try:
         doc.styles[ref_style]
         return ref_style
@@ -896,20 +896,20 @@ LOCATION_REFERENCES = {
 # =============================================================================
 
 
-def add_heading(doc, text, level=1, use_nrel_styles=True):
+def add_heading(doc, text, level=1, use_nlr_styles=True):
     """
     Add a heading with appropriate formatting.
 
-    If use_nrel_styles is True and NREL styles are available, uses NLR_Head_0X styles.
+    If use_nlr_styles is True and NLR styles are available, uses NLR_Head_0X styles.
     Otherwise falls back to built-in Heading X styles.
     """
-    if use_nrel_styles:
+    if use_nlr_styles:
         style_key = f"heading{level}"
-        nrel_style = NREL_STYLES.get(style_key)
-        if nrel_style:
+        nlr_style = NLR_STYLES.get(style_key)
+        if nlr_style:
             try:
-                # Use NREL style by adding paragraph with that style
-                p = doc.add_paragraph(text, style=nrel_style)
+                # Use NLR style by adding paragraph with that style
+                p = doc.add_paragraph(text, style=nlr_style)
                 return p
             except KeyError:
                 pass
@@ -960,8 +960,8 @@ def add_where_section(doc, var_key, compact=False):
     }
 
     # Add each definition as a bullet point (left-aligned)
-    # Try NREL bullet style first, fall back to List Bullet
-    bullet_style = NREL_STYLES.get("bullet", "List Bullet")
+    # Try NLR bullet style first, fall back to List Bullet
+    bullet_style = NLR_STYLES.get("bullet", "List Bullet")
     try:
         doc.styles[bullet_style]
     except KeyError:
@@ -1123,11 +1123,11 @@ def add_reference_with_doi_link(paragraph, reference_text):
 # Table Styling Functions
 # =============================================================================
 
-# NREL brand colors and fonts for table styling
-NREL_HEADER_BG = "0079C2"  # NREL Blue
-NREL_STRIPE_BG = "F0F7FC"  # Light blue for striping
-NREL_BORDER_COLOR = "5C6670"  # NREL Gray
-NREL_HEADER_FONT = "Arial"  # NREL header font (matches NLR heading styles)
+# NLR brand colors and fonts for table styling
+NLR_HEADER_BG = "0079C2"  # NLR Blue
+NLR_STRIPE_BG = "F0F7FC"  # Light blue for striping
+NLR_BORDER_COLOR = "5C6670"  # NLR Gray
+NLR_HEADER_FONT = "Arial"  # NLR header font (matches NLR heading styles)
 
 
 def set_cell_shading(cell, color_hex):
@@ -1140,7 +1140,7 @@ def set_cell_shading(cell, color_hex):
     tcPr.append(shd)
 
 
-def set_table_borders(table, color_hex=NREL_BORDER_COLOR, size="4"):
+def set_table_borders(table, color_hex=NLR_BORDER_COLOR, size="4"):
     """
     Set borders on all cells in a table.
 
@@ -1173,7 +1173,7 @@ def set_table_borders(table, color_hex=NREL_BORDER_COLOR, size="4"):
 
 def add_table_caption(doc, caption_text, table_number=None):
     """
-    Add a table caption with NREL styling.
+    Add a table caption with NLR styling.
 
     Args:
         doc: The Document object
@@ -1183,14 +1183,14 @@ def add_table_caption(doc, caption_text, table_number=None):
     Returns:
         The caption paragraph
     """
-    # Try NREL table caption style first, then figure caption, then Caption
-    caption_style = NREL_STYLES.get("table_caption")
+    # Try NLR table caption style first, then figure caption, then Caption
+    caption_style = NLR_STYLES.get("table_caption")
     try:
         p = doc.add_paragraph(style=caption_style)
     except KeyError:
         # Try figure caption as fallback
         try:
-            p = doc.add_paragraph(style=NREL_STYLES.get("caption", "Caption"))
+            p = doc.add_paragraph(style=NLR_STYLES.get("caption", "Caption"))
         except KeyError:
             p = doc.add_paragraph()
 
@@ -1208,7 +1208,7 @@ def add_table_caption(doc, caption_text, table_number=None):
 
 def add_figure_caption(doc, caption_text, figure_number=None):
     """
-    Add a figure caption with NREL styling.
+    Add a figure caption with NLR styling.
 
     Args:
         doc: The Document object
@@ -1218,7 +1218,7 @@ def add_figure_caption(doc, caption_text, figure_number=None):
     Returns:
         The caption paragraph
     """
-    caption_style = NREL_STYLES.get("caption", "Caption")
+    caption_style = NLR_STYLES.get("caption", "Caption")
     try:
         p = doc.add_paragraph(style=caption_style)
     except KeyError:
@@ -1291,7 +1291,7 @@ def render_image_from_spec(doc, image_spec, figure_number=None):
 
 def create_styled_table(doc, rows, cols, header_row=True):
     """
-    Create a table with NREL styling (borders and optional row striping).
+    Create a table with NLR styling (borders and optional row striping).
 
     Args:
         doc: The Document object
@@ -1313,7 +1313,7 @@ def create_styled_table(doc, rows, cols, header_row=True):
 
 def style_table_with_striping(table, header_row=True):
     """
-    Apply NREL-style formatting to a table with header and row striping.
+    Apply NLR-style formatting to a table with header and row striping.
 
     Args:
         table: The python-docx Table object
@@ -1323,19 +1323,19 @@ def style_table_with_striping(table, header_row=True):
         for cell in row.cells:
             if row_idx == 0 and header_row:
                 # Header row: dark background, white/bold text, header font
-                set_cell_shading(cell, NREL_HEADER_BG)
+                set_cell_shading(cell, NLR_HEADER_BG)
                 for paragraph in cell.paragraphs:
                     for run in paragraph.runs:
                         run.bold = True
                         run.font.color.rgb = RGBColor(255, 255, 255)
-                        run.font.name = NREL_HEADER_FONT
+                        run.font.name = NLR_HEADER_FONT
             elif row_idx % 2 == 0 and header_row:
                 # Even data rows (row 2, 4, 6... which are indices 1, 3, 5...
                 # after header): no shading (white)
                 pass
             elif row_idx % 2 == 1 and header_row:
                 # Odd data rows: light stripe
-                set_cell_shading(cell, NREL_STRIPE_BG)
+                set_cell_shading(cell, NLR_STRIPE_BG)
 
 
 def set_cell_text(cell, text, font_name="Arial", font_size=Pt(10), bold=False):
@@ -1353,7 +1353,7 @@ def render_table_from_spec(doc, table_spec, table_number=None):
     """
     Render a table from a specification dictionary.
 
-    This function creates a styled table with NREL formatting from a declarative
+    This function creates a styled table with NLR formatting from a declarative
     table specification. Use this for consistent table generation throughout
     the document.
 
@@ -1428,7 +1428,7 @@ def render_table_from_spec(doc, table_spec, table_number=None):
             for idx, cell in enumerate(row.cells):
                 cell.width = column_widths[idx]
 
-    # Apply NREL styling with header and row striping
+    # Apply NLR styling with header and row striping
     style_table_with_striping(table, header_row=True)
 
     # Add table caption below the table
@@ -1695,9 +1695,9 @@ ACRONYM_DEFINITIONS = {
         "laboratory that developed the original FVCOM model configurations and ran the "
         "hydrodynamic simulations used in this dataset."
     ),
-    "WPTO": (
-        "Water Power Technologies Office. The office within the U.S. Department of Energy's "
-        "Office of Energy Efficiency and Renewable Energy that funds marine energy research "
+    "H2O": (
+        "Hydropower and Hydrokinetic Office. The office within the U.S. Department of Energy "
+        "that funds marine energy research "
         "and development, including this dataset."
     ),
     "VAP": (
@@ -1821,7 +1821,7 @@ def create_executive_summary(doc):
 
     # Introduction paragraph
     intro = (
-        "This document describes the variables from the WPTO High Resolution Tidal Hindcast "
+        "This document describes the variables from the H2O High Resolution Tidal Hindcast "
         "dataset that are visualized on the Marine Energy Atlas. The dataset provides "
         "reconnaissance-level tidal energy resource characterization for five U.S. coastal "
         "regions, derived from high-resolution FVCOM hydrodynamic model simulations. These "
@@ -1890,13 +1890,13 @@ def create_executive_summary(doc):
         for idx, cell in enumerate(row.cells):
             cell.width = col_widths[idx]
 
-    # Apply NREL styling with header and row striping
+    # Apply NLR styling with header and row striping
     style_table_with_striping(table, header_row=True)
 
     # Add table caption below the table with NLR styling
     add_table_caption(
         doc,
-        "Summary of variables from the WPTO High Resolution Tidal Hindcast dataset available on the NLR Marine Energy Atlas",
+        "Summary of variables from the H2O High Resolution Tidal Hindcast dataset available on the NLR Marine Energy Atlas",
         table_number=1,
     )
 
@@ -1914,7 +1914,7 @@ def create_executive_summary(doc):
     doc.add_paragraph()
 
     # Get bullet style for location references
-    bullet_style = NREL_STYLES.get("bullet", "List Bullet")
+    bullet_style = NLR_STYLES.get("bullet", "List Bullet")
     try:
         doc.styles[bullet_style]
     except KeyError:
@@ -1990,8 +1990,8 @@ def create_variable_complete_section(doc, var_key, var_data):
     p = doc.add_paragraph()
     p.add_run("References").bold = True
 
-    # Try NREL bullet style first, fall back to List Bullet
-    bullet_style = NREL_STYLES.get("bullet", "List Bullet")
+    # Try NLR bullet style first, fall back to List Bullet
+    bullet_style = NLR_STYLES.get("bullet", "List Bullet")
     try:
         doc.styles[bullet_style]
     except KeyError:
@@ -2008,18 +2008,18 @@ def create_variable_complete_section(doc, var_key, var_data):
     doc.add_paragraph()  # Spacing
 
 
-def create_document(use_nrel_template=True):
+def create_document(use_nlr_template=True):
     """
     Create the complete Word document.
 
     Args:
-        use_nrel_template: If True and NREL template exists, use it for styling.
+        use_nlr_template: If True and NLR template exists, use it for styling.
                           Falls back to blank document if template not found.
     """
-    # Try to use NREL template
-    if use_nrel_template and NREL_TEMPLATE_PATH.exists():
+    # Try to use NLR template
+    if use_nlr_template and NLR_TEMPLATE_PATH.exists():
         try:
-            temp_docx_path = convert_dotx_to_docx(NREL_TEMPLATE_PATH)
+            temp_docx_path = convert_dotx_to_docx(NLR_TEMPLATE_PATH)
             doc = Document(temp_docx_path)
             # Clear template content (keep styles AND section properties)
             # Preserve sectPr element - needed for page layout/table widths
@@ -2028,9 +2028,9 @@ def create_document(use_nrel_template=True):
                 # Don't remove section properties - needed for page layout/table widths
                 if element.tag != qn("w:sectPr"):
                     body.remove(element)
-            print(f"Using NREL template: {NREL_TEMPLATE_PATH.name}")
+            print(f"Using NLR template: {NLR_TEMPLATE_PATH.name}")
         except Exception as e:
-            print(f"Warning: Could not load NREL template ({e}), using default styles")
+            print(f"Warning: Could not load NLR template ({e}), using default styles")
             doc = Document()
     else:
         doc = Document()
@@ -2039,9 +2039,9 @@ def create_document(use_nrel_template=True):
         style.font.name = "Calibri"
         style.font.size = Pt(11)
 
-    # Title - use NREL heading style or fall back to bold paragraph
-    title_style = NREL_STYLES.get("heading1")
-    title_text = "WPTO High Resolution Tidal Hindcast Dataset\nNLR Marine Energy Atlas Public Facing Variable Documentation"
+    # Title - use NLR heading style or fall back to bold paragraph
+    title_style = NLR_STYLES.get("heading1")
+    title_text = "H2O High Resolution Tidal Hindcast Dataset\nNLR Marine Energy Atlas Public Facing Variable Documentation"
     try:
         title = doc.add_paragraph(title_text, style=title_style)
     except KeyError:
@@ -2070,7 +2070,7 @@ def create_document(use_nrel_template=True):
     add_heading(doc, "Overview", level=1)
     intro_text = (
         "This document provides documentation for the user-facing variables displayed on the "
-        "Marine Energy Atlas for the WPTO High Resolution Tidal Hindcast dataset. Each variable "
+        "Marine Energy Atlas for the H2O High Resolution Tidal Hindcast dataset. Each variable "
         "includes a short summary suitable for information popups, as well as complete technical "
         "documentation including formulas, calculation methodology, and references."
     )
@@ -2165,7 +2165,7 @@ def generate_markdown() -> str:
     # Title
     lines.append("# Tidal Hindcast Variable Documentation")
     lines.append("")
-    lines.append("Technical documentation for user-facing variables displayed on the Marine Energy Atlas for the WPTO High Resolution Tidal Hindcast dataset.")
+    lines.append("Technical documentation for user-facing variables displayed on the Marine Energy Atlas for the H2O High Resolution Tidal Hindcast dataset.")
     lines.append("")
 
     # Overview section
@@ -2173,7 +2173,7 @@ def generate_markdown() -> str:
     lines.append("")
     lines.append(
         "This document provides documentation for the user-facing variables displayed on the "
-        "Marine Energy Atlas for the WPTO High Resolution Tidal Hindcast dataset. Each variable "
+        "Marine Energy Atlas for the H2O High Resolution Tidal Hindcast dataset. Each variable "
         "includes a short summary suitable for information popups, as well as complete technical "
         "documentation including formulas, calculation methodology, and references."
     )
