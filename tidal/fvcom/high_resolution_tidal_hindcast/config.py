@@ -888,10 +888,10 @@ Elhwa2 ;
         "Conventions": "CF-1.10, ACDD-1.3, ME Data Pipeline-1.0",
         # Source: ACDD
         # A place to acknowledge various types of support for the project that produced this data.
-        "acknowledgement": "This work was funded by the U.S. Department of Energy, Office of "
-        "Energy Efficiency & Renewable Energy, Water Power Technologies Office. The authors "
+        "acknowledgement": "This work was funded by the U.S. Department of Energy's "
+        "Hydropower and Hydrokinetic Office (H2O). The authors "
         "gratefully acknowledge project support from Heather Spence and Jim McNally (U.S. "
-        "Department of Energy Water Power Technologies Office) and Mary Serafin (National "
+        "Department of Energy Hydropower and Hydrokinetic Office) and Mary Serafin (National "
         "Laboratory of the Rockies). Technical guidance was provided by Levi Kilcher, Caroline Draxl, "
         "and Katie Peterson (National Laboratory of the Rockies).",
         "citation": format_references(["mhkdr_submission"]),
@@ -971,7 +971,7 @@ Elhwa2 ;
         # Source: IOOS
         # The URL of the individuals or institutions that contributed to the creation
         # of this data.
-        "contributor_url": "https://www.pnnl.gov, www.nrel.gov",
+        "contributor_url": "https://www.pnnl.gov, www.nlr.gov",
         # Source: Global, ACDD
         # A user-friendly description of the dataset. It should provide enough context
         # about the data for new users to quickly understand how the data can be used.
@@ -985,7 +985,7 @@ Elhwa2 ;
         "featureType": "timeSeries",
         # Source: IOOS
         # URL for background information about this dataset.
-        "infoURL": "https://www.github.com/nrel/marine_energy_resource_characterization/tidal/fvcom/high_resolution_tidal_hindcast",
+        "infoURL": "https://us-marine-energy-resource.github.io/tidal/high_resolution_hindcast/",
         # Source: ACDD
         # Name of the contributing instrument(s) or sensor(s) used to create this
         # data set or product.
@@ -1016,7 +1016,7 @@ Elhwa2 ;
         # Source: ACDD, IOOS
         # The organization that provides the initial id for the dataset.
         # "naming_authority": "gov.pnnl.sequim",
-        "naming_authority": "gov.nrel.water_power",
+        "naming_authority": "gov.nlr.water_power",
         # Source: ACDD, IOOS
         # Name of the platform(s) that supported the sensor data used to create this
         # data set or product.
@@ -1043,11 +1043,11 @@ Elhwa2 ;
         "comment": None,
         # Source: ACDD
         # A URL that gives the location of more complete metadata.
-        # "metadata_link": "https://www.github.com/nlr/marine_energy_resource_characterization/",
+        # "metadata_link": "https://www.github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast/",
         "metadata_link": None,
         # Source: ACDD
         # The overarching program(s) of which the dataset is a part.
-        "program": "U.S. Department of Energy (DOE) Water Power Technologies Office (WPTO) Marine Energy Resource Assessment and Characterization",
+        "program": "U.S. Department of Energy (DOE) Hydropower and Hydrokinetic Office (H2O) Marine Energy Resource Assessment and Characterization",
         # Source: ACDD
         # The name of the project(s) principally responsible for originating
         # this data.
@@ -1062,7 +1062,7 @@ Elhwa2 ;
         # Source: ACDD, IOOS
         # The email address of the person responsible for publishing the data file
         # or product to users.
-        "publisher_email": "michael.lawson@nrel.gov",
+        "publisher_email": "michael.lawson@nlr.gov",
         # Source: ACDD, IOOS
         # The institution of the publisher.
         "publisher_institution": "National Laboratory of the Rockies (NLR)",
@@ -1080,7 +1080,7 @@ Elhwa2 ;
         # Source: ACDD, IOOS
         # The URL of the person responsible for publishing the data file or product
         # to users.
-        "publisher_url": "https://www.nrel.gov",
+        "publisher_url": "https://www.nlr.gov",
     },
 }
 
