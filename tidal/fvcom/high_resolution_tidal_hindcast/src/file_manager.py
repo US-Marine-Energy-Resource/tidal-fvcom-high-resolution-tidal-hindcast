@@ -25,7 +25,9 @@ def get_specified_nc_files(config, location):
     return result
 
 
-def get_output_dirs(config, location, use_temp_base_path=False, omit_base_path=False):
+def get_output_dirs(
+    config, location, use_temp_base_path=False, omit_base_path=False, create=True
+):
     output_location_name = location["output_name"]
     version = f"v{config['dataset']['version']}"
     base_path = Path(config["dir"]["base"]).resolve()
@@ -60,8 +62,10 @@ def get_output_dirs(config, location, use_temp_base_path=False, omit_base_path=F
     for key, value in output_dirs.items():
         paths[key] = build_path(value)
 
-    # Only create directories if we're using full paths
-    if not omit_base_path:
+    # Only create directories if we're using full paths (and creation is requested).
+    # Pass create=False for read-only access (status checks, dry-run sizing) so we
+    # don't try to mkdir the HPC base path when running locally.
+    if create and not omit_base_path:
         for path in paths.values():
             path.mkdir(parents=True, exist_ok=True)
 
