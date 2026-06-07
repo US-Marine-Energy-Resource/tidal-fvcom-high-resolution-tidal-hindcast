@@ -1,18 +1,18 @@
-"""Command line interface for FVCOM data processing pipeline.
+"""Command line argument helpers for the FVCOM data processing workflow.
 
-The CLI supports two main arguments:
-    - location: The geographic location of the FVCOM dataset to process
-    - output-type: The type of processing to perform (summary, std, or all)
+Provides three parsers used across the entry points:
+    - ``location_arg_parser`` — a validated ``location`` positional (extend it with
+      extra args); used by the per-step ``run_<step>.py`` workers.
+    - ``parse_args`` — location + ``--output-type`` (used by older scripts).
+    - ``parse_partition_args`` — location + batch/product options for the array
+      workers (``partition_dataset.py``, ``summarize_dataset.py``).
+
+The unified workflow orchestrator is ``run.py``; see ``python run.py --list-steps``.
 
 Example:
-    To use in a script:
-        from src.cli import parse_args
-        args = parse_args(config)
-        location_config = config["locations"][args.location]
-
-    Command line usage:
-        python runner.py aleutian_islands
-        python runner.py cook_inlet --output-type std
+    parser = location_arg_parser(config, "Run one step.")
+    args = parser.parse_args()
+    location_config = config["location_specification"][args.location]
 """
 
 import argparse

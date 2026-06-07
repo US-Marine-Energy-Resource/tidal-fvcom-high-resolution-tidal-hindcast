@@ -1145,16 +1145,24 @@ processing level (a1, b1, etc.) - `date`: Date in YYYYMMDD format -
 `time`: Time in HHMMSS format - `ext`: File extension (nc for NetCDF,
 parquet for Parquet files)
 
-# Running Standardization Code
+# Running the Processing Workflow
 
 ## Usage
 
-``` bash
-python runner.py <location>
-```
+The unified orchestrator dispatches the whole workflow (raw → b5) for a location
+as a chain of SLURM jobs. List the available steps with:
 
 ``` bash
-sbatch runner_cook_inlet.sbatch
+python run.py --list-steps
+```
+
+Run the full workflow, resume from a step, or check status:
+
+``` bash
+python run.py <location>                 # full run
+python run.py <location> --from vap      # resume from a step
+python run.py <location> --status        # per-level status, no submission
+python run.py <location> --dry-run       # print the SLURM plan, submit nothing
 ```
 
 # Included Metadata
