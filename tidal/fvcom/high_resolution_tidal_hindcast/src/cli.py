@@ -108,5 +108,13 @@ def parse_partition_args(config):
         default=False,
         help="Skip processing faces whose output files already exist",
     )
+    # Which summary product(s) to compute (used by summarize_dataset.py; ignored
+    # by other batch workers). monthly -> b2, yearly -> b3, both -> b2 and b3.
+    parser.add_argument(
+        "--product",
+        choices=["monthly", "yearly", "both"],
+        default="both",
+        help="Summary product(s) to compute: monthly (b2), yearly (b3), or both",
+    )
 
     return parser.parse_args()
