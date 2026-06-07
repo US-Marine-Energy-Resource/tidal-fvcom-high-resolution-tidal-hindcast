@@ -416,25 +416,26 @@ def _submit_summary(ctx, dep_ids, subs):
 
 
 def _submit_upload(ctx, dep_ids, subs):
-    """Final S3 deployment.
+    """Final S3 deployment, gated on the data products.
 
-    The S3 upload path (dispatch_s3_upload_v2.py) is manifest-based and manages its
-    own SLURM array, so it can't be afterok-chained here in v1. Instead we emit the
-    exact follow-up command to run once the data products are complete.
+    The S3 upload path (dispatch_s3_upload_v2.py) builds its SQLite manifest by
+    scanning the data-level directories, so it can only run once those products
+    exist. We therefore submit a lightweight coordinator job (afterok the
+    vap_data_products + summary terminals) that creates the manifest(s) and
+    dispatches the upload array(s) from inside the job.
     """
-    levels = (
-        "b1_vap_daily_compressed hsds b1_vap_by_point_partition "
-        "b4_vap_summary_parquet b5_vap_atlas_summary_parquet"
-    )
-    print("  [upload] S3 upload is manifest-based and not auto-chained in v1.")
-    print(
-        "  [upload] After the data products complete, generate the manifest then run:"
-    )
-    print(
-        f"           python dispatch_s3_upload_v2.py {ctx.location} "
-        f"--data-levels {levels} --skip-if-uploaded"
-    )
-    return []
+    levels_env = ":".join(UPLOAD_DATA_LEVELS)
+    args = []
+    dep = dependency_arg(dep_ids)
+    if dep:
+        args.append(dep)
+    args += [
+        f"--export=LOCATION={ctx.location},DATA_LEVELS={levels_env}",
+        f"--job-name={ctx.location}_s3_upload_coordinator",
+        f"--output={ctx.location}_s3_upload_coordinator_%j.out",
+        "s3_upload_coordinator.sbatch",
+    ]
+    return [ctx.submitter.submit(args, label="upload")]
 
 
 # --------------------------------------------------------------------------- #
