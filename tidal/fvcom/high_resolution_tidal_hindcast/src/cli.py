@@ -65,6 +65,21 @@ def parse_args(config):
     return parser.parse_args()
 
 
+def location_arg_parser(config, description):
+    """Return an ArgumentParser with a validated ``location`` positional.
+
+    Shared by the per-step ``run_<step>.py`` workers. Callers may add extra
+    arguments to the returned parser before calling ``parse_args()``.
+    """
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument(
+        "location",
+        type=validate_location(config),
+        help="Location to process (e.g., aleutian_islands, cook_inlet)",
+    )
+    return parser
+
+
 def parse_partition_args(config):
     """Parse command line arguments using provided config."""
     parser = argparse.ArgumentParser(
