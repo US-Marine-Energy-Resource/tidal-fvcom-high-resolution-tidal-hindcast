@@ -47,6 +47,16 @@ from dispatch_b1_to_hsds_jobs import LOCATION_RESOURCES as HSDS_RESOURCES
 # Faces per batch for the point-parquet partition (matches partition_dataset.py usage).
 POINT_PARQUET_BATCH_SIZE = 10000
 
+# Publishable data levels uploaded to S3 by the `upload` step (in dispatch order).
+# Must use dispatch_s3_upload_v2.py's DATA_LEVEL_CONFIG keys.
+UPLOAD_DATA_LEVELS = [
+    "b1_vap_daily_compressed",
+    "hsds",
+    "b1_vap_by_point_partition",
+    "b4_vap_summary_parquet",
+    "b5_vap_atlas_summary_parquet",
+]
+
 # Ordered step DAG. depends_on lists upstream *step* names.
 STEP_ORDER = [
     "verify",
