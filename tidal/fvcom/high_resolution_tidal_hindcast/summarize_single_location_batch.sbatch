@@ -11,14 +11,15 @@
 # Get parameters from environment
 LOCATION=${LOCATION:-cook_inlet}
 BATCH_SIZE=${BATCH_SIZE:-10000}
+PRODUCT=${PRODUCT:-both}
 
 # Source shared environment setup
 source sbatch_env_setup.sh
 
 echo "Starting processing task $SLURM_ARRAY_TASK_ID for $LOCATION..."
-echo "Location: $LOCATION, Batch size: $BATCH_SIZE, Task ID: $SLURM_ARRAY_TASK_ID"
+echo "Location: $LOCATION, Batch size: $BATCH_SIZE, Product: $PRODUCT, Task ID: $SLURM_ARRAY_TASK_ID"
 
 # Run the Python script with location-specific parameters
-python summarize_dataset.py $LOCATION --batch-size $BATCH_SIZE --batch-num $SLURM_ARRAY_TASK_ID
+python summarize_dataset.py $LOCATION --batch-size $BATCH_SIZE --batch-num $SLURM_ARRAY_TASK_ID --product $PRODUCT
 
 echo "Task $SLURM_ARRAY_TASK_ID for $LOCATION completed successfully."
