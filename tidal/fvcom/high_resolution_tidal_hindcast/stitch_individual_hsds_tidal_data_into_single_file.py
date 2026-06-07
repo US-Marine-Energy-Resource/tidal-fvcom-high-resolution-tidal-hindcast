@@ -15,6 +15,7 @@ import h5py
 
 from config import config
 from src.file_manager import get_hsds_temp_dir, get_hsds_final_file_path
+from src.nc_manager import calculate_optimal_chunk_sizes
 
 # HDF5 cache settings for optimal performance
 HDF5_READ_CACHE = config["hdf5_cache"]["read_cache_bytes"]
@@ -849,36 +850,39 @@ def create_yearly_file_structure(
                 print(f"    Dtype: {var_info['dtype']}")
                 print(f"    Is static: {is_static}")
 
-                # Create dataset with chunking
-                if len(yearly_shape) > 1:
-                    # Multi-dimensional: chunk by time and spatial dims
-                    chunk_time = min(1000, yearly_shape[0])
-                    chunk_spatial = (
-                        min(10000, yearly_shape[1])
-                        if len(yearly_shape) > 1
-                        else yearly_shape[1]
-                    )
-                    chunks = (chunk_time, chunk_spatial)
-                    if len(yearly_shape) > 2:
-                        chunks = chunks + yearly_shape[2:]
-
-                    print(f"    Chunks: {chunks}")
-
-                    # Validate chunk size (rough estimate: chunks * dtype_size)
-                    dtype_size = np.dtype(var_info["dtype"]).itemsize
-                    chunk_elements = np.prod(chunks)
-                    chunk_bytes = chunk_elements * dtype_size
-                    chunk_gb = chunk_bytes / (1024**3)
-                    print(
-                        f"    Estimated chunk size: {chunk_gb:.3f} GB ({chunk_bytes:,} bytes)"
-                    )
-
-                    if chunk_gb >= 4.0:
-                        print("    WARNING: Chunk size exceeds 4GB limit!")
+                # Chunk sizes come from the central chunking strategy
+                # (calculate_optimal_chunk_sizes), which sizes chunks per the
+                # config chunk_spec. dim names tell it which axis to chunk along
+                # (the configured preferred dimension). The NLR spec guarantees
+                # 1D/2D variables, so we derive the names from the number of
+                # dimensions rather than from the source file.
+                num_dims = len(yearly_shape)
+                if num_dims == 2:
+                    dims = ["time", "face"]
+                elif num_dims == 1:
+                    dims = ["face"]
                 else:
-                    # 1D time series
-                    chunks = (min(10000, yearly_shape[0]),)
-                    print(f"    Chunks: {chunks}")
+                    raise ValueError(
+                        f"Variable '{var_name}' has {num_dims} dimensions "
+                        f"(shape {yearly_shape}); the NLR spec only allows "
+                        "1D or 2D variables."
+                    )
+
+                chunks = calculate_optimal_chunk_sizes(
+                    shape=yearly_shape,
+                    dims=dims,
+                    dtype=var_info["dtype"],
+                    config=config,
+                )
+                print(f"    Chunks: {chunks}")
+
+                # Informational chunk-size estimate
+                dtype_size = np.dtype(var_info["dtype"]).itemsize
+                chunk_bytes = int(np.prod(chunks)) * dtype_size
+                print(
+                    f"    Estimated chunk size: {chunk_bytes / (1024**2):.3f} MB "
+                    f"({chunk_bytes:,} bytes)"
+                )
 
                 print("    Creating dataset...")
                 dataset = yearly_h5.create_dataset(
