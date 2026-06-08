@@ -4,10 +4,53 @@ Unified variable definitions for all tidal hindcast documentation
 
 import re
 
+from config import config
 from src.gis_colors_registry import GIS_COLORS_REGISTRY
 
 _GITHUB_PAGES_BASE = "https://us-marine-energy-resource.github.io"
 _TIDAL_HINDCAST_PATH = "tidal/high-resolution-hindcast"
+
+
+def get_sigma_layers(location_key):
+    """Number of terrain-following sigma layers for a location.
+
+    Source of truth is the per-location ``sigma_layers`` entry in
+    ``config["location_specification"]`` (10 at most locations, 9 at AK Southeast).
+    """
+    return config["location_specification"][location_key].get("sigma_layers")
+
+
+def describe_sigma_layer_counts():
+    """Single-source, human-readable phrase describing sigma-layer counts across
+    all locations, derived from each location's ``sigma_layers``.
+
+    Example: ``"10 at most locations, 9 at Southeast, Alaska"``. Used throughout
+    the documentation so the wording stays correct as locations are added or
+    their layer counts change.
+    """
+    counts = {}  # layer count -> [location labels]
+    for loc in config["location_specification"].values():
+        n = loc.get("sigma_layers")
+        if n is None:
+            continue
+        counts.setdefault(n, []).append(loc["label"])
+
+    if not counts:
+        return "an unspecified number of sigma layers"
+    if len(counts) == 1:
+        (only_count,) = counts
+        return f"{only_count} at all locations"
+
+    # Modal count is described as "most locations"; the rest are listed by label.
+    modal = max(counts, key=lambda n: len(counts[n]))
+    parts = [f"{modal} at most locations"]
+    for n in sorted((c for c in counts if c != modal), reverse=True):
+        parts.append(f"{n} at {' and '.join(counts[n])}")
+    return ", ".join(parts)
+
+
+# Single source of truth for sigma-layer-count wording in documentation strings.
+SIGMA_LAYER_COUNT_PHRASE = describe_sigma_layer_counts()
 
 
 def docs_url(*parts: str) -> str:
@@ -99,7 +142,9 @@ VARIABLE_REGISTRY = {
         "equation": r"$\overline{\overline{U}} = U_{\text{average}} = \text{mean}\left(\left[\text{mean}(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right]\right)$",
         "equation_variables": [
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma layer $i$ at time $t$ $[\text{m/s}]$",
-            r"$N_{\sigma} = 10$, sigma layers (terrain-following vertical layers dividing the water column into equal-thickness fractions from surface to seafloor)",
+            r"$N_{\sigma}$, sigma layers ("
+            + SIGMA_LAYER_COUNT_PHRASE
+            + r"); terrain-following vertical layers dividing the water column into equal-thickness fractions from surface to seafloor",
             r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
         ],
     },
@@ -126,9 +171,9 @@ VARIABLE_REGISTRY = {
         "equation": r"$U_{95} = \text{percentile}(95, \left[\max(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right])$",
         "equation_variables": [
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma layer $i$ at time $t$ $[\text{m/s}]$",
-            r"$\max_{\sigma}$, maximum value across all 10 sigma layers at each timestep",
+            r"$\max_{\sigma}$, maximum value across all sigma layers at each timestep",
             r"$P_{95}$, 95th percentile operator over the full time series",
-            r"$N_{\sigma} = 10$, sigma layers",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
             r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
         ],
     },
@@ -152,7 +197,7 @@ VARIABLE_REGISTRY = {
         "equation": r"$U_{99} = \text{percentile}(99, \left[\max(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right])$",
         "equation_variables": [
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma level $i$ at time $t$ $[\text{m/s}]$",
-            r"$N_{\sigma} = 10$, sigma layers",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
             r"$T$, 1 year of hindcast data",
         ],
     },
@@ -178,7 +223,7 @@ VARIABLE_REGISTRY = {
         "equation": r"$U_{\max} = \max\left(\left[\max(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right]\right)$",
         "equation_variables": [
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma level $i$ at time $t$ $[\text{m/s}]$",
-            r"$N_{\sigma} = 10$, sigma layers",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
             r"$T$, 1 year of hindcast data",
         ],
     },
@@ -207,7 +252,7 @@ VARIABLE_REGISTRY = {
             r"$P_{i,t} = \frac{1}{2} \rho U_{i,t}^3$, power density at sigma layer $i$ at time $t$ $[\text{W/m}^2]$ [@hass_2011_assessment]",
             r"$\rho = 1025$, nominal seawater density (actual varies with temperature and salinity) $[\text{kg/m}^3]$",
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude $[\text{m/s}]$",
-            r"$N_{\sigma} = 10$, sigma layers",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
             r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
         ],
     },
@@ -234,7 +279,7 @@ VARIABLE_REGISTRY = {
         "equation_variables": [
             r"$P_{i,t} = \frac{1}{2} \rho U_{i,t}^3$, power density with $\rho = 1025$ $[\text{kg/m}^3]$",
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma level $i$ at time $t$ $[\text{m/s}]$",
-            r"$N_{\sigma} = 10$, sigma layers",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
             r"$T$, 1 year of hindcast data",
         ],
     },
@@ -544,7 +589,7 @@ VARIABLE_REGISTRY = {
         "equation_variables": [
             r"$P_{i,t} = \frac{1}{2} \rho U_{i,t}^3$, power density with $\rho = 1025$ $[\text{kg/m}^3]$",
             r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude $[\text{m/s}]$",
-            r"$N_{\sigma} = 10$, sigma layers",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
             r"$T$, 1 year of hindcast data",
         ],
     },
@@ -682,18 +727,18 @@ VARIABLE_REGISTRY = {
         "column_name": "full_year_data_s3_uri",
         "units": "",
         "long_name": "S3 URI for Full Year Time Series Data",
-        "one_liner": "direct link (S3 URI) to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for 10 uniform sigma levels at half-hourly (lower 48) or hourly (Alaska) intervals.",
+        "one_liner": "direct link (S3 URI) to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals.",
         "documentation_url": f"{docs['var']}full_year_s3_uri",
-        "complete_description": "direct link (S3 URI) to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for 10 uniform sigma levels at half-hourly (lower 48) or hourly (Alaska) intervals.",
+        "complete_description": "direct link (S3 URI) to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals.",
     },
     "full_year_https_url": {
         "display_name": "HTTPS URL for Full Year Time Series Data",
         "column_name": "full_year_data_https_url",
         "units": "",
         "long_name": "HTTPS URL for Full Year Time Series Data",
-        "one_liner": "direct link (HTTPS)  to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for 10 uniform sigma levels at half-hourly (lower 48) or hourly (Alaska) intervals",
+        "one_liner": "direct link (HTTPS)  to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals",
         "documentation_url": f"{docs['var']}full_year_https_url",
-        "complete_description": "direct link (HTTPS)  to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for 10 uniform sigma levels at half-hourly (lower 48) or hourly (Alaska) intervals",
+        "complete_description": "direct link (HTTPS)  to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals",
     },
 }
 

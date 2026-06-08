@@ -36,7 +36,7 @@ from lxml import etree
 
 # Import citation manager for BibTeX/CSL formatting
 from src.citation_manager import format_reference, format_citation
-from src.variable_registry import VARIABLE_REGISTRY
+from src.variable_registry import VARIABLE_REGISTRY, SIGMA_LAYER_COUNT_PHRASE
 
 # =============================================================================
 # NLR Template Configuration
@@ -709,10 +709,14 @@ def build_power_density_definition():
 
 
 def build_n_sigma_definition():
-    """Build: N_σ = 10"""
+    """Build: N_σ = number of sigma layers (count varies by location)."""
     elements = []
     elements.append(make_subscript([make_text("N")], [make_text("σ")]))
-    elements.append(make_text(" = 10", italic=False))
+    elements.append(
+        make_text(
+            f" = number of sigma layers ({SIGMA_LAYER_COUNT_PHRASE})", italic=False
+        )
+    )
     return make_equation_paragraph(elements)
 
 
@@ -949,7 +953,7 @@ def add_where_section(doc, var_key, compact=False):
         "u_component": "u = eastward velocity component (m/s), positive toward true east",
         "v_component": "v = northward velocity component (m/s), positive toward true north",
         "power_density": "P = ½ρU³ — power density at sigma layer i at time t (W/m²)",
-        "n_sigma": "Nσ = 10 sigma layers (terrain-following vertical layers)",
+        "n_sigma": f"Nσ = number of sigma layers ({SIGMA_LAYER_COUNT_PHRASE}; terrain-following vertical layers)",
         "rho": "ρ = 1025 kg/m³ (nominal seawater density)",
         "T": "T = 1 year of hindcast data",
         "h": "h = bathymetry depth below NAVD88 (m)",
@@ -1442,33 +1446,44 @@ def render_table_from_spec(doc, table_spec, table_number=None):
 # Definitions Section
 # =============================================================================
 
-# Sigma levels (boundaries): 0 at surface, -1 at seafloor (FVCOM convention)
-N_SIGMA_LEVELS = 11
+# Representative sigma discretization used for the documentation tables/figures.
+# Sigma levels (boundaries): 0 at surface, -1 at seafloor (FVCOM convention).
+# Most locations use 10 uniformly spaced layers (11 levels); AK Southeast uses 9
+# layers (10 levels). The tables below illustrate the common 10-layer grid; layer
+# centers are derived as midpoints of adjacent levels so this stays correct if the
+# representative count changes.
 N_SIGMA_LAYERS = 10
+N_SIGMA_LEVELS = N_SIGMA_LAYERS + 1
 _sigma_levels = np.linspace(0, -1.0, N_SIGMA_LEVELS)
-_sigma_layers = np.linspace(-0.05, -0.95, N_SIGMA_LAYERS)
+_sigma_layers = (_sigma_levels[:-1] + _sigma_levels[1:]) / 2.0
 
 sigma_levels_string = str([f"{float(x):.1f}" for x in _sigma_levels]).replace("'", "")
 sigma_layers_string = str([f"{float(x):.2f}" for x in _sigma_layers]).replace("'", "")
+
+
+def _band_labels(n, top, mid, bottom):
+    """Position labels for an n-element vertical band: top, mid, bottom only."""
+    labels = [""] * n
+    labels[0] = top
+    labels[n // 2] = mid
+    labels[-1] = bottom
+    return labels
+
 
 # Table data for sigma levels (generated from spec)
 _sigma_level_indices = [str(i) for i in range(N_SIGMA_LEVELS)]
 _sigma_level_values = [
     f"{x:.1f}" if x >= 0 else f"−{abs(x):.1f}" for x in _sigma_levels
 ]
-_sigma_level_positions = (
-    ["Sea surface"] + [""] * 4 + ["Mid-depth"] + [""] * 4 + ["Seafloor"]
+_sigma_level_positions = _band_labels(
+    N_SIGMA_LEVELS, "Sea surface", "Mid-depth", "Seafloor"
 )
 
 # Table data for sigma layers (generated from spec)
 _sigma_layer_indices = [str(i + 1) for i in range(N_SIGMA_LAYERS)]
 _sigma_layer_values = [f"−{abs(x):.2f}" for x in _sigma_layers]
-_sigma_layer_descriptions = (
-    ["Near-surface layer"]
-    + [""] * 4
-    + ["Mid-depth layer"]
-    + [""] * 3
-    + ["Near-bottom layer"]
+_sigma_layer_descriptions = _band_labels(
+    N_SIGMA_LAYERS, "Near-surface layer", "Mid-depth layer", "Near-bottom layer"
 )
 
 # Real-world example: Cook Inlet location (face=125262)
@@ -1506,7 +1521,8 @@ TECHNICAL_DEFINITIONS = {
                 "Layers stretch and compress dynamically as water depth varies with tides."
             ),
             (
-                "Configuration: The FVCOM model uses 10 uniformly spaced sigma layers. Model "
+                "Configuration: The FVCOM model uses uniformly spaced sigma layers "
+                f"({SIGMA_LAYER_COUNT_PHRASE}). Model "
                 "variables (velocity, etc.) are computed at each layer center. The physical depth "
                 "of any sigma value is: depth = −D × σ, where D = h + ζ (bathymetry + sea surface "
                 "elevation). The visualization below illustrates how sigma layers vary with tides."
@@ -1645,7 +1661,7 @@ SYMBOL_DEFINITIONS = {
     "T": "Time period (hindcast duration = 1 year)",
     "t": "Time index",
     "i": "Sigma layer index (1 to Nσ)",
-    "Nσ": "Number of sigma layers (= 10 in this dataset)",
+    "Nσ": f"Number of sigma layers ({SIGMA_LAYER_COUNT_PHRASE})",
     "σ": "Sigma coordinate (terrain-following vertical coordinate)",
     "P₉₅": "95th percentile operator",
 }
@@ -2332,7 +2348,7 @@ def generate_markdown() -> str:
                 "u_component": "$u$ = eastward velocity component (m/s), positive toward true east",
                 "v_component": "$v$ = northward velocity component (m/s), positive toward true north",
                 "power_density": "$P_{i,t} = \\frac{1}{2}\\rho U_{i,t}^3$ — power density at sigma layer $i$ at time $t$ (W/m²)",
-                "n_sigma": "$N_\\sigma = 10$ sigma layers (terrain-following vertical layers)",
+                "n_sigma": f"$N_\\sigma$ sigma layers ({SIGMA_LAYER_COUNT_PHRASE}; terrain-following vertical layers)",
                 "rho": "$\\rho = 1025$ kg/m³ (nominal seawater density)",
                 "T": "$T$ = 1 year of hindcast data",
                 "h": "$h$ = bathymetry depth below NAVD88 (m)",
