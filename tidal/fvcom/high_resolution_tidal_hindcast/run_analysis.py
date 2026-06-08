@@ -38,6 +38,18 @@ from haversine import haversine
 sns.set_theme()
 
 
+def detect_n_sigma_layers(df, prefix="vap_sea_water_speed_layer_"):
+    """Number of sigma layers in a parquet dataframe, detected from the 0-indexed
+    vap_sea_water_speed_layer_<i> columns. Layer counts vary by location (10 at most
+    locations, 9 at AK Southeast). Falls back to 10 if no layer columns are present."""
+    idxs = [
+        int(c[len(prefix):])
+        for c in df.columns
+        if c.startswith(prefix) and c[len(prefix):].isdigit()
+    ]
+    return max(idxs) + 1 if idxs else 10
+
+
 # INPUT_PATH = Path("./data/b4_parquet_partition/cook_inlet")
 # INPUT_PATH = Path("./data/WA_puget_sound/b4_by_point_parquet/")
 # INPUT_PATH = Path("./data/AK_cook_inlet_nikiski/b4_partition/")
@@ -201,7 +213,7 @@ def plot_velocity_profile_with_histograms(
     }
 
     # Extract layer information
-    n_layers = 10  # Assuming 10 sigma layers
+    n_layers = detect_n_sigma_layers(df)
     velocity_cols = [f"vap_sea_water_speed_layer_{i}" for i in range(n_layers)]
     direction_cols = [f"vap_sea_water_to_direction_layer_{i}" for i in range(n_layers)]
     depth_cols = [f"vap_sigma_depth_layer_{i}" for i in range(n_layers)]
@@ -1196,7 +1208,7 @@ def plot_tidal_harmonic_analysis(df, layer=4, n_components=5):
     df : pandas DataFrame
         DataFrame containing tidal data with DatetimeIndex
     layer : int
-        Depth layer to analyze (0-9, default is middle layer 4)
+        Depth layer to analyze (0 to N-1, where N is the number of sigma layers)
     n_components : int
         Number of harmonic components to extract
 
@@ -1455,8 +1467,8 @@ def plot_velocity_profile(df, timestamp_idx=0):
     depths = []
     velocities = []
 
-    # Number of layers (assuming 10 layers as in your data)
-    n_layers = 10
+    # Number of sigma layers (detected from the data)
+    n_layers = detect_n_sigma_layers(df)
 
     for layer in range(n_layers):
         depths.append(df.iloc[timestamp_idx][f"vap_sigma_depth_layer_{layer}"])
@@ -1489,7 +1501,7 @@ def plot_current_rose(df, layer=0, bins=16, vmax=None):
     df : pandas DataFrame
         DataFrame containing the tidal data
     layer : int
-        The depth layer to visualize (0-9)
+        The depth layer to visualize (0 to N-1, where N is the number of sigma layers)
     bins : int
         Number of direction bins to use
     vmax : float or None
@@ -1582,7 +1594,8 @@ def plot_tidal_time_series(df, start_date=None, end_date=None, layers=None):
     start_date, end_date : datetime or str, optional
         Date range to plot (if None, uses full range)
     layers : list of int, optional
-        List of depth layers to plot (if None, plots layers 0, 4, and 9)
+        List of depth layers to plot (if None, plots a representative
+        surface/middle/bottom spread)
 
     Returns:
     --------
@@ -1597,7 +1610,8 @@ def plot_tidal_time_series(df, start_date=None, end_date=None, layers=None):
 
     # Default layers if not specified (surface, middle, bottom)
     if layers is None:
-        layers = [0, 4, 9]
+        n = detect_n_sigma_layers(df)
+        layers = sorted({0, n // 2, n - 1})
 
     # Set up a 3-panel figure
     fig, axs = plt.subplots(3, 1, figsize=(12, 10), sharex=True)
@@ -1674,7 +1688,7 @@ def old_plot_velocity_exceedance(df, layers=None, key_percentiles=None):
     df : pandas DataFrame
         DataFrame containing the tidal data
     layers : list of int, optional
-        List of depth layers to plot (if None, uses layers 0, 2, 5, and 9)
+        List of depth layers to plot (if None, uses all sigma layers)
     key_percentiles : list of float, optional
         List of percentiles to highlight (if None, uses [50, 75, 90, 95])
 
@@ -1687,8 +1701,7 @@ def old_plot_velocity_exceedance(df, layers=None, key_percentiles=None):
     """
     # Default layers if not specified
     if layers is None:
-        # layers = [0, 2, 5, 9]
-        layers = range(10)
+        layers = range(detect_n_sigma_layers(df))
 
     # Default key percentiles
     if key_percentiles is None:
@@ -1787,7 +1800,7 @@ def plot_velocity_exceedance(df, layers=None, key_percentiles=None):
     df : pandas DataFrame
         DataFrame containing the tidal data
     layers : list of int, optional
-        List of depth layers to plot (if None, uses layers 0, 2, 5, and 9)
+        List of depth layers to plot (if None, uses all sigma layers)
     key_percentiles : list of float, optional
         List of percentiles to highlight (if None, uses [50, 75, 90, 95])
 
@@ -1804,8 +1817,7 @@ def plot_velocity_exceedance(df, layers=None, key_percentiles=None):
 
     # Default layers if not specified
     if layers is None:
-        # layers = [0, 2, 5, 9]  # Using subset for cleaner visualization
-        layers = range(10)
+        layers = range(detect_n_sigma_layers(df))
 
     # Default key percentiles
     if key_percentiles is None:
@@ -1978,7 +1990,7 @@ def analyze_power_density(df, layer=None, rho=1025, cutout_speed=0.5, rated_spee
     # If layer is not specified, find the layer with maximum mean power density
     if layer is None:
         mean_powers = []
-        for i in range(10):  # Assuming 10 layers as in your data
+        for i in range(detect_n_sigma_layers(df)):
             mean_powers.append(df[f"vap_sea_water_power_density_layer_{i}"].mean())
         layer = np.argmax(mean_powers)
         print(f"Selected layer {layer} with highest mean power density")
@@ -2136,9 +2148,9 @@ def plot_tidal_velocity_profile(df, timestamp_index=None):
     data = df.iloc[timestamp_index]
 
     # Extract depths and velocities for all layers
-    depths = [data[f"vap_sigma_depth_layer_{i}"] for i in range(10)]
-    speeds = [data[f"vap_sea_water_speed_layer_{i}"] for i in range(10)]
-    directions = [data[f"vap_sea_water_to_direction_layer_{i}"] for i in range(10)]
+    depths = [data[f"vap_sigma_depth_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
+    speeds = [data[f"vap_sea_water_speed_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
+    directions = [data[f"vap_sea_water_to_direction_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
 
     # Create the figure
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 8))
@@ -2191,9 +2203,9 @@ def plot_power_density_profile(df, timestamp_index=None):
     data = df.iloc[timestamp_index]
 
     # Extract depths and power density for all layers
-    depths = [data[f"vap_sigma_depth_layer_{i}"] for i in range(10)]
-    power_density = [data[f"vap_sea_water_power_density_layer_{i}"] for i in range(10)]
-    speeds = [data[f"vap_sea_water_speed_layer_{i}"] for i in range(10)]
+    depths = [data[f"vap_sigma_depth_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
+    power_density = [data[f"vap_sea_water_power_density_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
+    speeds = [data[f"vap_sea_water_speed_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
 
     # Create the figure
     fig, ax = plt.subplots(figsize=(10, 8))
@@ -2253,7 +2265,7 @@ def plot_tidal_time_series(df, start_index=0, end_index=None, layer=4):
     start_index, end_index : int
         Start and end indices for the time series
     layer : int
-        Depth layer to plot (0-9, default is middle layer 4)
+        Depth layer to plot (0 to N-1, where N is the number of sigma layers)
 
     Returns:
     --------
@@ -2324,7 +2336,7 @@ def plot_tidal_rose(df, layer=4):
     df : pandas DataFrame
         DataFrame containing the tidal data
     layer : int
-        Depth layer to analyze (0-9, default is middle layer 4)
+        Depth layer to analyze (0 to N-1, where N is the number of sigma layers)
 
     Returns:
     --------
@@ -2360,7 +2372,7 @@ def plot_tidal_rose(df, layer=4):
     return fig
 
 
-def plot_tidal_exceedance(df, layers=[0, 4, 9]):
+def plot_tidal_exceedance(df, layers=None):
     """
     Plot velocity and power exceedance curves for tidal energy development.
 
@@ -2376,6 +2388,10 @@ def plot_tidal_exceedance(df, layers=[0, 4, 9]):
     fig : matplotlib Figure
         The created figure
     """
+    if layers is None:
+        n = detect_n_sigma_layers(df)
+        layers = sorted({0, n // 2, n - 1})
+
     # Create the figure
     fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 7))
 
@@ -2466,8 +2482,8 @@ def create_tidal_resource_dashboard(df, timestamp_index=None):
 
     # 1. Velocity Profile
     ax1 = fig.add_subplot(gs[0, 0])
-    depths = [data[f"vap_sigma_depth_layer_{i}"] for i in range(10)]
-    speeds = [data[f"vap_sea_water_speed_layer_{i}"] for i in range(10)]
+    depths = [data[f"vap_sigma_depth_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
+    speeds = [data[f"vap_sea_water_speed_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
     ax1.plot(speeds, depths, "o-", linewidth=2, markersize=8)
     ax1.set_xlabel("Current Speed (m/s)")
     ax1.set_ylabel("Depth (m)")
@@ -2477,7 +2493,7 @@ def create_tidal_resource_dashboard(df, timestamp_index=None):
 
     # 2. Power Density Profile
     ax2 = fig.add_subplot(gs[0, 1])
-    power_density = [data[f"vap_sea_water_power_density_layer_{i}"] for i in range(10)]
+    power_density = [data[f"vap_sea_water_power_density_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
     ax2.plot(power_density, depths, "o-", linewidth=2, markersize=8, color="red")
     ax2.set_xlabel("Power Density (W/m²)")
     ax2.set_ylabel("Depth (m)")
@@ -2489,10 +2505,10 @@ def create_tidal_resource_dashboard(df, timestamp_index=None):
     ax3 = fig.add_subplot(gs[0, 2])
     # Flattened arrays for all days
     all_depths = np.array(
-        [df[f"vap_sigma_depth_layer_{i}"] for i in range(10)]
+        [df[f"vap_sigma_depth_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
     ).T.flatten()
     all_speeds = np.array(
-        [df[f"vap_sea_water_speed_layer_{i}"] for i in range(10)]
+        [df[f"vap_sea_water_speed_layer_{i}"] for i in range(detect_n_sigma_layers(df))]
     ).T.flatten()
 
     ax3.scatter(all_speeds, all_depths, s=10, alpha=0.3)
@@ -2510,7 +2526,8 @@ def create_tidal_resource_dashboard(df, timestamp_index=None):
     end_idx = min(len(df), timestamp_index + window)
     df_slice = df.iloc[start_idx:end_idx]
 
-    for layer in [0, 4, 9]:  # Top, middle, bottom layers
+    _n = detect_n_sigma_layers(df)
+    for layer in sorted({0, _n // 2, _n - 1}):  # Top, middle, bottom layers
         ax4.plot(
             df_slice.index,
             df_slice[f"vap_sea_water_speed_layer_{layer}"],
@@ -3439,9 +3456,11 @@ def plot_velocity_shear_profile(df):
     fig : matplotlib Figure
         The created figure
     """
+    n_layers = detect_n_sigma_layers(df)
+
     # Calculate average depths for each layer
     depths = []
-    for i in range(10):
+    for i in range(n_layers):
         layer_depths = df[f"vap_sigma_depth_layer_{i}"].values
         depths.append(np.mean(layer_depths))
 
@@ -3449,7 +3468,7 @@ def plot_velocity_shear_profile(df):
     velocity_diffs = []
     depth_diffs = []
 
-    for i in range(9):  # 10 layers means 9 differences
+    for i in range(n_layers - 1):  # N layers means N-1 differences
         v1 = df[f"vap_sea_water_speed_layer_{i}"].values
         v2 = df[f"vap_sea_water_speed_layer_{i + 1}"].values
         velocity_diff = v1 - v2
@@ -3465,7 +3484,7 @@ def plot_velocity_shear_profile(df):
     shear = []
     mean_interface_depths = []
 
-    for i in range(9):
+    for i in range(n_layers - 1):
         # Average depth difference between layers
         mean_depth_diff = np.mean(depth_diffs[i])
         # Calculate shear as velocity gradient
@@ -3478,7 +3497,7 @@ def plot_velocity_shear_profile(df):
     fig, (ax1, ax2, ax3) = plt.subplots(1, 3, figsize=(18, 10))
 
     # 1. Vertical profile of mean velocity
-    mean_velocities = [df[f"vap_sea_water_speed_layer_{i}"].mean() for i in range(10)]
+    mean_velocities = [df[f"vap_sea_water_speed_layer_{i}"].mean() for i in range(n_layers)]
     ax1.plot(mean_velocities, depths, "o-", linewidth=2, markersize=8)
     ax1.set_xlabel("Mean Current Speed (m/s)")
     ax1.set_ylabel("Depth (m)")
@@ -3546,7 +3565,7 @@ def plot_velocity_shear_profile(df):
     # Add a calculated metric for overall shear intensity
     total_depth = depths[-1] - depths[0]
     surface_speed = df["vap_sea_water_speed_layer_0"].mean()
-    bottom_speed = df["vap_sea_water_speed_layer_9"].mean()
+    bottom_speed = df[f"vap_sea_water_speed_layer_{n_layers - 1}"].mean()
     overall_shear = (surface_speed - bottom_speed) / total_depth
 
     fig.text(
@@ -3894,7 +3913,7 @@ def generate_tidal_site_assessment(df, site_name="Tidal Site"):
     # Calculate mean values for each depth layer
     mean_speeds = []
     mean_depths = []
-    for i in range(10):
+    for i in range(detect_n_sigma_layers(df)):
         mean_speeds.append(df[f"vap_sea_water_speed_layer_{i}"].mean())
         mean_depths.append(df[f"vap_sigma_depth_layer_{i}"].mean())
 
@@ -3949,8 +3968,8 @@ def plot_fft(df, sample_rate=None):
     # Style parameters
     colors = sns.color_palette()
 
-    # Get the number of layers (assuming 10 layers)
-    n_layers = 10
+    # Get the number of layers (detected from the data)
+    n_layers = detect_n_sigma_layers(df)
 
     # Extract timestamps
     timestamps = df.index
@@ -4087,8 +4106,8 @@ def plot_speed_mesh(df):
     fig : matplotlib Figure
         Figure containing the 2D heatmap of current speed
     """
-    # Get the number of layers (assuming 10 layers)
-    n_layers = 10
+    # Get the number of layers (detected from the data)
+    n_layers = detect_n_sigma_layers(df)
 
     # Extract timestamps
     timestamps = df.index
@@ -4176,13 +4195,14 @@ def plot_speed_mesh(df):
 
 
 def add_sigma_depth_layer_bounds(df):
-    for i in range(10):
+    n_layers = detect_n_sigma_layers(df)
+    for i in range(n_layers):
         print(f"Sigma {i} depth", df[f"vap_sigma_depth_layer_{i}"].iloc[0])
 
-    for i in range(11):
+    for i in range(n_layers + 1):
         if i == 0:
             df[f"vap_sigma_depth_bound_{i}"] = 0
-        elif i == 10:
+        elif i == n_layers:
             # df[f"vap_sigma_depth_bound_{i}"] = df["vap_surface_elevation"]
             df[f"vap_sigma_depth_bound_{i}"] = (
                 df["vap_surface_elevation"] + df["vap_sea_floor_depth"]
@@ -4975,7 +4995,7 @@ def plot_sigma_layers(
     - Each sigma layer is represented as a polygon
     - Surface is at 0, positive depth values increase downward
     - Bottom remains fixed
-    - 10 uniform sigma layers (11 sigma levels)
+    - uniform sigma layers (10 at most locations, 9 at AK Southeast)
     - Includes standard oceanographic tidal reference levels
 
     Parameters:
@@ -5019,8 +5039,8 @@ def plot_sigma_layers(
     times = df.index
     n_times = len(times)
 
-    # Number of sigma layers (10 layers, 11 levels)
-    n_layers = 10
+    # Number of sigma layers (detected from the data)
+    n_layers = detect_n_sigma_layers(df)
 
     # Create arrays to store the polygons and colors
     verts = []
@@ -5230,28 +5250,30 @@ def add_sigma_depth_bounds(df):
     Vectorized version to calculate sigma depth bounds for each time step.
     - Surface elevation changes
     - Bottom is at sea floor depth (fixed)
-    - 10 uniform sigma layers (11 sigma levels)
+    - uniform sigma layers (10 at most locations, 9 at AK Southeast)
     """
+    n_layers = detect_n_sigma_layers(df)
+
     # Extract sea floor depths as a Series
     sea_floor = df["vap_sea_floor_depth"]
 
     # Calculate sigma layer depths (centers)
-    for i in range(10):
+    for i in range(n_layers):
         # Vectorized calculation for all time steps at once
-        sigma_factor = (i + 0.5) / 10
+        sigma_factor = (i + 0.5) / n_layers
         df[f"vap_sigma_depth_layer_{i}"] = sea_floor * sigma_factor
 
-    # Calculate sigma level bounds (11 bounds for 10 layers)
-    for i in range(11):
+    # Calculate sigma level bounds (n_layers + 1 bounds for n_layers layers)
+    for i in range(n_layers + 1):
         if i == 0:
             # Surface is always at 0
             df[f"vap_sigma_depth_bound_{i}"] = 0
-        elif i == 10:
+        elif i == n_layers:
             # Bottom is at sea floor depth
             df[f"vap_sigma_depth_bound_{i}"] = sea_floor
         else:
             # Intermediate bounds at uniform intervals
-            df[f"vap_sigma_depth_bound_{i}"] = sea_floor * (i / 10)
+            df[f"vap_sigma_depth_bound_{i}"] = sea_floor * (i / n_layers)
 
     return df
 
@@ -5413,7 +5435,8 @@ for parquet_file in parquet_files:  # UNH Living Bridge
 
     print("Generating sigma depth bounds...")
     df = add_sigma_depth_bounds(df)
-    for i in range(11):
+    n_layers = detect_n_sigma_layers(df)
+    for i in range(n_layers + 1):
         iloc = 0
         print(f"Sigma Depth [{i}]: {df[f'vap_sigma_depth_bound_{i}'].iloc[iloc]}")
 
@@ -5499,7 +5522,7 @@ for parquet_file in parquet_files:  # UNH Living Bridge
     # )
     # plt.show()
     # exit()
-    for i in range(10):
+    for i in range(n_layers):
         min_depth = df[f"vap_sigma_depth_layer_{i}"].min()
         max_depth = df[f"vap_sigma_depth_layer_{i}"].max()
         depth_range_str = f"{min_depth:.2f} to {max_depth:.2f} m"
@@ -5594,7 +5617,7 @@ for parquet_file in parquet_files:  # UNH Living Bridge
     #     lambda: plot_tidal_harmonics(df, layer=0),
     # )
     # plot_tidal_harmonic_analysis(df, layer=4)
-    for i in range(10):
+    for i in range(n_layers):
         render_plot(
             label,
             file_label,
@@ -5611,7 +5634,7 @@ for parquet_file in parquet_files:  # UNH Living Bridge
     #     lambda: create_tidal_resource_dashboard(df),
     # )
 
-    for i in range(10):
+    for i in range(n_layers):
         render_plot(
             label,
             file_label,
@@ -5620,7 +5643,7 @@ for parquet_file in parquet_files:  # UNH Living Bridge
             lambda: plot_tidal_asymmetry(df, layer=i),
         )
 
-    for i in range(10):
+    for i in range(n_layers):
         min_depth = df[f"vap_sigma_depth_layer_{i}"].min()
         max_depth = df[f"vap_sigma_depth_layer_{i}"].max()
         depth_range_str = f"{min_depth:.2f} to {max_depth:.2f} m"
