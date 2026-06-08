@@ -583,6 +583,7 @@ config = {
             "partition_frequency": "5D",  # 7 Day Chunks
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 797978,
+            "sigma_layers": 10,
             "citation": format_references(["ak_aleutian_spicer2025_spatially"]),
             "original_attrs": """
 // global attributes:
@@ -620,6 +621,7 @@ config = {
             # "partition_frequency": "12h",
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 392002,
+            "sigma_layers": 10,
             "citation": format_references(["ak_cook_deb2025_characterizing"]),
             "original_attrs": """
 // global attributes:
@@ -656,6 +658,7 @@ config = {
             # "partition_frequency": "12h",
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 292927,
+            "sigma_layers": 10,
             "citation": format_references(["nh_piscataqua_spicer2023_tidal"]),
             "original_attrs": """
 // global attributes:
@@ -716,6 +719,7 @@ Lamprey2 ;
             "partition_frequency": "5D",
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 1734765,
+            "sigma_layers": 10,
             "citation": format_references(
                 [
                     "wa_puget_deb2024_tidal_iec",
@@ -812,6 +816,7 @@ Elhwa2 ;
             "partition_frequency": "5D",
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 1133134,
+            "sigma_layers": 9,
             "citation": format_references(
                 [
                     "ak_southeast_brand_2025_tidal",
@@ -856,6 +861,7 @@ Elhwa2 ;
             # "partition_frequency": "12h",
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 231208,
+            "sigma_layers": 10,
             "citation": format_references(["me_western_deb2023_turbulence"]),
             "original_attrs": """
 // global attributes:
