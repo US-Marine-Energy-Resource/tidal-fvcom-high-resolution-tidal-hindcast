@@ -15,7 +15,7 @@ S3 Access Methods:
 Example S3 URI:
     s3://marine-energy-data/us-tidal/AK_cook_inlet/v1.0.0/b1_vap_by_point_partition/
     lat_deg=59/lon_deg=-152/lat_dec=12/lon_dec=78/
-    AK_cook_inlet.wpto_high_res_tidal.face=00012345.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet
+    AK_cook_inlet.doe_h2o_high_res_tidal.face=00012345.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet
 """
 
 from datetime import datetime
@@ -99,7 +99,7 @@ def get_b1_filename(face_id, lat, lon, location, config):
         config: Configuration dictionary
 
     Returns:
-        str: Filename like 'AK_cook_inlet.wpto_high_res_tidal.face=00012345.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet'
+        str: Filename like 'AK_cook_inlet.doe_h2o_high_res_tidal.face=00012345.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet'
     """
     coord_digits_max = config["partition"]["coord_digits_max"]
     index_max_digits = config["partition"]["index_max_digits"]

@@ -15,7 +15,7 @@ class DataFileName:
 
     Components at fixed positions from the start:
         0: location_id      (e.g., "AK_cook_inlet")
-        1: dataset_name     (e.g., "wpto_high_res_tidal-year_average")
+        1: dataset_name     (e.g., "doe_h2o_high_res_tidal-year_average")
         2: data_level       (e.g., "b3")
         3: date             (YYYYMMDD, e.g., "20100603") — optional
         4: time             (HHMMSS, e.g., "000000") — optional
@@ -36,8 +36,8 @@ class DataFileName:
         """Parse a filename (with or without path) into its components.
 
         Examples:
-            >>> DataFileName.from_filename("AK_cook_inlet.wpto_high_res_tidal-year_average.b3.20100603.000000.v1.0.0.nc")
-            DataFileName(location_id='AK_cook_inlet', dataset_name='wpto_high_res_tidal-year_average',
+            >>> DataFileName.from_filename("AK_cook_inlet.doe_h2o_high_res_tidal-year_average.b3.20100603.000000.v1.0.0.nc")
+            DataFileName(location_id='AK_cook_inlet', dataset_name='doe_h2o_high_res_tidal-year_average',
                         data_level='b3', date='20100603', time='000000', version='1.0.0', ext='nc')
         """
         name = Path(str(filename)).name

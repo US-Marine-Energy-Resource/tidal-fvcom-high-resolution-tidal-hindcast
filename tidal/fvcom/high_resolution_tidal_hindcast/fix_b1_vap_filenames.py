@@ -3,9 +3,9 @@
 Adhoc script to fix b1_vap filenames that have duplicate year format.
 
 This script renames files from the incorrect format:
-    AK_cook_inlet.wpto_high_res_tidal.b1_vap.20050101.20050101.v1.0.0.nc
+    AK_cook_inlet.doe_h2o_high_res_tidal.b1_vap.20050101.20050101.v1.0.0.nc
 To the correct format:
-    AK_cook_inlet.wpto_high_res_tidal.b1_vap.20050101.000000.v1.0.0.nc
+    AK_cook_inlet.doe_h2o_high_res_tidal.b1_vap.20050101.000000.v1.0.0.nc
 
 The second timestamp should be the time (HHMMSS) of the first timestamp in the file,
 not the date of the last timestamp.

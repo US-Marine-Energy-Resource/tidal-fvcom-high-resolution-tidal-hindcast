@@ -61,8 +61,8 @@ def parse_parquet_filename(filename):
     {location}.{dataset}.face={faceid}.lat={lat}.lon={lon}-{temporal}.b1.{date}.{time}.v{version}.parquet
 
     Examples:
-    AK_cook_inlet.wpto_high_res_tidal.face=000123.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet
-    AK_aleutian_islands.wpto_high_res_tidal.face=000299.lat=49.9379654.lon=-174.9613647-1h.b1.20100603.000000.v1.0.0.parquet
+    AK_cook_inlet.doe_h2o_high_res_tidal.face=000123.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet
+    AK_aleutian_islands.doe_h2o_high_res_tidal.face=000299.lat=49.9379654.lon=-174.9613647-1h.b1.20100603.000000.v1.0.0.parquet
 
     Parameters
     ----------
@@ -867,7 +867,7 @@ def generate_compact_manifest(config, output_dir, existing_manifest=None):
         # Path template for file reconstruction
         "path_template": {
             "template": path_template,
-            "example": "AK_cook_inlet/v1.0.0/b1_vap_by_point_partition/lat_deg=59/lon_deg=-152/lat_dec=12/lon_dec=78/AK_cook_inlet.wpto_high_res_tidal.face=00012345.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet",
+            "example": "AK_cook_inlet/v1.0.0/b1_vap_by_point_partition/lat_deg=59/lon_deg=-152/lat_dec=12/lon_dec=78/AK_cook_inlet.doe_h2o_high_res_tidal.face=00012345.lat=59.1234567.lon=-152.7890123-1h.b1.20050101.000000.v1.0.0.parquet",
         },
         # Summary statistics
         "total_grids": len(grid_index),

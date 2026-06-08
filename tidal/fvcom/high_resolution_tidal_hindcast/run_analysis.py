@@ -5469,7 +5469,7 @@ for parquet_file in parquet_files:  # UNH Living Bridge
     )
     short_label = f"{dataset_name} | {lat_str}, {lon_str}"
     file_label = (
-        f"{dataset_name}.wpto_high_res_tidal_hindcast.lat={lat_str}.lon={lon_str}"
+        f"{dataset_name}.doe_h2o_high_res_tidal_hindcast.lat={lat_str}.lon={lon_str}"
     )
     # dataset_name = meta["global:dataset_name"]
     # datastream = meta["global:datastream"]

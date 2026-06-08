@@ -11,4 +11,4 @@
 
 source sbatch_env_setup.sh
 
-python verify_s3_upload.py --bucket oedi-data-drop --key us-tidal/WA_puget_sound/v1.0.0/hsds/WA_puget_sound.wpto_high_res_tidal.hsds.v1.0.0.h5 --local-path /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.0.0/hsds/WA_puget_sound.wpto_high_res_tidal.hsds.v1.0.0.h5
+python verify_s3_upload.py --bucket oedi-data-drop --key us-tidal/WA_puget_sound/v1.0.0/hsds/WA_puget_sound.doe_h2o_high_res_tidal.hsds.v1.0.0.h5 --local-path /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.0.0/hsds/WA_puget_sound.doe_h2o_high_res_tidal.hsds.v1.0.0.h5
