@@ -57,8 +57,8 @@ def prepare_nc_metadata_for_parquet(attributes):
     variable_attrs = {}
 
     # Set identifiers in metadata
-    global_attrs["WPTO_HINDCAST_FORMAT_VERSION"] = "1.0"
-    global_attrs["WPTO_HINDCAST_METADATA_TYPE"] = "netcdf_compatible"
+    global_attrs["US_DOE_H2O_HINDCAST_FORMAT_VERSION"] = "1.0"
+    global_attrs["US_DOE_H2O_HINDCAST_METADATA_TYPE"] = "netcdf_compatible"
 
     global_attrs_to_skip = [
         # This does not provide relevant information here
