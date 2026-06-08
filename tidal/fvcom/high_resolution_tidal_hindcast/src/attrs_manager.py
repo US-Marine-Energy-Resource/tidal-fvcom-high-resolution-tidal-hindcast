@@ -687,6 +687,18 @@ def standardize_dataset_global_attrs(
     print("Computing vertical attributes...")
     vertical_attributes = compute_vertical_attributes(ds)
 
+    # Number of terrain-following sigma layers in this model grid. This varies by
+    # location (10 at most sites, 9 at AK Southeast), so derive it from the data
+    # rather than hardcoding it in the description text below.
+    if "sigma_layer" in ds.sizes:
+        n_sigma_layers = int(ds.sizes["sigma_layer"])
+    elif "siglay_center" in ds:
+        n_sigma_layers = int(ds.siglay_center.shape[0])
+    elif "siglay" in ds:
+        n_sigma_layers = int(ds.siglay.shape[0])
+    else:
+        n_sigma_layers = None
+
     print("Parsing model forcing configuration...")
     forcing_config = parse_model_forcing_configuration(location["original_attrs"])
 
@@ -829,9 +841,9 @@ Hydrokinetic Office Marine Energy Resource Assessment and Characterization proje
 provides one year ({location["start_date_utc"]} to {location["end_date_utc"]}) of {location["temporal_resolution"]} resolved model output
 including eastward sea water velocity (u) [m/s], northward sea water velocity (v) [m/s], sea surface elevation [m] relative to NAVD88,
 sea water speed [m/s], sea water velocity to direction [degrees clockwise from true north], kinetic power density [W/m²], layer depths
-below surface [m], and total water column depth [m] across 10 vertical sigma layers. Pacific Northwest National Laboratory generated
+below surface [m], and total water column depth [m] across {n_sigma_layers} vertical sigma layers. Pacific Northwest National Laboratory generated
 hindcast results using {config["model_specification"]["model_version"]}, a finite volume coastal ocean model with an unstructured
-triangular mesh topology. The model employs 10 terrain-following sigma coordinate layers that adjust dynamically with tidal elevation,
+triangular mesh topology. The model employs {n_sigma_layers} terrain-following sigma coordinate layers that adjust dynamically with tidal elevation,
 where layer thickness varies proportionally to total water depth. Model outputs are computed at volume centroids that use WGS84 (EPSG:4326)
 to define the X and Y coordinates and Z coordinates are calculated relative to NAVD88. Boundary conditions incorporate 12 tidal constituents from the OSU TPXO global tide model. {forcing_config["description_text"]}
 Model validation against available Acoustic Doppler Current Profiler (ADCP) measurements is documented in {location["citation"]}
@@ -1048,7 +1060,7 @@ High-resolution tidal energy resource hindcast for {location["label"]}, develope
 and National Laboratory of the Rockies (NLR) under the U.S. Department of Energy Hydropower and Hydrokinetic Office Marine Energy
 Resource Assessment and Characterization project. Provides one year ({location["start_date_utc"]} to {location["end_date_utc"]}) of
 {location["temporal_resolution"]} three-dimensional hindcast model results including velocity components (u, v) [m/s], surface
-elevation [m] from NAVD88, and derived quantities (speed, direction, power density) across 10 depth layers spanning the water column.
+elevation [m] from NAVD88, and derived quantities (speed, direction, power density) across {n_sigma_layers} depth layers spanning the water column.
 This dataset meets IEC TS 62600-201 Edition 1.0 (2015) Stage 1 requirements for regional-scale tidal resource
 characterization, evaluating the feasibility of developing tidal energy projects by quantifying the available undisturbed resource
 across the study area.
