@@ -138,23 +138,35 @@ def extract_and_verify_sigma_layers(ds):
     # Assuming regular spacing around 0.05, 0.15, 0.25, etc.
     sigma_layer = np.round(sigma_layer, decimals=2)
 
-    # Validate sigma_layer follows expected pattern: -0.05 - 0.1*n for n=0..9
-    # This gives: [-0.05, -0.15, -0.25, -0.35, -0.45, -0.55, -0.65, -0.75, -0.85, -0.95]
+    # Validate sigma_layer is a uniform, full-column discretization.
+    # FVCOM uniform sigma layers are the midpoints of n_layers boundaries that
+    # span 0 (surface) to -1 (bottom), so layer n is centered at
+    #   center_n = -(n + 0.5) / n_layers
+    # This generalizes across grids with different layer counts. For example:
+    #   n_layers=10 -> [-0.05, -0.15, ..., -0.95]   (0.1 spacing, most locations)
+    #   n_layers=9  -> [-0.056, -0.167, ..., -0.944] (1/9 spacing, AK Southeast)
     n_layers = len(sigma_layer)
-    expected_sigma_layer = np.array([-0.05 - 0.1 * n for n in range(n_layers)])
+    layer_thickness = 1.0 / n_layers
+    expected_sigma_layer = np.array(
+        [-(n + 0.5) * layer_thickness for n in range(n_layers)]
+    )
 
     if not np.allclose(sigma_layer, expected_sigma_layer, atol=0.01):
         raise ValueError(
-            f"sigma_layer does not follow expected pattern -0.05 - 0.1*n.\n"
+            f"sigma_layer does not follow the expected uniform full-column pattern "
+            f"-(n + 0.5)/n_layers (n_layers={n_layers}, spacing={layer_thickness:.4f}).\n"
             f"Expected: {expected_sigma_layer}\n"
             f"Got:      {sigma_layer}\n"
             f"Difference: {sigma_layer - expected_sigma_layer}"
         )
 
-    # Replace with exact decimal values to avoid float32 precision errors
-    sigma_layer = np.array([-0.05 - 0.1 * n for n in range(n_layers)], dtype=np.float32)
+    # Replace with exact values to avoid float32 precision errors
+    sigma_layer = expected_sigma_layer.astype(np.float32)
 
-    print("  Validated: sigma_layer follows expected pattern")
+    print(
+        f"  Validated: sigma_layer is uniform full-column "
+        f"({n_layers} layers, spacing {layer_thickness:.4f})"
+    )
 
     # Validate uniform spacing in sigma_layer
     sigma_layer_diffs = np.diff(sigma_layer)
@@ -171,9 +183,12 @@ def extract_and_verify_sigma_layers(ds):
     # Each boundary is midway between adjacent layer centers
     # Note: sigma ranges from 0 (surface) to -1 (bottom) in FVCOM convention
 
-    # Construct sigma_level with exact decimal values
-    # Formula: boundary[i] = -0.1 * i for i=0..10
-    sigma_level = np.array([-0.1 * i for i in range(n_layers + 1)], dtype=np.float32)
+    # Construct sigma_level with exact values.
+    # Boundaries evenly span 0 (surface) to -1 (bottom):
+    #   boundary[i] = -i / n_layers for i = 0..n_layers
+    sigma_level = np.array(
+        [-i * layer_thickness for i in range(n_layers + 1)], dtype=np.float32
+    )
 
     # Validate sigma_level ranges from 0 to -1
     if sigma_level[0] != 0.0:
@@ -195,16 +210,16 @@ def extract_and_verify_sigma_layers(ds):
         "  Validated: sigma_level ranges from 0.0 to -1.0 and is monotonically decreasing"
     )
 
-    # Validate uniform spacing in sigma_level (excluding last boundary which is fixed at -1.0)
-    sigma_level_diffs = np.diff(sigma_level[:-1])  # Exclude the last boundary
+    # Validate uniform spacing in sigma_level across all boundaries
+    sigma_level_diffs = np.diff(sigma_level)
     if not np.allclose(sigma_level_diffs, sigma_level_diffs[0], atol=0.001):
         raise ValueError(
-            f"sigma_level spacing is not uniform (excluding last boundary).\n"
+            f"sigma_level spacing is not uniform.\n"
             f"Differences: {sigma_level_diffs}\n"
             f"Expected all differences to be approximately {sigma_level_diffs[0]:.3f}"
         )
     print(
-        f"  Validated: sigma_level has uniform spacing of {sigma_level_diffs[0]:.3f} (excluding last boundary)"
+        f"  Validated: sigma_level has uniform spacing of {sigma_level_diffs[0]:.3f}"
     )
 
     # Print full arrays for verification
