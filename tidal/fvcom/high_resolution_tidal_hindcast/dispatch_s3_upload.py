@@ -358,7 +358,7 @@ def get_data_level_paths(location_key, data_level):
         input_dir_template = config["dir"]["input"]["original"]
         input_dir = input_dir_template.replace(
             "<location>", location_spec["output_name"]
-        )
+        ).replace("<version>", f"v{config['dataset']['version']}")
         local_dir = base_path / input_dir
         s3_base_path = str(
             Path(location_spec["output_name"])

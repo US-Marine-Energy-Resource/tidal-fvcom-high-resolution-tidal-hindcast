@@ -5,10 +5,13 @@ from pathlib import Path
 
 def get_specified_nc_files(config, location):
     base_path = Path(config["dir"]["base"]).resolve()
-    original_data_dir = Path(base_path, config["dir"]["input"]["original"]).resolve()
-    original_data_dir = str(original_data_dir).replace(
-        "<location>", location["output_name"]
+    version = f"v{config['dataset']['version']}"
+    original_data_dir = (
+        config["dir"]["input"]["original"]
+        .replace("<location>", location["output_name"])
+        .replace("<version>", version)
     )
+    original_data_dir = Path(base_path, original_data_dir).resolve()
     search_dir = Path(original_data_dir, location["base_dir"]).resolve()
     if search_dir.exists() is not True:
         raise ValueError(f"Directory Error: {search_dir} does not exist!")
