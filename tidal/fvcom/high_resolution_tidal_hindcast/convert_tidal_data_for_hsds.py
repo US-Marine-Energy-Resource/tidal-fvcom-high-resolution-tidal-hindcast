@@ -297,7 +297,7 @@ def stream_data_to_h5(
 
         # Ensure version attribute exists
         if "version" not in h5f.attrs:
-            h5f.attrs["version"] = "v1.0.0"
+            h5f.attrs["version"] = f"v{config['dataset']['version']}"
 
         # Create required datasets
         h5f.create_dataset("meta", data=metadata)
@@ -518,7 +518,7 @@ if __name__ == "__main__":
     output_path = Path(
         base_dir,
         "hsds",
-        f"{location_dir}.wpto_high_res_tidal.hsds.v{config['dataset']['version']}.h5",
+        f"{location_dir}.{config['dataset']['name']}.hsds.v{config['dataset']['version']}.h5",
     )
 
     create_hsds_tidal_dataset(
