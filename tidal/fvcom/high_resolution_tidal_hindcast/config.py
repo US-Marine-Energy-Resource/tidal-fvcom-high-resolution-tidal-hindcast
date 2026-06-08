@@ -3,10 +3,10 @@ from src.citation_manager import format_references
 config = {
     "dataset": {
         "label": "High Resolution Tidal Hindcast",
-        "name": "wpto_high_res_tidal",
-        "version": "1.0.0",
-        "gis_output_version": "1.0.0",
-        "development_version": "1.0.0",
+        "name": "doe_h2o_high_res_tidal",
+        "version": "1.1.0",
+        "gis_output_version": "1.1.0",
+        "development_version": "1.1.0",
         "issue_date": "2025-11-12",
         "encoding": {
             "var": {
@@ -37,7 +37,7 @@ config = {
         "xarray_netcdf4_engine": "h5netcdf",
     },
     "code": {
-        "version": "1.0.0",
+        "version": "1.1.0",
         "development_version": "1.1.0",
     },
     "partition": {
@@ -52,7 +52,7 @@ config = {
         # Manifest specification version (format of the manifest structure)
         "spec_version": "2.0.0",
         # Manifest version (auto-increments patch on regeneration)
-        "version": "1.0.0",
+        "version": "1.1.0",
     },
     "storage": {
         # S3 storage configuration for public data access
@@ -1044,7 +1044,7 @@ Elhwa2 ;
         # Source: ACDD
         # A URL that gives the location of more complete metadata.
         # "metadata_link": "https://www.github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast/",
-        "metadata_link": None,
+        "metadata_link": "https://mhkdr.openei.org/submissions/632",
         # Source: ACDD
         # The overarching program(s) of which the dataset is a part.
         "program": "U.S. Department of Energy (DOE) Hydropower and Hydrokinetic Office (H2O) Marine Energy Resource Assessment and Characterization",
