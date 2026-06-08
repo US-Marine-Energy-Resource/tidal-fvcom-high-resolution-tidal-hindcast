@@ -110,7 +110,7 @@ config = {
         "base": "/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast",
         # Input directory relative to base_dir
         "input": {
-            "original": "<location>/00_raw",
+            "original": "<location>/<version>/00_raw",
         },
         # Output Data Directories relative to base_dir
         "output": {

@@ -18,41 +18,50 @@ import math
 import argparse
 import sys
 
-# Location configurations: location_name: {'faces': count, 'temporal_resolution': 'hourly'/'half_hourly'}
-LOCATIONS = {
-    "aleutian_islands": {
-        "faces": 797978,
-        "temporal_resolution": "hourly",
-        "process_runtime_hours": 18,
-        "retry_runtime_hours": 24,
-    },
-    "cook_inlet": {
-        "faces": 392002,
-        "temporal_resolution": "hourly",
-        "process_runtime_hours": 4,
-        "retry_runtime_hours": 6,
-    },
-    "piscataqua_river": {
-        "faces": 292927,
-        "temporal_resolution": "half_hourly",
-        "process_runtime_hours": 4,
-        "retry_runtime_hours": 6,
-    },
-    "puget_sound": {
-        "faces": 1734765,
-        "temporal_resolution": "half_hourly",
-        # This is 73 half hourly files and is relatively slow
-        # Short partition
-        "process_runtime_hours": 18,
-        "retry_runtime_hours": 24,
-    },
-    "western_passage": {
-        "faces": 231208,
-        "temporal_resolution": "half_hourly",
-        "process_runtime_hours": 4,
-        "retry_runtime_hours": 6,
-    },
+import config as _config
+
+# SLURM wall-time tuning for the summarize array, per location. This is the only
+# summarize-specific data not derivable from config.py; everything else (faces,
+# temporal_resolution) is read from the canonical location_specification there.
+_RUNTIME_HOURS = {
+    "aleutian_islands": {"process": 18, "retry": 24},
+    "cook_inlet": {"process": 4, "retry": 6},
+    "piscataqua_river": {"process": 4, "retry": 6},
+    # Half-hourly full year (~73 5-day partitions), ~1.13M faces — sized like
+    # Puget Sound, the other large half-hourly location.
+    "southeast_alaska": {"process": 18, "retry": 24},
+    # 73 half hourly files, relatively slow.
+    "puget_sound": {"process": 18, "retry": 24},
+    "western_passage": {"process": 4, "retry": 6},
 }
+
+# Default wall-time for any location not listed above.
+_DEFAULT_RUNTIME_HOURS = {"process": 18, "retry": 24}
+
+
+def _build_locations():
+    """Derive per-location summarize config from config.py (the canonical source).
+
+    ``faces`` (config's ``face_count``) and ``temporal_resolution`` come straight
+    from ``location_specification`` so they never drift; only the SLURM runtime
+    hours are summarize-specific and live in ``_RUNTIME_HOURS``.
+    """
+    locations = {}
+    for name, spec in _config.config["location_specification"].items():
+        runtime = _RUNTIME_HOURS.get(name, _DEFAULT_RUNTIME_HOURS)
+        locations[name] = {
+            "faces": spec["face_count"],
+            # config uses the hyphenated form (e.g. "half-hourly"); normalize to
+            # the underscore key expected by BATCH_SIZE_MAP.
+            "temporal_resolution": spec["temporal_resolution"].replace("-", "_"),
+            "process_runtime_hours": runtime["process"],
+            "retry_runtime_hours": runtime["retry"],
+        }
+    return locations
+
+
+# Location configurations: location_name: {'faces': count, 'temporal_resolution': 'hourly'/'half_hourly'}
+LOCATIONS = _build_locations()
 
 # Mapping temporal resolution to batch size
 BATCH_SIZE_MAP = {"hourly": 10000, "half_hourly": 5000}

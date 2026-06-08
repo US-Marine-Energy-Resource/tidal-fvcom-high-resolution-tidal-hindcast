@@ -246,7 +246,7 @@ def discover_files(location_key, data_levels):
                 input_dir_template = config["dir"]["input"]["original"]
                 input_dir = input_dir_template.replace(
                     "<location>", location_spec["output_name"]
-                )
+                ).replace("<version>", f"v{config['dataset']['version']}")
                 local_dir = base_path / input_dir
             else:
                 # Get directory key

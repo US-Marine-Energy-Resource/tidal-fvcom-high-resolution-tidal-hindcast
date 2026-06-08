@@ -204,7 +204,7 @@ def discover_files(location_key, data_level):
         input_dir_template = config["dir"]["input"]["original"]
         input_dir = input_dir_template.replace(
             "<location>", location_spec["output_name"]
-        )
+        ).replace("<version>", f"v{config['dataset']['version']}")
         local_dir = base_path / input_dir
         # For 00_raw, relative path for S3 is manually constructed
         s3_base_relative_path = (
