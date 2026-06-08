@@ -1109,10 +1109,10 @@ def main():
 
                 # Save figure
                 output_path = Path(
-                    output_dir, f"wpto_hr_tidal_hindcast_{key}_{variable}_v006.png"
+                    output_dir, f"doe_h2o_hr_tidal_hindcast_{key}_{variable}_v006.png"
                 )
                 small_output_path = Path(
-                    output_dir, f"wpto_hr_tidal_hindcast_{key}_{variable}_web_v006.png"
+                    output_dir, f"doe_h2o_hr_tidal_hindcast_{key}_{variable}_web_v006.png"
                 )
 
                 print(f"Saving {key} {variable} to {output_path}...")

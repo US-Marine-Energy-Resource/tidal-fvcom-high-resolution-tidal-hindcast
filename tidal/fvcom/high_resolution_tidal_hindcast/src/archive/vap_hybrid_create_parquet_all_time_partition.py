@@ -204,8 +204,8 @@ def standalone_save_parquet_batch(args, safe_config, safe_location):
                     metadata[f"global:{attr_name}"] = attr_value
 
             # Add metadata markers
-            metadata["_WPTO_HINDCAST_FORMAT_VERSION"] = "1.0"
-            metadata["_WPTO_HINDCAST_METADATA_TYPE"] = "netcdf_compatible"
+            metadata["_US_DOE_H2O_HINDCAST_FORMAT_VERSION"] = "1.0"
+            metadata["_US_DOE_H2O_HINDCAST_METADATA_TYPE"] = "netcdf_compatible"
 
             # Convert all metadata values to bytes
             metadata_bytes = {}
@@ -403,8 +403,8 @@ class ConvertTidalNcToParquet:
                 metadata[f"global:{attr_name}"] = attr_value
 
         # Add metadata markers
-        metadata["_WPTO_HINDCAST_FORMAT_VERSION"] = "1.0"
-        metadata["_WPTO_HINDCAST_METADATA_TYPE"] = "netcdf_compatible"
+        metadata["_US_DOE_H2O_HINDCAST_FORMAT_VERSION"] = "1.0"
+        metadata["_US_DOE_H2O_HINDCAST_METADATA_TYPE"] = "netcdf_compatible"
 
         # Convert all metadata values to bytes
         metadata_bytes = {}
