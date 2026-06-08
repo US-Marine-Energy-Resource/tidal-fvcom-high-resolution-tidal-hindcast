@@ -523,7 +523,7 @@ def stream_monthly_data_to_h5(
 
         # Ensure version attribute
         if "version" not in h5f.attrs:
-            h5f.attrs["version"] = "v1.0.0"
+            h5f.attrs["version"] = f"v{config['dataset']['version']}"
 
         # Create time_index dataset
         h5f.create_dataset("time_index", data=time_index)
