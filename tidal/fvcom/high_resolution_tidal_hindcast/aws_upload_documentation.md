@@ -288,35 +288,35 @@ tidal_hindcast.viz.joint_probability_distribution(df, metadata, sigma_layer=1)
 ```
 
 ![Joint Probability Distribution
-Example](./docs/img/py_output/ak_cook_inlet.wpto_high_res_tidal_hindcast.lat=60.750500.lon=-151.446533.tidal_joint_probability_distribution_sigma_layer_1_depth_range_5.44_to_6.75_m.png)
+Example](./docs/img/py_output/ak_cook_inlet.doe_h2o_high_res_tidal_hindcast.lat=60.750500.lon=-151.446533.tidal_joint_probability_distribution_sigma_layer_1_depth_range_5.44_to_6.75_m.png)
 
 ``` python
 tidal_hindcast.viz.probability_of_exceedance(df, metadata)
 ```
 
 ![Velocity Exceedance
-Example](./docs/img/py_output/ak_cook_inlet.wpto_high_res_tidal_hindcast.lat=60.750500.lon=-151.446533.velocity_exceedance_probability.png)
+Example](./docs/img/py_output/ak_cook_inlet.doe_h2o_high_res_tidal_hindcast.lat=60.750500.lon=-151.446533.velocity_exceedance_probability.png)
 
 ``` python
 tidal_hindcast.viz.speed(df, metadata, start_date="2005-01-01", number_of_days=7)
 ```
 
 ![Speed Over Time
-Example](./docs/img/py_output/ak_cook_inlet.wpto_high_res_tidal_hindcast.lat=60.732075.lon=-151.431580_7days_2005-01-01.sea_water_speed.png)
+Example](./docs/img/py_output/ak_cook_inlet.doe_h2o_high_res_tidal_hindcast.lat=60.732075.lon=-151.431580_7days_2005-01-01.sea_water_speed.png)
 
 ``` python
 tidal_hindcast.viz.to_direction(df, metadata, start_date="2005-01-01", number_of_days=7)
 ```
 
 ![To Direction Over Time
-Example](./docs/img/py_output/ak_cook_inlet.wpto_high_res_tidal_hindcast.lat=60.732075.lon=-151.431580_7days_2005-01-01.sea_water_to_direction.png)
+Example](./docs/img/py_output/ak_cook_inlet.doe_h2o_high_res_tidal_hindcast.lat=60.732075.lon=-151.431580_7days_2005-01-01.sea_water_to_direction.png)
 
 ``` python
 tidal_hindcast.viz.surface_elevation(df, metadata, start_date="2005-01-01", number_of_days=7)
 ```
 
 ![Surface Elevation Over Time
-Example](./docs/img/py_output/ak_cook_inlet.wpto_high_res_tidal_hindcast.lat=60.732075.lon=-151.431580_7days_2005-01-01.surface_elevation_analysis.png)
+Example](./docs/img/py_output/ak_cook_inlet.doe_h2o_high_res_tidal_hindcast.lat=60.732075.lon=-151.431580_7days_2005-01-01.surface_elevation_analysis.png)
 
 Additionally a full overview of the data can be created using the
 `overview` function:
@@ -326,7 +326,7 @@ tidal_hindcast.viz.overview(df, metadata)
 ```
 
 ![Point Data Overview
-Example](./docs/img/py_output/ak_cook_inlet.wpto_high_res_tidal_hindcast.lat=60.750500.lon=-151.446533.velocity_and_direction_overview.png)
+Example](./docs/img/py_output/ak_cook_inlet.doe_h2o_high_res_tidal_hindcast.lat=60.750500.lon=-151.446533.velocity_and_direction_overview.png)
 
 Additional data resulting dataframe contains the complete tidal hindcast
 data for the specified point as a pandas DataFrame, and the metadata is

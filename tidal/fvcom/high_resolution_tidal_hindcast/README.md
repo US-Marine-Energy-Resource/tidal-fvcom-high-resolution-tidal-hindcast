@@ -1,6 +1,6 @@
 # H2O High Resolution Tidal Hindcast
 
-2026-06-04
+2026-06-07
 
 - [<span class="toc-section-number">1</span> Overview](#overview)
 - [<span class="toc-section-number">2</span> Versions](#versions)
@@ -20,8 +20,8 @@
   Quality Control](#data-quality-assurance-and-quality-control-1)
 - [<span class="toc-section-number">10</span> Data Levels and Processing
   Pipeline](#data-levels-and-processing-pipeline)
-- [<span class="toc-section-number">11</span> Running Standardization
-  Code](#running-standardization-code)
+- [<span class="toc-section-number">11</span> Running the Processing
+  Workflow](#running-the-processing-workflow)
 - [<span class="toc-section-number">12</span> Included
   Metadata](#included-metadata)
 - [<span class="toc-section-number">13</span> Visualization
@@ -61,8 +61,8 @@ Atlas](https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers?
 
 | Asset                             | Status    | Version |
 |-----------------------------------|-----------|---------|
-| Processing Code (This Repository) | In Review | 1.0.0   |
-| Public Dataset                    | Released  | 1.0.0   |
+| Processing Code (This Repository) | In Review | 1.1.0   |
+| Public Dataset                    | Released  | 1.1.0   |
 
 # Tidal Data Overview
 
@@ -71,7 +71,7 @@ Atlas](https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers?
 | Label | Specification |
 |----|----|
 | Project Title | High Resolution Tidal Hindcast |
-| Project ID | `wpto_high_res_tidal` |
+| Project ID | `doe_h2o_high_res_tidal` |
 | Data Generation | Pacific Northwest National Laboratory (PNNL) |
 | Data Processing and Visualization | National Laboratory of the Rockies (NLR) |
 
@@ -1149,8 +1149,8 @@ parquet for Parquet files)
 
 ## Usage
 
-The unified orchestrator dispatches the whole workflow (raw → b5) for a location
-as a chain of SLURM jobs. List the available steps with:
+The unified orchestrator dispatches the whole workflow (raw → b5) for a
+location as a chain of SLURM jobs. List the available steps with:
 
 ``` bash
 python run.py --list-steps
@@ -1194,6 +1194,7 @@ python run.py <location> --dry-run       # print the SLURM plan, submit nothing
 | Keywords | keywords | OCEAN TIDES, TIDAL ENERGY, VELOCITY, SPEED, DIRECTION, POWER DENSITY |
 | License | license | Freely Distributed |
 | Naming Authority | naming_authority | gov.nlr.water_power |
+| Metadata Link | metadata_link | https://mhkdr.openei.org/submissions/632 |
 | Program | program | U.S. Department of Energy (DOE) Hydropower and Hydrokinetic Office (H2O) Marine Energy Resource Assessment and Characterization |
 | Project | project | High Resolution Tidal Hindcast |
 | Publisher Country | publisher_country | USA |
