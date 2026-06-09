@@ -3,8 +3,8 @@
 #SBATCH --output=%x_%A_%a.out
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=andrew.simms@nlr.gov
-#SBATCH --time=12:00:00
-#SBATCH --partition=standard
+#SBATCH --time=3:59:00
+#SBATCH --partition=short
 
 # Array worker for the point-parquet sub-product of vap_data_products:
 # partitions b1_vap into the per-point time-series parquet dataset
