@@ -44,8 +44,17 @@ from dispatch_summarize_jobs import LOCATIONS as SUMMARIZE_LOCATIONS, BATCH_SIZE
 # Reuse the per-location HSDS resource table.
 from dispatch_b1_to_hsds_jobs import LOCATION_RESOURCES as HSDS_RESOURCES
 
-# Faces per batch for the point-parquet partition (matches partition_dataset.py usage).
+# Faces per batch for the point-parquet partition. Half-hourly locations hold
+# twice the per-face time series of hourly ones, so they get half the batch size
+# (5000 vs 10000) to stay within node memory and avoid OOM kills. Sizing comes
+# from the shared BATCH_SIZE_MAP keyed by the location's temporal resolution.
 POINT_PARQUET_BATCH_SIZE = 10000
+
+
+def _point_parquet_batch_size(location_cfg):
+    """Faces per point-parquet batch, halved for half-hourly locations."""
+    temporal_resolution = location_cfg["temporal_resolution"].replace("-", "_")
+    return BATCH_SIZE_MAP.get(temporal_resolution, POINT_PARQUET_BATCH_SIZE)
 
 # Publishable data levels uploaded to S3 by the `upload` step (in dispatch order).
 # Must use dispatch_s3_upload_v2.py's DATA_LEVEL_CONFIG keys.
@@ -235,13 +244,14 @@ def _submit_vap(ctx, dep_ids, subs):
 
 def _submit_point_parquet(ctx, dep_ids):
     faces = ctx.location_cfg["face_count"]
-    array_size = calculate_array_size(faces, POINT_PARQUET_BATCH_SIZE)
+    batch_size = _point_parquet_batch_size(ctx.location_cfg)
+    array_size = calculate_array_size(faces, batch_size)
     args = []
     dep = dependency_arg(dep_ids)
     if dep:
         args.append(dep)
     args += [
-        f"--export=LOCATION={ctx.location},BATCH_SIZE={POINT_PARQUET_BATCH_SIZE}",
+        f"--export=LOCATION={ctx.location},BATCH_SIZE={batch_size}",
         f"--array=0-{array_size}",
         f"--job-name={ctx.location}_point_parquet",
         f"--output={ctx.location}_point_parquet_%A_%a.out",
