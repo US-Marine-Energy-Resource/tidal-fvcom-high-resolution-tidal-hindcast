@@ -2770,6 +2770,9 @@ if __name__ == "__main__":
         # Display available regions
         regions = get_available_regions()
         # regions.reverse()
+        # TEMPORARY: restrict the run to the Southeast Alaska (se_ak) dataset only.
+        # Remove this line to restore processing of all regions.
+        regions = [region for region in regions if region == "AK_southeast"]
         print("Available regions:")
         # regions = [region for region in regions if "cook" in region]
         for i, region in enumerate(regions):
