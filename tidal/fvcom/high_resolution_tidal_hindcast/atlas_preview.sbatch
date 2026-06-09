@@ -6,10 +6,10 @@
 #SBATCH --mail-type=BEGIN,END,FAIL
 #SBATCH --mail-type=END,FAIL
 #SBATCH --mail-user=andrew.simms@nlr.gov
-##SBATCH --time=59
-##SBATCH --partition=debug
-#SBATCH --time=3:59:59
-#SBATCH --partition=short
+#SBATCH --time=59
+#SBATCH --partition=debug
+##SBATCH --time=3:59:59
+##SBATCH --partition=short
 
 source sbatch_env_setup.sh
 
