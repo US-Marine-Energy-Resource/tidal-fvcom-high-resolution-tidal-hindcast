@@ -179,12 +179,14 @@ display(Markdown(tabulate(df, tablefmt="markdown", headers="keys", showindex=Fal
 
 : High Resolution Tidal Hindcast Variables {#tbl-model-config}
 
-5 US locations of new high resolution 3D tidal data, generated using FVCOM version 4.3.1, with `u` and `v` vectors, and calculated
+6 US locations of new high resolution 3D tidal data, generated using FVCOM version 4.3.1, with `u` and `v` vectors, and calculated
 `sea_water_speed`, `sea_water_to_direction`, and `sea_water_power_density` at 10 sigma layers:
 
 ![Cook Inlet, Alaska - Sea Water Speed, Yearly Average, Depth Average](./docs/img/AK_cook_inlet_mean_sea_water_speed.png){#fig-ak-cook-speed}
 
 ![Aleutian Islands - Sea Water Speed, Yearly Average, Depth Average](./docs/img/AK_aleutian_islands_mean_sea_water_speed.png){#fig-ak-aleutian-speed}
+
+![Southeast, Alaska - Sea Water Speed, Yearly Average, Depth Average](./docs/img/AK_southeast_vap_water_column_mean_sea_water_speed.png){#fig-ak-southeast-speed}
 
 ![Western Passage, Maine - Sea Water Speed, Yearly Average, Depth Average](./docs/img/ME_western_passage_mean_sea_water_speed.png){#fig-me-west-speed-speed}
 

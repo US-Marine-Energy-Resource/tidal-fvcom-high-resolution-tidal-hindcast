@@ -1,6 +1,6 @@
 # H2O High Resolution Tidal Hindcast
 
-2026-06-07
+2026-06-09
 
 - [<span class="toc-section-number">1</span> Overview](#overview)
 - [<span class="toc-section-number">2</span> Versions](#versions)
@@ -174,7 +174,7 @@ Table 6: High Resolution Tidal Hindcast Variables
 
 </div>
 
-5 US locations of new high resolution 3D tidal data, generated using
+6 US locations of new high resolution 3D tidal data, generated using
 FVCOM version 4.3.1, with `u` and `v` vectors, and calculated
 `sea_water_speed`, `sea_water_to_direction`, and
 `sea_water_power_density` at 10 sigma layers:
@@ -197,11 +197,20 @@ Average
 
 </div>
 
+<div id="fig-ak-southeast-speed">
+
+![](./docs/img/AK_southeast_vap_water_column_mean_sea_water_speed.png)
+
+Figure 3: Southeast, Alaska - Sea Water Speed, Yearly Average, Depth
+Average
+
+</div>
+
 <div id="fig-me-west-speed-speed">
 
 ![](./docs/img/ME_western_passage_mean_sea_water_speed.png)
 
-Figure 3: Western Passage, Maine - Sea Water Speed, Yearly Average,
+Figure 4: Western Passage, Maine - Sea Water Speed, Yearly Average,
 Depth Average
 
 </div>
@@ -210,7 +219,7 @@ Depth Average
 
 ![](./docs/img/NH_piscataqua_river_mean_sea_water_speed.png)
 
-Figure 4: Piscataqua River New Hampshire - Sea Water Speed, Yearly
+Figure 5: Piscataqua River New Hampshire - Sea Water Speed, Yearly
 Average, Depth Average
 
 </div>
@@ -219,7 +228,7 @@ Average, Depth Average
 
 ![](./docs/img/WA_puget_sound_mean_sea_water_speed.png)
 
-Figure 5: Puget Sound, Washington - Sea Water Speed, Yearly Average,
+Figure 6: Puget Sound, Washington - Sea Water Speed, Yearly Average,
 Depth Average
 
 </div>
@@ -356,7 +365,7 @@ Table 8: High Resolution Tidal Hindcast Time Specification
 
 | Type | Data Level | Name | Kestrel Path |
 |:---|:---|:---|:---|
-| Input | 00 | Original | `<location>/00_raw` |
+| Input | 00 | Original | `<location>/<version>/00_raw` |
 | Output | A1 | Standardized | `<location>/<version>/a1_std` |
 | Output | A2 | Standardized Partition | `<location>/<version>/a2_std_partition` |
 | Output | B1 | Vap | `<location>/<version>/b1_vap` |
@@ -1237,12 +1246,13 @@ Atlas](https://maps.nlr.gov/marine-energy-atlas/data-viewer/data-library/layers?
 
 Atlas summary parquet files are located at:
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/<location>/v1.0.0/b5_vap_atlas_summary_parquet/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/<location>/v1.1.0/b5_vap_atlas_summary_parquet/
 
 | Location Name                   | `<location>`          |
 |---------------------------------|-----------------------|
 | Aleutian Islands, Alaska        | `AK_aleutian_islands` |
 | Cook Inlet, Alaska              | `AK_cook_inlet`       |
+| Southeast, Alaska               | `AK_southeast`        |
 | Western Passage, Maine          | `ME_western_passage`  |
 | Piscataqua River, New Hampshire | `NH_piscataqua_river` |
 | Puget Sound, Washington         | `WA_puget_sound`      |
@@ -1253,31 +1263,36 @@ GeoPackage files for each location are located at:
 
 **Aleutian Islands, Alaska**
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_aleutian_islands/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_aleutian_islands/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 
 **Cook Inlet, Alaska**
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_cook_inlet/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_cook_inlet/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+
+**Southeast, Alaska**
+
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_southeast/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 
 **Western Passage, Maine**
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/ME_western_passage/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/ME_western_passage/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 
 **Piscataqua River, New Hampshire**
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/NH_piscataqua_river/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/NH_piscataqua_river/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 
 **Puget Sound, Washington**
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 
 **All locations (combined)**
 
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_aleutian_islands/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_cook_inlet/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/ME_western_passage/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/NH_piscataqua_river/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
-    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.0.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_aleutian_islands/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_cook_inlet/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_southeast/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/ME_western_passage/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/NH_piscataqua_river/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+    /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 
 ## Location Details
 
@@ -1285,6 +1300,7 @@ GeoPackage files for each location are located at:
 |----|----|----|----|
 | Aleutian Islands, Alaska | 797,978 | 2010-06-03 00:00:00 to 2011-06-02 23:00:00 | hourly |
 | Cook Inlet, Alaska | 392,002 | 2005-01-01 00:00:00 to 2005-12-31 23:00:00 | hourly |
+| Southeast, Alaska | 1,133,134 | 2008-01-01 00:00:00 to 2008-12-30 23:30:00 | half-hourly |
 | Western Passage, Maine | 231,208 | 2017-01-01 00:00:00 to 2017-12-31 23:30:00 | half-hourly |
 | Piscataqua River, New Hampshire | 292,927 | 2007-01-01 00:00:00 to 2007-12-31 23:30:00 | half-hourly |
 | Puget Sound, Washington | 1,734,765 | 2015-01-01 00:00:00 to 2015-12-30 23:30:00 | half-hourly |
@@ -3382,7 +3398,7 @@ methodology, citations, and full dataset access. Contact
 - **Data Column:** `full_year_data_https_url`
 - **Description:** direct link (HTTPS) to download the one-year hindcast
   time series (parquet) for this location. Includes speed, direction,
-  for 10 uniform sigma levels at half-hourly (lower 48) or hourly
+  for all uniform sigma layers at half-hourly (lower 48) or hourly
   (Alaska) intervals \[\]
 - **Documentation:**
   <https://us-marine-energy-resource.github.io/tidal/high-resolution-hindcast/full_year_https_url>
@@ -3434,7 +3450,7 @@ methodology, citations, and full dataset access. Contact
 - **Data Column:** `full_year_data_s3_uri`
 - **Description:** direct link (S3 URI) to download the one-year
   hindcast time series (parquet) for this location. Includes speed,
-  direction, for 10 uniform sigma levels at half-hourly (lower 48) or
+  direction, for all uniform sigma layers at half-hourly (lower 48) or
   hourly (Alaska) intervals. \[\]
 - **Documentation:**
   <https://us-marine-energy-resource.github.io/tidal/high-resolution-hindcast/full_year_s3_uri>
@@ -4127,6 +4143,13 @@ Alaska](docs/img/AK_cook_inlet_vap_water_column_mean_sea_water_speed.png)
 *Figure: Mean Current Speed spatial distribution for Cook Inlet, Alaska.
 Units: m/s*
 
+**Southeast, Alaska Mean Current Speed**
+
+![Mean Current Speed for Southeast,
+Alaska](docs/img/AK_southeast_vap_water_column_mean_sea_water_speed.png)
+*Figure: Mean Current Speed spatial distribution for Southeast, Alaska.
+Units: m/s*
+
 **Western Passage, Maine Mean Current Speed**
 
 ![Mean Current Speed for Western Passage,
@@ -4166,6 +4189,13 @@ Alaska](docs/img/AK_cook_inlet_vap_water_column_95th_percentile_sea_water_speed.
 *Figure: 95th Percentile Current Speed spatial distribution for Cook
 Inlet, Alaska. Units: m/s*
 
+**Southeast, Alaska 95th Percentile Current Speed**
+
+![95th Percentile Current Speed for Southeast,
+Alaska](docs/img/AK_southeast_vap_water_column_95th_percentile_sea_water_speed.png)
+*Figure: 95th Percentile Current Speed spatial distribution for
+Southeast, Alaska. Units: m/s*
+
 **Western Passage, Maine 95th Percentile Current Speed**
 
 ![95th Percentile Current Speed for Western Passage,
@@ -4203,6 +4233,13 @@ Alaska. Units: W/m²*
 ![Mean Power Density for Cook Inlet,
 Alaska](docs/img/AK_cook_inlet_vap_water_column_mean_sea_water_power_density.png)
 *Figure: Mean Power Density spatial distribution for Cook Inlet, Alaska.
+Units: W/m²*
+
+**Southeast, Alaska Mean Power Density**
+
+![Mean Power Density for Southeast,
+Alaska](docs/img/AK_southeast_vap_water_column_mean_sea_water_power_density.png)
+*Figure: Mean Power Density spatial distribution for Southeast, Alaska.
 Units: W/m²*
 
 **Western Passage, Maine Mean Power Density**
@@ -4244,6 +4281,13 @@ Alaska](docs/img/AK_cook_inlet_vap_water_column_height_min.png) *Figure:
 Minimum Water Depth spatial distribution for Cook Inlet, Alaska. Units:
 m*
 
+**Southeast, Alaska Minimum Water Depth**
+
+![Minimum Water Depth for Southeast,
+Alaska](docs/img/AK_southeast_vap_water_column_height_min.png) *Figure:
+Minimum Water Depth spatial distribution for Southeast, Alaska. Units:
+m*
+
 **Western Passage, Maine Minimum Water Depth**
 
 ![Minimum Water Depth for Western Passage,
@@ -4283,6 +4327,13 @@ Alaska](docs/img/AK_cook_inlet_vap_water_column_height_max.png) *Figure:
 Maximum Water Depth spatial distribution for Cook Inlet, Alaska. Units:
 m*
 
+**Southeast, Alaska Maximum Water Depth**
+
+![Maximum Water Depth for Southeast,
+Alaska](docs/img/AK_southeast_vap_water_column_height_max.png) *Figure:
+Maximum Water Depth spatial distribution for Southeast, Alaska. Units:
+m*
+
 **Western Passage, Maine Maximum Water Depth**
 
 ![Maximum Water Depth for Western Passage,
@@ -4320,6 +4371,12 @@ Units: m*
 ![Grid Resolution for Cook Inlet,
 Alaska](docs/img/AK_cook_inlet_vap_grid_resolution.png) *Figure: Grid
 Resolution spatial distribution for Cook Inlet, Alaska. Units: m*
+
+**Southeast, Alaska Grid Resolution**
+
+![Grid Resolution for Southeast,
+Alaska](docs/img/AK_southeast_vap_grid_resolution.png) *Figure: Grid
+Resolution spatial distribution for Southeast, Alaska. Units: m*
 
 **Western Passage, Maine Grid Resolution**
 
@@ -4498,9 +4555,9 @@ bounds for optimal clarity.*
 
 ## Document Information
 
-- **Generated:** 2026-04-16 17:37:58 UTC
+- **Generated:** 2026-06-09 14:28:40 UTC
 - **Regions Processed:** AK_aleutian_islands, AK_cook_inlet,
-  ME_western_passage, NH_piscataqua_river, WA_puget_sound
+  AK_southeast, ME_western_passage, NH_piscataqua_river, WA_puget_sound
 
 *This specification was auto-generated from the tidal data visualization
 pipeline.* *All color codes, ranges, and technical specifications are

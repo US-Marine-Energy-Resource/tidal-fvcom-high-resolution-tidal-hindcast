@@ -13,11 +13,28 @@ Atlas summary parquet files are located at:
 
 | Location Name | `<location>` |
 | --- | --- |
+| Aleutian Islands, Alaska | `AK_aleutian_islands` |
+| Cook Inlet, Alaska | `AK_cook_inlet` |
 | Southeast, Alaska | `AK_southeast` |
+| Western Passage, Maine | `ME_western_passage` |
+| Piscataqua River, New Hampshire | `NH_piscataqua_river` |
+| Puget Sound, Washington | `WA_puget_sound` |
 
 ### GeoPackage (GPKG) Files
 
 GeoPackage files for each location are located at:
+
+**Aleutian Islands, Alaska**
+
+```
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_aleutian_islands/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+```
+
+**Cook Inlet, Alaska**
+
+```
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_cook_inlet/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+```
 
 **Southeast, Alaska**
 
@@ -25,10 +42,33 @@ GeoPackage files for each location are located at:
 /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_southeast/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 ```
 
+**Western Passage, Maine**
+
+```
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/ME_western_passage/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+```
+
+**Piscataqua River, New Hampshire**
+
+```
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/NH_piscataqua_river/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+```
+
+**Puget Sound, Washington**
+
+```
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+```
+
 **All locations (combined)**
 
 ```
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_aleutian_islands/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_cook_inlet/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 /projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/AK_southeast/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/ME_western_passage/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/NH_piscataqua_river/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
+/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast/WA_puget_sound/v1.1.0/b5_vap_atlas_summary_parquet/gis/gpkg/
 ```
 
 
@@ -36,7 +76,12 @@ GeoPackage files for each location are located at:
 
 | Location Name | Face Count | Averaging Dates [UTC] | Averaging Temporal Resolution
 | --- | --- | --- | --- |
+| Aleutian Islands, Alaska | 797,978 | 2010-06-03 00:00:00 to 2011-06-02 23:00:00 | hourly |
+| Cook Inlet, Alaska | 392,002 | 2005-01-01 00:00:00 to 2005-12-31 23:00:00 | hourly |
 | Southeast, Alaska | 1,133,134 | 2008-01-01 00:00:00 to 2008-12-30 23:30:00 | half-hourly |
+| Western Passage, Maine | 231,208 | 2017-01-01 00:00:00 to 2017-12-31 23:30:00 | half-hourly |
+| Piscataqua River, New Hampshire | 292,927 | 2007-01-01 00:00:00 to 2007-12-31 23:30:00 | half-hourly |
+| Puget Sound, Washington | 1,734,765 | 2015-01-01 00:00:00 to 2015-12-30 23:30:00 | half-hourly |
 
 ## Display Name Details
 
@@ -2335,7 +2380,7 @@ All colors use discrete levels with an overflow level for values exceeding the m
 | 8 | 1.05 - 1.20 [m/s] | `#f2824c` | `rgb(242, 130, 76)` | ![#f2824c](https://placehold.co/40x15/f2824c/f2824c) |
 | 9 | 1.20 - 1.35 [m/s] | `#fba53c` | `rgb(251, 165, 60)` | ![#fba53c](https://placehold.co/40x15/fba53c/fba53c) |
 | 10 | 1.35 - 1.50 [m/s] | `#f6d045` | `rgb(246, 208, 69)` | ![#f6d045](https://placehold.co/40x15/f6d045/f6d045) |
-| 11 | ≥ 1.500 m/s | `#e7fa5a` | `rgb(231, 250, 90)` | ![#e7fa5a](https://placehold.co/40x15/e7fa5a/e7fa5a) |
+| 11 | ≥ 1.500 [m/s] | `#e7fa5a` | `rgb(231, 250, 90)` | ![#e7fa5a](https://placehold.co/40x15/e7fa5a/e7fa5a) |
 
 ### 95th Percentile Current Speed [m/s], `vap_water_column_95th_percentile_sea_water_speed`
 
@@ -2355,7 +2400,7 @@ All colors use discrete levels with an overflow level for values exceeding the m
 | 8 | 3.50 - 4.00 [m/s] | `#931f63` | `rgb(147, 31, 99)` | ![#931f63](https://placehold.co/40x15/931f63/931f63) |
 | 9 | 4.00 - 4.50 [m/s] | `#72195f` | `rgb(114, 25, 95)` | ![#72195f](https://placehold.co/40x15/72195f/72195f) |
 | 10 | 4.50 - 5.00 [m/s] | `#4f1552` | `rgb(79, 21, 82)` | ![#4f1552](https://placehold.co/40x15/4f1552/4f1552) |
-| 11 | ≥ 5.000 m/s | `#2f0f3d` | `rgb(47, 15, 61)` | ![#2f0f3d](https://placehold.co/40x15/2f0f3d/2f0f3d) |
+| 11 | ≥ 5.000 [m/s] | `#2f0f3d` | `rgb(47, 15, 61)` | ![#2f0f3d](https://placehold.co/40x15/2f0f3d/2f0f3d) |
 
 ### Mean Power Density [W/m²], `vap_water_column_mean_sea_water_power_density`
 
@@ -2372,7 +2417,7 @@ All colors use discrete levels with an overflow level for values exceeding the m
 | 5 | 1000 - 1250 [W/m²] | `#795cc3` | `rgb(121, 92, 195)` | ![#795cc3](https://placehold.co/40x15/795cc3/795cc3) |
 | 6 | 1250 - 1500 [W/m²] | `#723693` | `rgb(114, 54, 147)` | ![#723693](https://placehold.co/40x15/723693/723693) |
 | 7 | 1500 - 1750 [W/m²] | `#5c1957` | `rgb(92, 25, 87)` | ![#5c1957](https://placehold.co/40x15/5c1957/5c1957) |
-| 8 | ≥ 1750 W/m² | `#360e24` | `rgb(54, 14, 36)` | ![#360e24](https://placehold.co/40x15/360e24/360e24) |
+| 8 | ≥ 1750 [W/m²] | `#360e24` | `rgb(54, 14, 36)` | ![#360e24](https://placehold.co/40x15/360e24/360e24) |
 
 ### Minimum Water Depth [m], `vap_water_column_height_min`
 
@@ -2392,7 +2437,7 @@ All colors use discrete levels with an overflow level for values exceeding the m
 | 8 | 140 - 160 [m] | `#3d5a92` | `rgb(61, 90, 146)` | ![#3d5a92](https://placehold.co/40x15/3d5a92/3d5a92) |
 | 9 | 160 - 180 [m] | `#41407b` | `rgb(65, 64, 123)` | ![#41407b](https://placehold.co/40x15/41407b/41407b) |
 | 10 | 180 - 200 [m] | `#372c50` | `rgb(55, 44, 80)` | ![#372c50](https://placehold.co/40x15/372c50/372c50) |
-| 11 | ≥ 200.0 m | `#271a2c` | `rgb(39, 26, 44)` | ![#271a2c](https://placehold.co/40x15/271a2c/271a2c) |
+| 11 | ≥ 200.0 [m] | `#271a2c` | `rgb(39, 26, 44)` | ![#271a2c](https://placehold.co/40x15/271a2c/271a2c) |
 
 ### Maximum Water Depth [m], `vap_water_column_height_max`
 
@@ -2412,7 +2457,7 @@ All colors use discrete levels with an overflow level for values exceeding the m
 | 8 | 140 - 160 [m] | `#3d5a92` | `rgb(61, 90, 146)` | ![#3d5a92](https://placehold.co/40x15/3d5a92/3d5a92) |
 | 9 | 160 - 180 [m] | `#41407b` | `rgb(65, 64, 123)` | ![#41407b](https://placehold.co/40x15/41407b/41407b) |
 | 10 | 180 - 200 [m] | `#372c50` | `rgb(55, 44, 80)` | ![#372c50](https://placehold.co/40x15/372c50/372c50) |
-| 11 | ≥ 200.0 m | `#271a2c` | `rgb(39, 26, 44)` | ![#271a2c](https://placehold.co/40x15/271a2c/271a2c) |
+| 11 | ≥ 200.0 [m] | `#271a2c` | `rgb(39, 26, 44)` | ![#271a2c](https://placehold.co/40x15/271a2c/271a2c) |
 
 ### Grid Resolution [m], `vap_grid_resolution`
 
@@ -2422,68 +2467,218 @@ All colors use discrete levels with an overflow level for values exceeding the m
 
 | Level | Value Range | Hex Color | RGB Color | Color Preview |
 | ----- | ----------- | --------- | --------- | ------------- |
-| 1 | 0.00 - 50.00 [m] | `#1f77b4` | `rgb(31, 119, 180)` | ![#1f77b4](https://placehold.co/40x15/1f77b4/1f77b4) |
-| 2 | 50 - 500 [m] | `#ff7f0e` | `rgb(255, 127, 14)` | ![#ff7f0e](https://placehold.co/40x15/ff7f0e/ff7f0e) |
-| 3 | ≥ 500.0 m | `#dc143c` | `rgb(220, 20, 60)` | ![#dc143c](https://placehold.co/40x15/dc143c/dc143c) |
+| 1 | Stage 2 (≤50m) [m] | `#1f77b4` | `rgb(31, 119, 180)` | ![#1f77b4](https://placehold.co/40x15/1f77b4/1f77b4) |
+| 2 | Stage 1 (≤500m) [m] | `#ff7f0e` | `rgb(255, 127, 14)` | ![#ff7f0e](https://placehold.co/40x15/ff7f0e/ff7f0e) |
+| 3 | Non-compliant (>500m) [m] | `#DC143C` | `rgb(220, 20, 60)` | ![#DC143C](https://placehold.co/40x15/DC143C/DC143C) |
 
 ## Visualizations by Variable
 
 ### Mean Current Speed
+
+**Aleutian Islands, Alaska Mean Current Speed**
+
+![Mean Current Speed for Aleutian Islands, Alaska](docs/img/AK_aleutian_islands_vap_water_column_mean_sea_water_speed.png)
+*Figure: Mean Current Speed spatial distribution for Aleutian Islands, Alaska. Units: m/s*
+
+**Cook Inlet, Alaska Mean Current Speed**
+
+![Mean Current Speed for Cook Inlet, Alaska](docs/img/AK_cook_inlet_vap_water_column_mean_sea_water_speed.png)
+*Figure: Mean Current Speed spatial distribution for Cook Inlet, Alaska. Units: m/s*
 
 **Southeast, Alaska Mean Current Speed**
 
 ![Mean Current Speed for Southeast, Alaska](docs/img/AK_southeast_vap_water_column_mean_sea_water_speed.png)
 *Figure: Mean Current Speed spatial distribution for Southeast, Alaska. Units: m/s*
 
+**Western Passage, Maine Mean Current Speed**
+
+![Mean Current Speed for Western Passage, Maine](docs/img/ME_western_passage_vap_water_column_mean_sea_water_speed.png)
+*Figure: Mean Current Speed spatial distribution for Western Passage, Maine. Units: m/s*
+
+**Piscataqua River, New Hampshire Mean Current Speed**
+
+![Mean Current Speed for Piscataqua River, New Hampshire](docs/img/NH_piscataqua_river_vap_water_column_mean_sea_water_speed.png)
+*Figure: Mean Current Speed spatial distribution for Piscataqua River, New Hampshire. Units: m/s*
+
+**Puget Sound, Washington Mean Current Speed**
+
+![Mean Current Speed for Puget Sound, Washington](docs/img/WA_puget_sound_vap_water_column_mean_sea_water_speed.png)
+*Figure: Mean Current Speed spatial distribution for Puget Sound, Washington. Units: m/s*
+
 
 ---
 
 ### 95th Percentile Current Speed
+
+**Aleutian Islands, Alaska 95th Percentile Current Speed**
+
+![95th Percentile Current Speed for Aleutian Islands, Alaska](docs/img/AK_aleutian_islands_vap_water_column_95th_percentile_sea_water_speed.png)
+*Figure: 95th Percentile Current Speed spatial distribution for Aleutian Islands, Alaska. Units: m/s*
+
+**Cook Inlet, Alaska 95th Percentile Current Speed**
+
+![95th Percentile Current Speed for Cook Inlet, Alaska](docs/img/AK_cook_inlet_vap_water_column_95th_percentile_sea_water_speed.png)
+*Figure: 95th Percentile Current Speed spatial distribution for Cook Inlet, Alaska. Units: m/s*
 
 **Southeast, Alaska 95th Percentile Current Speed**
 
 ![95th Percentile Current Speed for Southeast, Alaska](docs/img/AK_southeast_vap_water_column_95th_percentile_sea_water_speed.png)
 *Figure: 95th Percentile Current Speed spatial distribution for Southeast, Alaska. Units: m/s*
 
+**Western Passage, Maine 95th Percentile Current Speed**
+
+![95th Percentile Current Speed for Western Passage, Maine](docs/img/ME_western_passage_vap_water_column_95th_percentile_sea_water_speed.png)
+*Figure: 95th Percentile Current Speed spatial distribution for Western Passage, Maine. Units: m/s*
+
+**Piscataqua River, New Hampshire 95th Percentile Current Speed**
+
+![95th Percentile Current Speed for Piscataqua River, New Hampshire](docs/img/NH_piscataqua_river_vap_water_column_95th_percentile_sea_water_speed.png)
+*Figure: 95th Percentile Current Speed spatial distribution for Piscataqua River, New Hampshire. Units: m/s*
+
+**Puget Sound, Washington 95th Percentile Current Speed**
+
+![95th Percentile Current Speed for Puget Sound, Washington](docs/img/WA_puget_sound_vap_water_column_95th_percentile_sea_water_speed.png)
+*Figure: 95th Percentile Current Speed spatial distribution for Puget Sound, Washington. Units: m/s*
+
 
 ---
 
 ### Mean Power Density
+
+**Aleutian Islands, Alaska Mean Power Density**
+
+![Mean Power Density for Aleutian Islands, Alaska](docs/img/AK_aleutian_islands_vap_water_column_mean_sea_water_power_density.png)
+*Figure: Mean Power Density spatial distribution for Aleutian Islands, Alaska. Units: W/m²*
+
+**Cook Inlet, Alaska Mean Power Density**
+
+![Mean Power Density for Cook Inlet, Alaska](docs/img/AK_cook_inlet_vap_water_column_mean_sea_water_power_density.png)
+*Figure: Mean Power Density spatial distribution for Cook Inlet, Alaska. Units: W/m²*
 
 **Southeast, Alaska Mean Power Density**
 
 ![Mean Power Density for Southeast, Alaska](docs/img/AK_southeast_vap_water_column_mean_sea_water_power_density.png)
 *Figure: Mean Power Density spatial distribution for Southeast, Alaska. Units: W/m²*
 
+**Western Passage, Maine Mean Power Density**
+
+![Mean Power Density for Western Passage, Maine](docs/img/ME_western_passage_vap_water_column_mean_sea_water_power_density.png)
+*Figure: Mean Power Density spatial distribution for Western Passage, Maine. Units: W/m²*
+
+**Piscataqua River, New Hampshire Mean Power Density**
+
+![Mean Power Density for Piscataqua River, New Hampshire](docs/img/NH_piscataqua_river_vap_water_column_mean_sea_water_power_density.png)
+*Figure: Mean Power Density spatial distribution for Piscataqua River, New Hampshire. Units: W/m²*
+
+**Puget Sound, Washington Mean Power Density**
+
+![Mean Power Density for Puget Sound, Washington](docs/img/WA_puget_sound_vap_water_column_mean_sea_water_power_density.png)
+*Figure: Mean Power Density spatial distribution for Puget Sound, Washington. Units: W/m²*
+
 
 ---
 
 ### Minimum Water Depth
+
+**Aleutian Islands, Alaska Minimum Water Depth**
+
+![Minimum Water Depth for Aleutian Islands, Alaska](docs/img/AK_aleutian_islands_vap_water_column_height_min.png)
+*Figure: Minimum Water Depth spatial distribution for Aleutian Islands, Alaska. Units: m*
+
+**Cook Inlet, Alaska Minimum Water Depth**
+
+![Minimum Water Depth for Cook Inlet, Alaska](docs/img/AK_cook_inlet_vap_water_column_height_min.png)
+*Figure: Minimum Water Depth spatial distribution for Cook Inlet, Alaska. Units: m*
 
 **Southeast, Alaska Minimum Water Depth**
 
 ![Minimum Water Depth for Southeast, Alaska](docs/img/AK_southeast_vap_water_column_height_min.png)
 *Figure: Minimum Water Depth spatial distribution for Southeast, Alaska. Units: m*
 
+**Western Passage, Maine Minimum Water Depth**
+
+![Minimum Water Depth for Western Passage, Maine](docs/img/ME_western_passage_vap_water_column_height_min.png)
+*Figure: Minimum Water Depth spatial distribution for Western Passage, Maine. Units: m*
+
+**Piscataqua River, New Hampshire Minimum Water Depth**
+
+![Minimum Water Depth for Piscataqua River, New Hampshire](docs/img/NH_piscataqua_river_vap_water_column_height_min.png)
+*Figure: Minimum Water Depth spatial distribution for Piscataqua River, New Hampshire. Units: m*
+
+**Puget Sound, Washington Minimum Water Depth**
+
+![Minimum Water Depth for Puget Sound, Washington](docs/img/WA_puget_sound_vap_water_column_height_min.png)
+*Figure: Minimum Water Depth spatial distribution for Puget Sound, Washington. Units: m*
+
 
 ---
 
 ### Maximum Water Depth
+
+**Aleutian Islands, Alaska Maximum Water Depth**
+
+![Maximum Water Depth for Aleutian Islands, Alaska](docs/img/AK_aleutian_islands_vap_water_column_height_max.png)
+*Figure: Maximum Water Depth spatial distribution for Aleutian Islands, Alaska. Units: m*
+
+**Cook Inlet, Alaska Maximum Water Depth**
+
+![Maximum Water Depth for Cook Inlet, Alaska](docs/img/AK_cook_inlet_vap_water_column_height_max.png)
+*Figure: Maximum Water Depth spatial distribution for Cook Inlet, Alaska. Units: m*
 
 **Southeast, Alaska Maximum Water Depth**
 
 ![Maximum Water Depth for Southeast, Alaska](docs/img/AK_southeast_vap_water_column_height_max.png)
 *Figure: Maximum Water Depth spatial distribution for Southeast, Alaska. Units: m*
 
+**Western Passage, Maine Maximum Water Depth**
+
+![Maximum Water Depth for Western Passage, Maine](docs/img/ME_western_passage_vap_water_column_height_max.png)
+*Figure: Maximum Water Depth spatial distribution for Western Passage, Maine. Units: m*
+
+**Piscataqua River, New Hampshire Maximum Water Depth**
+
+![Maximum Water Depth for Piscataqua River, New Hampshire](docs/img/NH_piscataqua_river_vap_water_column_height_max.png)
+*Figure: Maximum Water Depth spatial distribution for Piscataqua River, New Hampshire. Units: m*
+
+**Puget Sound, Washington Maximum Water Depth**
+
+![Maximum Water Depth for Puget Sound, Washington](docs/img/WA_puget_sound_vap_water_column_height_max.png)
+*Figure: Maximum Water Depth spatial distribution for Puget Sound, Washington. Units: m*
+
 
 ---
 
 ### Grid Resolution
 
+**Aleutian Islands, Alaska Grid Resolution**
+
+![Grid Resolution for Aleutian Islands, Alaska](docs/img/AK_aleutian_islands_vap_grid_resolution.png)
+*Figure: Grid Resolution spatial distribution for Aleutian Islands, Alaska. Units: m*
+
+**Cook Inlet, Alaska Grid Resolution**
+
+![Grid Resolution for Cook Inlet, Alaska](docs/img/AK_cook_inlet_vap_grid_resolution.png)
+*Figure: Grid Resolution spatial distribution for Cook Inlet, Alaska. Units: m*
+
 **Southeast, Alaska Grid Resolution**
 
 ![Grid Resolution for Southeast, Alaska](docs/img/AK_southeast_vap_grid_resolution.png)
 *Figure: Grid Resolution spatial distribution for Southeast, Alaska. Units: m*
+
+**Western Passage, Maine Grid Resolution**
+
+![Grid Resolution for Western Passage, Maine](docs/img/ME_western_passage_vap_grid_resolution.png)
+*Figure: Grid Resolution spatial distribution for Western Passage, Maine. Units: m*
+
+**Piscataqua River, New Hampshire Grid Resolution**
+
+![Grid Resolution for Piscataqua River, New Hampshire](docs/img/NH_piscataqua_river_vap_grid_resolution.png)
+*Figure: Grid Resolution spatial distribution for Piscataqua River, New Hampshire. Units: m*
+
+**Puget Sound, Washington Grid Resolution**
+
+![Grid Resolution for Puget Sound, Washington](docs/img/WA_puget_sound_vap_grid_resolution.png)
+*Figure: Grid Resolution spatial distribution for Puget Sound, Washington. Units: m*
 
 
 ---
@@ -2575,8 +2770,8 @@ These kernel density estimation (KDE) plots provide clean statistical comparison
 
 ## Document Information
 
-- **Generated:** 2026-06-09 11:27:49 UTC
-- **Regions Processed:** AK_southeast
+- **Generated:** 2026-06-09 14:28:40 UTC
+- **Regions Processed:** AK_aleutian_islands, AK_cook_inlet, AK_southeast, ME_western_passage, NH_piscataqua_river, WA_puget_sound
 
 *This specification was auto-generated from the tidal data visualization pipeline.*
 *All color codes, ranges, and technical specifications are programmatically derived.*
