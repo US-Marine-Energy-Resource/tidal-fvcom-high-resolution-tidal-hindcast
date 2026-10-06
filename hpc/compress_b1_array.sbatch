@@ -12,7 +12,7 @@
 #   SKIP_EXISTING: 1 to skip existing files, 0 to reprocess (default: 0)
 
 # Source shared environment setup
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Validate required environment variables
 if [ -z "$LOCATION" ]; then
@@ -43,7 +43,7 @@ fi
 
 # Run the worker script
 echo "Starting compression for file index $SLURM_ARRAY_TASK_ID..."
-python compress_single_b1_file.py $ARGS
+python -m tidal_fvcom.steps.compress_single_b1_file $ARGS
 
 # Capture exit code
 EXIT_CODE=$?

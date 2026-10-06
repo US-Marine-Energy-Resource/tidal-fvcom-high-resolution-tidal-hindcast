@@ -16,10 +16,10 @@
 LOCATION=${LOCATION:-cook_inlet}
 
 # Source shared environment setup
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Run the coordinator script
-python summarize_retry_coordinator.py $LOCATION
+python -m tidal_fvcom.steps.summarize_retry_coordinator $LOCATION
 
 exit_code=$?
 

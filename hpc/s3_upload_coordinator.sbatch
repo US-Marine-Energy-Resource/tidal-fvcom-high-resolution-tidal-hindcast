@@ -25,10 +25,10 @@ DATA_LEVELS=${DATA_LEVELS:?DATA_LEVELS must be set}
 # Convert the ':'-delimited list back into space-separated args.
 DATA_LEVELS="${DATA_LEVELS//:/ }"
 
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 echo "Dispatching S3 upload for $LOCATION (levels: $DATA_LEVELS)..."
 
-python dispatch_s3_upload_v2.py $LOCATION --data-levels $DATA_LEVELS --skip-if-uploaded
+python -m tidal_fvcom.steps.dispatch_s3_upload_v2 $LOCATION --data-levels $DATA_LEVELS --skip-if-uploaded
 
 echo "S3 upload dispatch for $LOCATION complete."

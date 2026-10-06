@@ -11,7 +11,7 @@
 #SBATCH --partition=debug
 
 # Prepare for python script execution
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Run the manifest generation script
-python3 generate_parquet_partition_manifest_json.py
+python -m tidal_fvcom.steps.generate_parquet_partition_manifest_json

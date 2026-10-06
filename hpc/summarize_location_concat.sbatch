@@ -10,12 +10,11 @@
 LOCATION=${LOCATION:-cook_inlet}
 
 # Source shared environment setup
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 echo "Starting concatenation for $LOCATION..."
 
 # Run your concatenation script here
-python concat_summarized_datasets.py $LOCATION --batch-num 0
-# python concatenate_results.py $LOCATION --batch-num 1
+python -m tidal_fvcom.steps.concat_summarized_datasets $LOCATION --batch-num 0
 
 echo "Concatenation for $LOCATION completed successfully."

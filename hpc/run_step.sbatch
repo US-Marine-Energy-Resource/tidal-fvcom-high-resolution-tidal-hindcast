@@ -17,14 +17,14 @@ STEP=${STEP:?STEP must be set (verify|standardize|partition|vap|summary)}
 PRODUCT=${PRODUCT:-}
 
 # Prepare for python script execution
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 echo "Running workflow step '$STEP' for $LOCATION..."
 
 if [ "$STEP" = "summary" ] && [ -n "$PRODUCT" ]; then
-    python run_${STEP}.py $LOCATION --product $PRODUCT
+    python -m tidal_fvcom.steps.run_${STEP} $LOCATION --product $PRODUCT
 else
-    python run_${STEP}.py $LOCATION
+    python -m tidal_fvcom.steps.run_${STEP} $LOCATION
 fi
 
 echo "Workflow step '$STEP' for $LOCATION completed."

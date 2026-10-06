@@ -15,7 +15,7 @@
 #   MANIFEST_PATH: Path to SQLite manifest file
 
 # Prepare for python script execution
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Validate required environment variables
 if [ -z "$MANIFEST_PATH" ]; then
@@ -33,7 +33,7 @@ echo "=========================================="
 echo ""
 
 # Run the failure manifest script
-python3 s3_create_failure_manifest.py "$MANIFEST_PATH"
+python -m tidal_fvcom.steps.s3_create_failure_manifest "$MANIFEST_PATH"
 
 # Capture exit code
 EXIT_CODE=$?

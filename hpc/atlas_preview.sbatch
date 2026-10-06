@@ -11,7 +11,7 @@
 ##SBATCH --time=3:59:59
 ##SBATCH --partition=short
 
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Run the Python script with the desired arguments
-python3 atlas_preview.py
+python atlas/atlas_preview.py

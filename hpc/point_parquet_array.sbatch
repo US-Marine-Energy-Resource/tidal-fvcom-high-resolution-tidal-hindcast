@@ -17,10 +17,10 @@
 LOCATION=${LOCATION:-cook_inlet}
 BATCH_SIZE=${BATCH_SIZE:-10000}
 
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 echo "Point-parquet batch $SLURM_ARRAY_TASK_ID for $LOCATION (batch size $BATCH_SIZE)..."
 
-python partition_dataset.py $LOCATION --batch-size $BATCH_SIZE --batch-num $SLURM_ARRAY_TASK_ID --skip-existing
+python -m tidal_fvcom.steps.partition_dataset $LOCATION --batch-size $BATCH_SIZE --batch-num $SLURM_ARRAY_TASK_ID --skip-existing
 
 echo "Point-parquet batch $SLURM_ARRAY_TASK_ID for $LOCATION completed."

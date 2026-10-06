@@ -17,7 +17,7 @@
 #   VERIFY_CHECKSUM: "true" or "false"
 
 # Prepare for python script execution
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Validate required environment variables
 if [ -z "$MANIFEST_PATH" ]; then
@@ -54,7 +54,7 @@ if [ "$VERIFY_CHECKSUM" = "false" ]; then
 fi
 
 # Run the upload script
-python3 upload_from_manifest.py $ARGS
+python -m tidal_fvcom.steps.upload_from_manifest $ARGS
 
 # Capture exit code
 EXIT_CODE=$?

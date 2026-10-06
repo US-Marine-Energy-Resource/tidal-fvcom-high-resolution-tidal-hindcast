@@ -9,7 +9,7 @@
 #SBATCH --time=4:00:00
 
 # Prepare for python script execution
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Run the conversion script with the chunk index from SLURM_ARRAY_TASK_ID
-python3 convert_b1_vap_tidal_data_for_hsds.py --chunk ${SLURM_ARRAY_TASK_ID} --location ${LOCATION}
+python -m tidal_fvcom.steps.convert_b1_vap_tidal_data_for_hsds --chunk ${SLURM_ARRAY_TASK_ID} --location ${LOCATION}

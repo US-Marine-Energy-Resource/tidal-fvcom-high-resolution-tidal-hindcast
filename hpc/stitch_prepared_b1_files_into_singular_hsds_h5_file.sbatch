@@ -10,7 +10,7 @@
 ##SBATCH --time=59
 
 # Prepare for python script execution
-source sbatch_env_setup.sh
+source hpc/sbatch_env_setup.sh
 
 # Run the stitching script
-python3 stitch_individual_hsds_tidal_data_into_single_file.py --location ${LOCATION}
+python -m tidal_fvcom.steps.stitch_individual_hsds_tidal_data_into_single_file --location ${LOCATION}
