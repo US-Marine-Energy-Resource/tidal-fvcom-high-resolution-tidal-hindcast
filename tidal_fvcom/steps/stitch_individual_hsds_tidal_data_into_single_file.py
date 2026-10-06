@@ -13,9 +13,9 @@ import numpy as np
 import pandas as pd
 import h5py
 
-from config import config
-from src.file_manager import get_hsds_temp_dir, get_hsds_final_file_path
-from src.nc_manager import calculate_optimal_chunk_sizes
+from tidal_fvcom.config import config
+from tidal_fvcom.file_manager import get_hsds_temp_dir, get_hsds_final_file_path
+from tidal_fvcom.nc_manager import calculate_optimal_chunk_sizes
 
 # HDF5 cache settings for optimal performance
 HDF5_READ_CACHE = config["hdf5_cache"]["read_cache_bytes"]

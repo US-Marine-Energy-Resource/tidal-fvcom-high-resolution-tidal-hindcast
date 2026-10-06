@@ -13,10 +13,10 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message=".*scalar.*")
 
-from config import config
-from src.cli import location_arg_parser
-from src.file_manager import get_specified_nc_files
-from src.verify import verify_dataset
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import location_arg_parser
+from tidal_fvcom.file_manager import get_specified_nc_files
+from tidal_fvcom.verify import verify_dataset
 
 
 def main():

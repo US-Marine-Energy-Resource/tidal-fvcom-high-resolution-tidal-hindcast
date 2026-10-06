@@ -16,10 +16,10 @@ from pathlib import Path
 
 import pandas as pd
 
-from config import config
-from src.cli import location_arg_parser
-from src.file_manager import get_tracking_output_dir
-from src.partition_by_time import partition_by_time
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import location_arg_parser
+from tidal_fvcom.file_manager import get_tracking_output_dir
+from tidal_fvcom.partition_by_time import partition_by_time
 
 
 def main():

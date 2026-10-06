@@ -37,7 +37,7 @@ from typing import Optional, Tuple
 
 import pandas as pd
 
-from config import config
+from tidal_fvcom.config import config
 
 
 class Timer:
@@ -446,7 +446,7 @@ def load_and_display_parquet(args, s3_cache, relative_path, benchmark, total_sta
 
     try:
         if args.use_hpc:
-            from query_tidal_manifest import TidalManifestQuery
+            from tidal_fvcom.query.query_tidal_manifest import TidalManifestQuery
 
             full_path = TidalManifestQuery.get_hpc_path(relative_path)
             parquet_path = Path(full_path)
@@ -708,7 +708,7 @@ Test coordinates:
     s3_cache = None
     if not args.use_hpc:
         with Timer("Import S3CacheManager", benchmark):
-            from s3_cache_manager import S3CacheManager
+            from tidal_fvcom.query.s3_cache_manager import S3CacheManager
 
         with Timer("Initialize S3CacheManager", benchmark):
             # Include bucket name in cache directory to separate different buckets
@@ -751,7 +751,7 @@ Test coordinates:
     # Load manifest and create query interface
     print("\nLoading manifest...")
     with Timer("Import TidalManifestQuery", benchmark):
-        from query_tidal_manifest import TidalManifestQuery
+        from tidal_fvcom.query.query_tidal_manifest import TidalManifestQuery
 
     # Pass s3_cache to TidalManifestQuery for on-demand grid file fetching
     with Timer("Initialize TidalManifestQuery (load JSON + build KDTree)", benchmark):

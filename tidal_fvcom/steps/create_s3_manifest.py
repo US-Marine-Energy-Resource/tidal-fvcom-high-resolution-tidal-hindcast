@@ -13,8 +13,8 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
-from config import config
-from src.file_manager import (
+from tidal_fvcom.config import config
+from tidal_fvcom.file_manager import (
     get_manifest_output_dir,
     get_output_dirs,
     validate_manifest_version,

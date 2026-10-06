@@ -17,9 +17,9 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message=".*scalar.*")
 
-from config import config
-from src.cli import location_arg_parser
-from src.vap_create_parquet_summary import convert_nc_summary_to_parquet
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import location_arg_parser
+from tidal_fvcom.vap_create_parquet_summary import convert_nc_summary_to_parquet
 
 
 def main():

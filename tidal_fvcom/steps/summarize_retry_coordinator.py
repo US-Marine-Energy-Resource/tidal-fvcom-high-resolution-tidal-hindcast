@@ -20,9 +20,9 @@ import subprocess
 import sys
 import time
 
-from config import config
-from src import file_manager
-from dispatch_summarize_jobs import LOCATIONS, BATCH_SIZE_MAP
+from tidal_fvcom.config import config
+from tidal_fvcom import file_manager
+from tidal_fvcom.steps.dispatch_summarize_jobs import LOCATIONS, BATCH_SIZE_MAP
 
 
 def find_missing_batches(output_dir, total_faces, batch_size):
@@ -97,7 +97,7 @@ def submit_retry_jobs(location, missing_indices, faces, batch_size, runtime_hour
         f"--job-name={location}_retry",
         f"--time={runtime_hours * 60}",
         "--partition=standard",  # Use standard partition for retries
-        "summarize_single_location_batch.sbatch",
+        "hpc/summarize_single_location_batch.sbatch",
     ]
 
     try:

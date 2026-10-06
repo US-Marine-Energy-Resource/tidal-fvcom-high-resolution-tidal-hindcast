@@ -18,8 +18,8 @@ import argparse
 import subprocess
 from pathlib import Path
 
-from config import config
-from src.file_manager import get_vap_output_dir
+from tidal_fvcom.config import config
+from tidal_fvcom.file_manager import get_vap_output_dir
 
 # Location-specific resource configurations
 # Each location has different resource requirements based on:
@@ -149,7 +149,7 @@ def main():
         f"--time={convert_resources['time']}",
         f"--output=convert_b1_hsds_{location}_%A_%a.out",
         f"--job-name=convert_hsds_{location}",
-        "convert_single_b1_vap_nc_into_hsds_h5_file.sbatch",
+        "hpc/convert_single_b1_vap_nc_into_hsds_h5_file.sbatch",
     ]
 
     convert_job_id = submit_sbatch(convert_args)
@@ -164,7 +164,7 @@ def main():
         f"--time={stitch_resources['time']}",
         f"--output=stitch_hsds_{location}_%j.out",
         f"--job-name=stitch_hsds_{location}",
-        "stitch_prepared_b1_files_into_singular_hsds_h5_file.sbatch",
+        "hpc/stitch_prepared_b1_files_into_singular_hsds_h5_file.sbatch",
     ]
 
     stitch_job_id = submit_sbatch(stitch_args)

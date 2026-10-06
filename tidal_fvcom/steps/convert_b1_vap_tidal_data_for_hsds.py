@@ -12,12 +12,12 @@ import pandas as pd
 import xarray as xr
 import h5py
 
-from config import config
-from src.file_manager import get_vap_output_dir, get_hsds_temp_dir
+from tidal_fvcom.config import config
+from tidal_fvcom.file_manager import get_vap_output_dir, get_hsds_temp_dir
 
 # HDF5 cache settings for optimal performance
 HDF5_WRITE_CACHE = config["hdf5_cache"]["write_cache_bytes"]
-from src.nc_manager import calculate_optimal_chunk_sizes
+from tidal_fvcom.nc_manager import calculate_optimal_chunk_sizes
 
 
 def create_monthly_hsds_file(

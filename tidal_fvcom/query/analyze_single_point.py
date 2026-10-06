@@ -6,7 +6,7 @@ from pathlib import Path
 
 import pandas as pd
 
-from query_tidal_manifest import TidalManifestQuery
+from tidal_fvcom.query.query_tidal_manifest import TidalManifestQuery
 
 # ============================================================================
 # CONFIGURATION - Edit these coordinates

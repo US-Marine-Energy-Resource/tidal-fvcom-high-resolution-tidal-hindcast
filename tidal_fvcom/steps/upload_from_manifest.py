@@ -20,7 +20,7 @@ from boto3.s3.transfer import TransferConfig
 from botocore.exceptions import ClientError
 
 # Import from upload_to_s3
-from upload_to_s3 import (
+from tidal_fvcom.steps.upload_to_s3 import (
     S3_BUCKET,
     S3_BASE_PATH,
     S3_PROFILE,

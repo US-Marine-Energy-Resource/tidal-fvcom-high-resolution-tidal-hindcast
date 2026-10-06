@@ -6,7 +6,7 @@ import numpy as np
 import pandas as pd
 import xarray as xr
 
-from config import config
+from tidal_fvcom.config import config
 
 
 def parse_nc_structure(nc_path, output_dir=None):

@@ -1,7 +1,7 @@
-from config import config
-from src.cli import parse_partition_args
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import parse_partition_args
 
-from src.calculate_vap_average import (
+from tidal_fvcom.calculate_vap_average import (
     combine_monthly_face_files,
     combine_yearly_face_files,
 )

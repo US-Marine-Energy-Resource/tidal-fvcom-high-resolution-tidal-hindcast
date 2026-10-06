@@ -16,9 +16,9 @@ from pathlib import Path
 import boto3
 from botocore.exceptions import ClientError
 
-from config import config
-from create_s3_manifest import create_manifest
-from upload_to_s3 import S3_BASE_PATH, S3_BUCKET, S3_PROFILE
+from tidal_fvcom.config import config
+from tidal_fvcom.steps.create_s3_manifest import create_manifest
+from tidal_fvcom.steps.upload_to_s3 import S3_BASE_PATH, S3_BUCKET, S3_PROFILE
 
 # Maximum SLURM array jobs (global limit)
 MAX_SLURM_JOBS = 500
@@ -319,7 +319,7 @@ def submit_upload_jobs(
         f"--array=0-{num_jobs - 1}",
         f"--export={','.join(export_vars)}",
         f"--time={time_str}",
-        "s3_upload_array.sbatch",
+        "hpc/s3_upload_array.sbatch",
     ]
 
     if dry_run:
@@ -355,7 +355,7 @@ def submit_failure_manifest_job(manifest_path, dependency_job_id, dry_run=False)
         "--parsable",
         f"--dependency=afterany:{dependency_job_id}",
         f"--export={','.join(export_vars)}",
-        "s3_create_failure_manifest.sbatch",
+        "hpc/s3_create_failure_manifest.sbatch",
     ]
 
     if dry_run:

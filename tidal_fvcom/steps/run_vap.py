@@ -12,9 +12,9 @@ import warnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 warnings.filterwarnings("ignore", message=".*scalar.*")
 
-from config import config
-from src.cli import location_arg_parser
-from src.derive_vap_fvcom import (
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import location_arg_parser
+from tidal_fvcom.derive_vap_fvcom import (
     calculate_and_save_face_center_precalculations,
     derive_vap,
 )

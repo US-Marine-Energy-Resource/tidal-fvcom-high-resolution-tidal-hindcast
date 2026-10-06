@@ -39,8 +39,8 @@ import pandas as pd
 import numpy as np
 import xarray as xr
 
-from config import config
-from src import file_manager
+from tidal_fvcom.config import config
+from tidal_fvcom import file_manager
 
 
 def parse_parquet_filename(filename):

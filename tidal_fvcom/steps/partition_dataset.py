@@ -1,8 +1,8 @@
-from config import config
-from src.cli import parse_partition_args
-from src.file_manager import get_specified_nc_files
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import parse_partition_args
+from tidal_fvcom.file_manager import get_specified_nc_files
 
-from src.vap_simple_create_parquet_all_time_partition import (
+from tidal_fvcom.vap_simple_create_parquet_all_time_partition import (
     partition_vap_into_parquet_dataset,
 )
 

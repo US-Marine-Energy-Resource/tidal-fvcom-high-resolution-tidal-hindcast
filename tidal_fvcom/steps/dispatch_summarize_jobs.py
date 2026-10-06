@@ -18,7 +18,7 @@ import math
 import argparse
 import sys
 
-import config as _config
+from tidal_fvcom import config as _config
 
 # SLURM wall-time tuning for the summarize array, per location. This is the only
 # summarize-specific data not derivable from config.py; everything else (faces,
@@ -144,7 +144,7 @@ def submit_location_jobs(location):
         f"--job-name={location}_process",
         # Time in minutes
         f"--time={process_runtime_hours * 60}",
-        "summarize_single_location_batch.sbatch",
+        "hpc/summarize_single_location_batch.sbatch",
     ]
 
     process_job_id = submit_sbatch(process_args)
@@ -158,7 +158,7 @@ def submit_location_jobs(location):
         f"--export=LOCATION={location}",
         f"--output={location}_coordinator_%j.out",
         f"--job-name={location}_coordinator",
-        "summarize_retry_coordinator.sbatch",
+        "hpc/summarize_retry_coordinator.sbatch",
     ]
 
     coordinator_job_id = submit_sbatch(coordinator_args)
@@ -172,7 +172,7 @@ def submit_location_jobs(location):
         f"--export=LOCATION={location}",
         f"--output={location}_concat_%j.out",
         f"--job-name={location}_concat",
-        "summarize_location_concat.sbatch",
+        "hpc/summarize_location_concat.sbatch",
     ]
 
     concat_job_id = submit_sbatch(concat_args)

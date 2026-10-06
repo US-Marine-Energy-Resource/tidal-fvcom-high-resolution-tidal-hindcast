@@ -19,8 +19,8 @@ from pathlib import Path
 import pandas as pd
 import xarray as xr
 
-from config import config
-from src import file_manager, nc_manager
+from tidal_fvcom.config import config
+from tidal_fvcom import file_manager, nc_manager
 
 
 def validate_location(location):

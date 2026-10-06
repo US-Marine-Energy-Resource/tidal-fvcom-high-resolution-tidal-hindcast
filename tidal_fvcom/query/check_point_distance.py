@@ -5,11 +5,11 @@ This script uses the TidalManifestQuery class to find the nearest data point
 and reports whether it's within 100 meters.
 
 Usage:
-    cd tidal/fvcom/high_resolution_tidal_hindcast && python check_point_distance.py
+    python -m tidal_fvcom.query.check_point_distance
 """
 
 from pathlib import Path
-from query_tidal_manifest import TidalManifestQuery
+from tidal_fvcom.query.query_tidal_manifest import TidalManifestQuery
 
 
 def check_point_distance(lat, lon, max_distance_meters=100):

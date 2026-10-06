@@ -14,10 +14,10 @@ import pandas as pd
 import pyarrow as pa
 import pyarrow.parquet as pq
 
-from config import config
+from tidal_fvcom.config import config
 
 
-from src.file_manager import get_vap_output_dir
+from tidal_fvcom.file_manager import get_vap_output_dir
 
 
 def find_closest_faces(
@@ -708,7 +708,7 @@ def extract_point_data_incremental(
     location = config["location_specification"][location_key]
 
     # Get input files (adapt based on your file_manager structure)
-    from src.file_manager import get_vap_output_dir
+    from tidal_fvcom.file_manager import get_vap_output_dir
 
     input_dir = get_vap_output_dir(config, location)
 
@@ -798,7 +798,7 @@ def extract_point_data_incremental(
 # Example usage and CLI integration
 if __name__ == "__main__":
     # You would import your actual config here
-    from config import config
+    from tidal_fvcom.config import config
 
     location_key = "puget_sound"
     output_path = Path("/projects/hindcastra/Tidal/datasets/projects/katie_puget_sound")

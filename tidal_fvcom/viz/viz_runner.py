@@ -13,7 +13,7 @@ import xarray as xr
 import pandas as pd
 import seaborn as sns
 
-from tidal_visualizer import (
+from tidal_fvcom.viz import (
     # Core components
     TidalVisualizer,
     get_location_names,

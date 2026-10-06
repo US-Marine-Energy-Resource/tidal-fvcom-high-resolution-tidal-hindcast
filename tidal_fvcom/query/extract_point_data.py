@@ -3,8 +3,8 @@ from pathlib import Path
 import xarray as xr
 import pandas as pd
 
-from config import config
-from src import cli, file_manager
+from tidal_fvcom.config import config
+from tidal_fvcom import cli, file_manager
 
 
 def extract_point_data(filename, this_point_index):
