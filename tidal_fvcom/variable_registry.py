@@ -4,8 +4,8 @@ Unified variable definitions for all tidal hindcast documentation
 
 import re
 
-from config import config
-from src.gis_colors_registry import GIS_COLORS_REGISTRY
+from tidal_fvcom.config import config
+from tidal_fvcom.gis_colors_registry import GIS_COLORS_REGISTRY
 
 _GITHUB_PAGES_BASE = "https://us-marine-energy-resource.github.io"
 _TIDAL_HINDCAST_PATH = "tidal/high-resolution-hindcast"
@@ -957,7 +957,7 @@ def _build_color_spec_for_var(gcr_key):
     ``cmap(i / (n_colors - 1))`` where n_colors = levels + 1.
     """
     import numpy as np
-    from src.gis_colors_registry import resolve_colormap
+    from tidal_fvcom.gis_colors_registry import resolve_colormap
 
     style = GIS_COLORS_REGISTRY[gcr_key]
     reg = VARIABLE_REGISTRY.get(gcr_key, {})

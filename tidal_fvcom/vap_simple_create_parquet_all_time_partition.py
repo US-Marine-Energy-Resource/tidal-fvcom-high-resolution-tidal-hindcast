@@ -1159,7 +1159,7 @@ def partition_vap_into_parquet_dataset(
 
 
 if __name__ == "__main__":
-    from config import config
+    from tidal_fvcom.config import config
 
     partition_vap_into_parquet_dataset(
         config, "cook_inlet", batch_size=2, batch_number=0

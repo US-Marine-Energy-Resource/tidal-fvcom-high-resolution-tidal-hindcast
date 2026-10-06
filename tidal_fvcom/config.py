@@ -1,4 +1,4 @@
-from src.citation_manager import format_references
+from tidal_fvcom.citation_manager import format_references
 
 config = {
     "dataset": {

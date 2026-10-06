@@ -9,7 +9,7 @@ from citeproc import (
 )
 from citeproc.source.bibtex import BibTeX
 
-REFERENCES_DIR = Path(Path(__file__).parent.parent, "references")
+REFERENCES_DIR = Path(Path(__file__).parent, "references")
 
 REFERENCES_FILE = Path(REFERENCES_DIR, "./references.bib")
 # CSL_FILE = Path(REFERENCES_DIR, "./apa-6th-edition.csl")

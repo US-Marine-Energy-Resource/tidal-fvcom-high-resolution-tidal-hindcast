@@ -31,18 +31,18 @@ from typing import Callable, Optional
 
 import pandas as pd
 
-from src import file_manager
-from src.slurm import (
+from tidal_fvcom import file_manager
+from tidal_fvcom.slurm import (
     Submitter,
     calculate_array_size,
     dependency_arg,
 )
 
 # Reuse the summarize sizing/runtime table that dispatch_summarize_jobs.py owns.
-from dispatch_summarize_jobs import LOCATIONS as SUMMARIZE_LOCATIONS, BATCH_SIZE_MAP
+from tidal_fvcom.steps.dispatch_summarize_jobs import LOCATIONS as SUMMARIZE_LOCATIONS, BATCH_SIZE_MAP
 
 # Reuse the per-location HSDS resource table.
-from dispatch_b1_to_hsds_jobs import LOCATION_RESOURCES as HSDS_RESOURCES
+from tidal_fvcom.steps.dispatch_b1_to_hsds_jobs import LOCATION_RESOURCES as HSDS_RESOURCES
 
 # Faces per batch for the point-parquet partition. Half-hourly locations hold
 # twice the per-face time series of hourly ones, so they get half the batch size
@@ -171,7 +171,7 @@ def _submit_run_step(ctx, dep_ids, step, *, product=None, label=None):
         f"--output={ctx.location}_{step}_%j.out",
         f"--time={time_limit}",
         f"--partition={partition}",
-        "run_step.sbatch",
+        "hpc/run_step.sbatch",
     ]
     return ctx.submitter.submit(args, label=label or step)
 
@@ -255,7 +255,7 @@ def _submit_point_parquet(ctx, dep_ids):
         f"--array=0-{array_size}",
         f"--job-name={ctx.location}_point_parquet",
         f"--output={ctx.location}_point_parquet_%A_%a.out",
-        "point_parquet_array.sbatch",
+        "hpc/point_parquet_array.sbatch",
     ]
     return ctx.submitter.submit(args, label="vap_data_products.point_parquet")
 
@@ -272,7 +272,7 @@ def _submit_compress(ctx, dep_ids):
         f"--array=0-{array_size}",
         f"--job-name={ctx.location}_compress_b1",
         f"--output={ctx.location}_compress_b1_%A_%a.out",
-        "compress_b1_array.sbatch",
+        "hpc/compress_b1_array.sbatch",
     ]
     return ctx.submitter.submit(args, label="vap_data_products.compress")
 
@@ -303,7 +303,7 @@ def _submit_hsds(ctx, dep_ids):
         f"--time={conv['time']}",
         f"--job-name=convert_hsds_{ctx.location}",
         f"--output=convert_b1_hsds_{ctx.location}_%A_%a.out",
-        "convert_single_b1_vap_nc_into_hsds_h5_file.sbatch",
+        "hpc/convert_single_b1_vap_nc_into_hsds_h5_file.sbatch",
     ]
     convert_id = ctx.submitter.submit(conv_args, label="vap_data_products.hsds:convert")
 
@@ -315,7 +315,7 @@ def _submit_hsds(ctx, dep_ids):
         f"--time={stitch['time']}",
         f"--job-name=stitch_hsds_{ctx.location}",
         f"--output=stitch_hsds_{ctx.location}_%j.out",
-        "stitch_prepared_b1_files_into_singular_hsds_h5_file.sbatch",
+        "hpc/stitch_prepared_b1_files_into_singular_hsds_h5_file.sbatch",
     ]
     return ctx.submitter.submit(stitch_args, label="vap_data_products.hsds:stitch")
 
@@ -353,7 +353,7 @@ def _submit_means_chain(ctx, dep_ids, product):
         f"--output={ctx.location}_process_%A_%a.out",
         f"--job-name={ctx.location}_process",
         f"--time={runtime_hours * 60}",
-        "summarize_single_location_batch.sbatch",
+        "hpc/summarize_single_location_batch.sbatch",
     ]
     process_id = ctx.submitter.submit(
         proc_args, label=f"summary.means({product}):process"
@@ -364,7 +364,7 @@ def _submit_means_chain(ctx, dep_ids, product):
         f"--export=LOCATION={ctx.location},PRODUCT={product}",
         f"--output={ctx.location}_coordinator_%j.out",
         f"--job-name={ctx.location}_coordinator",
-        "summarize_retry_coordinator.sbatch",
+        "hpc/summarize_retry_coordinator.sbatch",
     ]
     coordinator_id = ctx.submitter.submit(
         coordinator_args, label=f"summary.means({product}):coordinator"
@@ -375,7 +375,7 @@ def _submit_means_chain(ctx, dep_ids, product):
         f"--export=LOCATION={ctx.location},PRODUCT={product}",
         f"--output={ctx.location}_concat_%j.out",
         f"--job-name={ctx.location}_concat",
-        "summarize_location_concat.sbatch",
+        "hpc/summarize_location_concat.sbatch",
     ]
     return ctx.submitter.submit(concat_args, label=f"summary.means({product}):concat")
 
@@ -443,7 +443,7 @@ def _submit_upload(ctx, dep_ids, subs):
         f"--export=LOCATION={ctx.location},DATA_LEVELS={levels_env}",
         f"--job-name={ctx.location}_s3_upload_coordinator",
         f"--output={ctx.location}_s3_upload_coordinator_%j.out",
-        "s3_upload_coordinator.sbatch",
+        "hpc/s3_upload_coordinator.sbatch",
     ]
     return [ctx.submitter.submit(args, label="upload")]
 

@@ -2,8 +2,8 @@
 
 Centralizes the ``sbatch --parsable`` submission pattern and array-index utilities
 that were previously copy-pasted across the ``dispatch_*.py`` scripts
-(``dispatch_summarize_jobs.py``, ``dispatch_compress_b1_jobs.py``,
-``dispatch_b1_to_hsds_jobs.py``) and ``summarize_retry_coordinator.py``.
+(``steps/dispatch_summarize_jobs.py``, ``steps/dispatch_b1_to_hsds_jobs.py``)
+and ``steps/summarize_retry_coordinator.py``.
 
 The :class:`Submitter` wraps job submission so the unified pipeline (``run.py``)
 can run in either real or ``--dry-run`` mode with one code path: in dry-run mode it

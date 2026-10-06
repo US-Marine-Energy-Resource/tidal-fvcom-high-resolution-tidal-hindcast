@@ -13,8 +13,8 @@ from urllib.parse import urlparse
 import numpy as np
 import pandas as pd
 
-from src.citation_manager import format_references
-from src import gis_boundary_manager
+from tidal_fvcom.citation_manager import format_references
+from tidal_fvcom import gis_boundary_manager
 
 WORD_WRAP_WIDTH = 80
 
@@ -1151,14 +1151,11 @@ if __name__ == "__main__":
     # print(standardize_dataset_global_attrs(None, None, None, "a1"))
     import xarray as xr
     from pathlib import Path
-    import sys
-
-    sys.path.append("..")
-    from config import config
-    import coord_manager
+    from tidal_fvcom.config import config
+    from tidal_fvcom import coord_manager
     from compliance_checker.runner import ComplianceChecker, CheckSuite
 
-    nc_file = Path("../data/00_raw/MD_AIS_west_hrBathy_0240.nc")
+    nc_file = Path("data/00_raw/MD_AIS_west_hrBathy_0240.nc")
     print(f"Reading {nc_file} into ds...")
     ds = xr.open_dataset(nc_file, decode_times=False)
     print(ds.attrs)
