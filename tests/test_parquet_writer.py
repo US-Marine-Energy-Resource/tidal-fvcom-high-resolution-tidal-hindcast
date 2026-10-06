@@ -1,6 +1,6 @@
-from config import config
+from tidal_fvcom.config import config
 
-from src.vap_simple_create_parquet_all_time_partition import (
+from tidal_fvcom.vap_simple_create_parquet_all_time_partition import (
     partition_vap_into_parquet_dataset,
 )
 

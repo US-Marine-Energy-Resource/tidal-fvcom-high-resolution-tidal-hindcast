@@ -19,7 +19,10 @@ from pathlib import Path
 
 
 SPEC_PATH = Path(__file__).parent / "documentation_variable_spec.json"
-DOCS_ROOT = Path(__file__).parent.parent.parent.parent / "docs"
+REPO_ROOT = Path(__file__).resolve().parents[2]
+# Default to a local, gitignored output dir. Pass --pages-dir to write into the
+# documentation repo (e.g. ../documentation/docs/tidal/high-resolution-hindcast).
+DOCS_ROOT = REPO_ROOT / "output" / "variable_docs"
 
 # Legacy inline target
 INLINE_DOCS_PATH = DOCS_ROOT / "tidal-hindcast.md"
@@ -27,13 +30,13 @@ START_MARKER = "<!-- GENERATED:VARIABLE_DOCS_START -->"
 END_MARKER = "<!-- GENERATED:VARIABLE_DOCS_END -->"
 
 # Multi-page target
-PAGES_DIR = DOCS_ROOT / "tidal" / "high_resolution_hindcast" / "variables"
+PAGES_DIR = DOCS_ROOT / "variables"
 
 # Auto-generated file header (HTML comment, invisible in rendered output)
 AUTOGEN_HEADER = (
     "<!-- AUTO-GENERATED FILE — DO NOT EDIT DIRECTLY -->\n"
-    "<!-- Source of truth: src/variable_registry.py (VARIABLE_REGISTRY) -->\n"
-    "<!-- To update: edit the registry, then run `python generate_variable_docs.py` -->\n"
+    "<!-- Source of truth: tidal_fvcom/variable_registry.py (VARIABLE_REGISTRY) -->\n"
+    "<!-- To update: edit the registry, then run `python scripts/docs_gen/generate_variable_docs.py` -->\n"
 )
 
 # Snippet include appended to every page
@@ -282,6 +285,7 @@ def write_pages(spec, dry_run=False):
 
 
 def main():
+    global PAGES_DIR
     parser = argparse.ArgumentParser(
         description="Generate variable documentation for MkDocs"
     )
@@ -290,14 +294,22 @@ def main():
         choices=["inline", "pages"],
         default="inline",
         help="Output mode: 'inline' injects into tidal-hindcast.md (legacy), "
-        "'pages' writes individual files to docs/tidal/high_resolution_hindcast/variables/",
+        "'pages' writes individual files to --pages-dir",
     )
     parser.add_argument(
         "--dry-run",
         action="store_true",
         help="Preview generated content without writing to file(s)",
     )
+    parser.add_argument(
+        "--pages-dir",
+        type=Path,
+        default=PAGES_DIR,
+        help=f"Directory for 'pages' mode output (default: {PAGES_DIR})",
+    )
     args = parser.parse_args()
+
+    PAGES_DIR = args.pages_dir
 
     spec = load_spec()
 

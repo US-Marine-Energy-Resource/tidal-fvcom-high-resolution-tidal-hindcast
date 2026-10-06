@@ -24,18 +24,16 @@ from matplotlib.cm import ScalarMappable
 from PIL import Image, ImageOps
 from pyproj import Transformer
 
-from config import config
-from src.gis_colors_registry import GIS_COLORS_REGISTRY, resolve_colormap
-from src.variable_registry import VARIABLE_REGISTRY, POLYGON_COLUMNS, ATLAS_COLUMNS
+from tidal_fvcom.config import config
+from tidal_fvcom.gis_colors_registry import GIS_COLORS_REGISTRY, resolve_colormap
+from tidal_fvcom.variable_registry import VARIABLE_REGISTRY, POLYGON_COLUMNS, ATLAS_COLUMNS
 
 
 # Set the base directory - modify this to match your system
 BASE_DIR = Path("/projects/hindcastra/Tidal/datasets/high_resolution_tidal_hindcast")
 
 # VIZ_OUTPUT_DIR = Path("/home/asimms/tidal/analysis/viz/")
-VIZ_OUTPUT_DIR = Path(
-    "/home/asimms/marine_energy_resource_characterization/tidal/fvcom/high_resolution_tidal_hindcast/docs/img/"
-)
+VIZ_OUTPUT_DIR = Path(__file__).resolve().parents[1] / "docs" / "img"
 # VIZ_OUTPUT_DIR = Path(
 #     "/projects/hindcastra/Tidal/simms_nlr_dev/high_resolution_tidal_hindcast"
 # )

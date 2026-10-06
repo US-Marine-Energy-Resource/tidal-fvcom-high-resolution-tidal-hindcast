@@ -35,8 +35,8 @@ from docx.oxml import OxmlElement
 from lxml import etree
 
 # Import citation manager for BibTeX/CSL formatting
-from src.citation_manager import format_reference, format_citation
-from src.variable_registry import VARIABLE_REGISTRY, SIGMA_LAYER_COUNT_PHRASE
+from tidal_fvcom.citation_manager import format_reference, format_citation
+from tidal_fvcom.variable_registry import VARIABLE_REGISTRY, SIGMA_LAYER_COUNT_PHRASE
 
 # =============================================================================
 # NLR Template Configuration
@@ -2426,7 +2426,7 @@ def main():
     )
     args = parser.parse_args()
 
-    output_dir = Path(__file__).parent / "output"
+    output_dir = Path(__file__).resolve().parents[1] / "output"
     output_dir.mkdir(exist_ok=True)
 
     if args.format == "markdown":

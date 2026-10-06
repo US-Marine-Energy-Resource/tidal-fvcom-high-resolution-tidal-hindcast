@@ -14,7 +14,7 @@ Can be run from anywhere.
 import sys
 from pathlib import Path
 
-from config import config
+from tidal_fvcom.config import config
 
 # HPC base path where all output data lives
 BASE_DIR = Path(config["dir"]["base"])

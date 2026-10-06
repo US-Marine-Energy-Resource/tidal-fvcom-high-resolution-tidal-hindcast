@@ -6,7 +6,7 @@ from typing import Dict, List, Optional, Tuple
 from datetime import datetime
 import xarray as xr
 
-from src.attrs_manager import standardize_dataset_global_attrs
+from tidal_fvcom.attrs_manager import standardize_dataset_global_attrs
 
 
 # Global configuration
