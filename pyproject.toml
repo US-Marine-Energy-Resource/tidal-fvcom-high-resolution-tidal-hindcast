@@ -1,0 +1,21 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "tidal_fvcom"
+version = "1.1.0"
+description = "Processing pipeline for the DOE H2O high resolution tidal (FVCOM) hindcast"
+requires-python = ">=3.11"
+
+[tool.setuptools.packages.find]
+include = ["tidal_fvcom*"]
+
+[tool.setuptools.package-data]
+tidal_fvcom = ["references/*"]
+
+[tool.ruff]
+target-version = "py311"
+
+[tool.ruff.lint]
+ignore = ["F401"]

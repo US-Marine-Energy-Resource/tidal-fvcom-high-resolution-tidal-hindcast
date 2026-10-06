@@ -1,0 +1,1027 @@
+"""
+Unified variable definitions for all tidal hindcast documentation
+"""
+
+import re
+
+from tidal_fvcom.config import config
+from tidal_fvcom.gis_colors_registry import GIS_COLORS_REGISTRY
+
+_GITHUB_PAGES_BASE = "https://us-marine-energy-resource.github.io"
+_TIDAL_HINDCAST_PATH = "tidal/high-resolution-hindcast"
+
+
+def get_sigma_layers(location_key):
+    """Number of terrain-following sigma layers for a location.
+
+    Source of truth is the per-location ``sigma_layers`` entry in
+    ``config["location_specification"]`` (10 at most locations, 9 at AK Southeast).
+    """
+    return config["location_specification"][location_key].get("sigma_layers")
+
+
+def describe_sigma_layer_counts():
+    """Single-source, human-readable phrase describing sigma-layer counts across
+    all locations, derived from each location's ``sigma_layers``.
+
+    Example: ``"10 at most locations, 9 at Southeast, Alaska"``. Used throughout
+    the documentation so the wording stays correct as locations are added or
+    their layer counts change.
+    """
+    counts = {}  # layer count -> [location labels]
+    for loc in config["location_specification"].values():
+        n = loc.get("sigma_layers")
+        if n is None:
+            continue
+        counts.setdefault(n, []).append(loc["label"])
+
+    if not counts:
+        return "an unspecified number of sigma layers"
+    if len(counts) == 1:
+        (only_count,) = counts
+        return f"{only_count} at all locations"
+
+    # Modal count is described as "most locations"; the rest are listed by label.
+    modal = max(counts, key=lambda n: len(counts[n]))
+    parts = [f"{modal} at most locations"]
+    for n in sorted((c for c in counts if c != modal), reverse=True):
+        parts.append(f"{n} at {' and '.join(counts[n])}")
+    return ", ".join(parts)
+
+
+# Single source of truth for sigma-layer-count wording in documentation strings.
+SIGMA_LAYER_COUNT_PHRASE = describe_sigma_layer_counts()
+
+
+def docs_url(*parts: str) -> str:
+    """Build a documentation URL by joining path segments onto the base URL."""
+    segments = [_GITHUB_PAGES_BASE, *parts]
+    return "/".join(s.strip("/") for s in segments)
+
+
+docs = {
+    "base": docs_url(),
+    "tidal": docs_url(_TIDAL_HINDCAST_PATH),
+    "var": docs_url(_TIDAL_HINDCAST_PATH) + "/",
+}
+
+DOCUMENTATION_REGISTRY = {
+    "data_availability": {
+        "href": "https://mhkdr.openei.org/submissions/632",
+        "full_text": "High Resolution Tidal Hindcast Data Repository",
+        "short_text": "Dataset Repository",
+        "keyword": "DATA_CITATION",
+    },
+    "data_access": {
+        "href": "https://data.openei.org/s3_viewer?bucket=marine-energy-data&prefix=us-tidal%2F",
+        "full_text": "High Resolution Tidal Hindcast Data Access on OpenEI",
+        "short_text": "Data Access",
+        "keyword": "DATA_ACCESS",
+    },
+    "dataset_documentation": {
+        "href": f"{docs['base']}",
+        "full_text": "Tidal Hindcast Dataset Documentation",
+        "short_text": "Dataset Documentation",
+        "keyword": "DOCUMENTATION",
+    },
+    "pnnl_team": {
+        "href": "https://www.pnnl.gov/projects/ocean-dynamics-modeling",
+        "full_text": "Pacific Northwest National Laboratory Ocean Dynamics and Modeling Group",
+        "short_text": "PNNL Ocean Dynamics and Modeling Group",
+        "keyword": "PNNL",
+    },
+    "nlr_team": {
+        "href": "https://www.nlr.gov/water/resource-characterization",
+        "full_text": "National Laboratory of the Rockies Marine Energy Resource Characterization Team",
+        "short_text": "NLR Resource Characterization Team",
+        "keyword": "NLR",
+    },
+    "doe": {
+        "href": "https://www.energy.gov/",
+        "full_text": "U.S. Department of Energy",
+        "short_text": "DOE",
+        "keyword": "DOE",
+    },
+    "h2o": {
+        "href": "https://www.energy.gov/cmei/water/hydropower-and-hydrokinetic-office",
+        "full_text": "Hydropower and Hydrokinetic Office",
+        "short_text": "H2O",
+        "keyword": "H2O",
+    },
+    "contact_email": {
+        "href": "mailto:marineresource@nlr.gov",
+        "full_text": "marineresource@nlr.gov",
+        "short_text": "marineresource@nlr.gov",
+        "keyword": "CONTACT_EMAIL",
+    },
+}
+
+VARIABLE_REGISTRY = {
+    # =========================================================================
+    # Water column speed variables
+    # =========================================================================
+    "mean_current_speed": {
+        "display_name": "Mean Current Speed",
+        "column_name": "vap_water_column_mean_sea_water_speed",
+        "units": "m/s",
+        "long_name": "Mean Current Speed (depth-averaged)",
+        "one_liner": "Annual average of depth-averaged current speed",
+        "documentation_url": f"{docs['var']}mean-current-speed",
+        "complete_description": (
+            "Annual average of the depth-averaged current velocity magnitude, representing the "
+            "characteristic flow speed at each grid location under free-stream (undisturbed) conditions. "
+            "This metric is intended for IEC 62600-201 [@iec_62600_201] Stage 1 reconnaissance-level analysis to identify "
+            "areas with potentially viable tidal current resources. It serves as a primary metric for "
+            "identifying viable tidal energy sites, used to estimate annual energy production (AEP), "
+            "compare site potential across regions, determine expected average viable current speeds "
+            "for commercial deployment, and select appropriate turbine technology."
+        ),
+        # Scientific/engineering context
+        "physical_meaning": "Yearly average of depth averaged current speed",
+        "intended_usage": "Site screening and turbine selection for power generation",
+        "equation": r"$\overline{\overline{U}} = U_{\text{average}} = \text{mean}\left(\left[\text{mean}(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma layer $i$ at time $t$ $[\text{m/s}]$",
+            r"$N_{\sigma}$, sigma layers ("
+            + SIGMA_LAYER_COUNT_PHRASE
+            + r"); terrain-following vertical layers dividing the water column into equal-thickness fractions from surface to seafloor",
+            r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
+        ],
+    },
+    "p95_current_speed": {
+        "display_name": "95th Percentile Current Speed",
+        "column_name": "vap_water_column_95th_percentile_sea_water_speed",
+        "units": "m/s",
+        "long_name": "95th Percentile Current Speed",
+        # Documentation
+        "one_liner": "Estimated extreme current speed, outlier-tolerant and comparable across sites for reconnaissance-level assessment",
+        "documentation_url": f"{docs['var']}95th-percentile-current-speed",
+        "complete_description": (
+            "95th percentile of the maximum current velocity magnitude across the water column "
+            "calculated over the 1-year hindcast period, representing a robust, outlier-tolerant "
+            "estimate of extreme current conditions at any depth under free-stream (undisturbed) "
+            "conditions. This metric is intended for IEC 62600-201 [@iec_62600_201] Stage 1 reconnaissance-level "
+            "analysis to provide a consistent basis for comparing extreme flow conditions across "
+            "sites. It serves as a key input for initial structural loading assessment of turbine "
+            "blades and towers, as well as for sizing electrical generation components and power electronics."
+        ),
+        # Scientific/engineering context
+        "physical_meaning": "95th percentile of yearly depth maximum current speed",
+        "intended_usage": "Generator sizing and power electronics design",
+        "equation": r"$U_{95} = \text{percentile}(95, \left[\max(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right])$",
+        "equation_variables": [
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma layer $i$ at time $t$ $[\text{m/s}]$",
+            r"$\max_{\sigma}$, maximum value across all sigma layers at each timestep",
+            r"$P_{95}$, 95th percentile operator over the full time series",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
+            r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
+        ],
+    },
+    "p99_current_speed": {
+        "display_name": "99th Percentile Current Speed",
+        "column_name": "vap_water_column_99th_percentile_sea_water_speed",
+        "units": "m/s",
+        "one_liner": "Estimated near-maximum current speed for extreme event analysis",
+        "documentation_url": "",
+        "complete_description": (
+            "99th percentile of the maximum current velocity magnitude across the water column "
+            "calculated over the 1-year hindcast period, representing a robust estimate of "
+            "near-maximum current conditions at any depth under free-stream (undisturbed) conditions. "
+            "This metric is intended for IEC 62600-201 [@iec_62600_201] Stage 1 reconnaissance-level analysis to "
+            "characterize rare, high-intensity flow events. It serves as a critical input for "
+            "extreme event planning, safety margin calculations, designing emergency shutdown "
+            "systems, and ensuring equipment survivability during rare but intense current events."
+        ),
+        "physical_meaning": "99th percentile of yearly depth maximum current speed",
+        "intended_usage": "Extreme event analysis and safety system design",
+        "equation": r"$U_{99} = \text{percentile}(99, \left[\max(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right])$",
+        "equation_variables": [
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma level $i$ at time $t$ $[\text{m/s}]$",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    "max_current_speed": {
+        "display_name": "Maximum Current Speed",
+        "column_name": "vap_water_column_max_sea_water_speed",
+        "units": "m/s",
+        "long_name": "Maximum Current Speed",
+        "one_liner": "Absolute maximum current speed observed over the hindcast year",
+        "documentation_url": f"{docs['var']}maximum-current-speed",
+        "complete_description": (
+            "Absolute maximum current speed calculated at any depth and any time during the "
+            "1-year hindcast period, defining the worst-case flow condition from the numerical "
+            "model. This metric serves as an upper bound reference for extreme conditions, useful "
+            "for quick screening of absolute worst-case scenarios and as a sanity check against "
+            "percentile-based statistics. However, as a single extreme value from a numerical "
+            "model, it may be influenced by model artifacts or transient numerical effects. "
+            "For structural design loads and survival analysis, the 95th Percentile Current Speed "
+            "is generally preferred as a more robust and statistically representative metric."
+        ),
+        "physical_meaning": "Absolute maximum depth-max current speed calculated over the year",
+        "intended_usage": "Upper bound reference for extreme conditions",
+        "equation": r"$U_{\max} = \max\left(\left[\max(U_{1,t}, ..., U_{N_{\sigma},t}) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma level $i$ at time $t$ $[\text{m/s}]$",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    # =========================================================================
+    # Power density variables
+    # =========================================================================
+    "mean_power_density": {
+        "display_name": "Mean Power Density",
+        "column_name": "vap_water_column_mean_sea_water_power_density",
+        "units": "W/m\u00b2",
+        "long_name": "Mean Power Density (depth-averaged)",
+        # Documentation
+        "one_liner": "Annual average of depth-averaged kinetic energy flux",
+        "documentation_url": f"{docs['var']}mean-power-density",
+        "complete_description": (
+            "Annual average of the kinetic energy flux per unit area (depth-averaged) "
+            "calculated over the 1-year hindcast period, representing a mean estimate of energy flux for the entire water column at each grid location under free-stream (undisturbed) conditions. "
+            "This metric is intended for IEC 62600-201 [@iec_62600_201] Stage 1 reconnaissance-level analysis to identify "
+            "areas with potentially viable tidal current resources. This metric defines the theoretic average energy potential based on model output and does not account for changes in salinity, temperature, or turbulence that may affect real-world energy extraction."
+        ),
+        # Scientific/engineering context
+        "physical_meaning": "Yearly average of depth averaged power density (kinetic energy flux)",
+        "intended_usage": "Resource quantification and economic feasibility analysis",
+        "equation": r"$\overline{\overline{P}} = P_{\text{average}} = \text{mean}\left(\left[\text{mean}(P_{1,t}, ..., P_{N_{\sigma},t}) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$P_{i,t} = \frac{1}{2} \rho U_{i,t}^3$, power density at sigma layer $i$ at time $t$ $[\text{W/m}^2]$ [@hass_2011_assessment]",
+            r"$\rho = 1025$, nominal seawater density (actual varies with temperature and salinity) $[\text{kg/m}^3]$",
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude $[\text{m/s}]$",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
+            r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
+        ],
+    },
+    "p95_power_density": {
+        "display_name": "95th Percentile Power Density",
+        "column_name": "vap_water_column_95th_percentile_sea_water_power_density",
+        "units": "W/m\u00b2",
+        "long_name": "95th Percentile Power Density",
+        "one_liner": "Estimated extreme power density, outlier-tolerant and comparable across sites for reconnaissance-level assessment",
+        "documentation_url": f"{docs['var']}95th-percentile-power-density",
+        "complete_description": (
+            "95th percentile of the maximum power density (kinetic energy flux) across the water "
+            "column calculated over the 1-year hindcast period, representing a robust, "
+            "outlier-tolerant estimate of extreme energy flux at any depth under free-stream "
+            "(undisturbed) conditions. Due to the cubic relationship between velocity and power "
+            "density, extreme values are particularly sensitive to model artifacts, making the 95th percentile a more reliable "
+            "metric than the absolute maximum for comparing extreme energy flux across sites. It is "
+            "intended for IEC 62600-201 [@iec_62600_201] Stage 1 reconnaissance-level analysis and is intended to be "
+            "input for extreme load analysis on tidal turbine components."
+        ),
+        "physical_meaning": "95th percentile of the yearly maximum of depth averaged power density (kinetic energy flux)",
+        "intended_usage": "Structural design loads and extreme loading conditions",
+        "equation": r"$P_{95} = \text{percentile}(95, \left[\max(P_{1,t}, ..., P_{N_{\sigma},t}) \text{ for } t=1,...,T\right])$",
+        "equation_variables": [
+            r"$P_{i,t} = \frac{1}{2} \rho U_{i,t}^3$, power density with $\rho = 1025$ $[\text{kg/m}^3]$",
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude at sigma level $i$ at time $t$ $[\text{m/s}]$",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    # =========================================================================
+    # Depth variables
+    # =========================================================================
+    "mean_water_depth": {
+        "display_name": "Mean Water Depth",
+        "column_name": "vap_sea_floor_depth",
+        "units": "m (below NAVD88)",
+        "long_name": "Model Sea Floor Depth from NAVD88",
+        "one_liner": "Model bathymetry depth below NAVD88 vertical datum",
+        "documentation_url": f"{docs['var']}sea-floor-depth",
+        "complete_description": (
+            "Time-averaged water depth calculated over the 1-year hindcast period, representing "
+            "the sum of the static bathymetry (depth below NAVD88) and the mean sea surface "
+            "elevation. This is a fundamental site characterization parameter required by "
+            "IEC 62600-201 for all assessment stages [@iec_62600_201]. The underlying bathymetry "
+            "is from the FVCOM model grid, developed by PNNL using regional survey data. This "
+            "metric supports dermination of deployment feasibility and installation methodology."
+        ),
+        "physical_meaning": "Time-averaged total water depth (bathymetry + mean sea level)",
+        "intended_usage": "Installation planning and foundation design",
+        "equation": r"$\overline{d} = d_{\text{average}} = \text{mean}\left(\left[(h + \zeta_t) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$h$, bathymetry below NAVD88 $[\text{m}]$",
+            r"$\zeta_t$, sea surface elevation above NAVD88 at time $t$ $[\text{m}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    "min_water_depth": {
+        "display_name": "Minimum Water Depth",
+        "column_name": "vap_water_column_height_min",
+        "units": "m",
+        "long_name": "Minimum Water Depth",
+        # Documentation
+        "one_liner": "Minimum water depth calculated over the 1-year hindcast period",
+        "documentation_url": f"{docs['var']}minimum-water-depth",
+        "complete_description": (
+            "The minimum water depth (surface to seafloor) calculated at each grid location over "
+            "the 1-year hindcast period, typically occurring during extreme low tide conditions. "
+            "This metric represents the model lower bound of water depth variability and is intended for "
+            "assessing deployment feasibility, defining safe navigation limits, "
+            "and planning installation operations."
+        ),
+        # Scientific/engineering context
+        "physical_meaning": "Minimum water depth calculated over the year (shallowest, typically at low tide)",
+        "intended_usage": "Minimum clearance and grounding risk assessment",
+        "equation": r"$d_{\min} = \min\left(\left[(h + \zeta_t) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$h$, bathymetry below NAVD88 $[\text{m}]$",
+            r"$\zeta_t$, sea surface elevation above NAVD88 at time $t$ $[\text{m}]$",
+            r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
+        ],
+    },
+    "max_water_depth": {
+        "display_name": "Maximum Water Depth",
+        "column_name": "vap_water_column_height_max",
+        "units": "m",
+        "long_name": "Maximum Water Depth",
+        "one_liner": "Maximum water depth calculated over the 1-year hindcast period",
+        "documentation_url": f"{docs['var']}maximum-water-depth",
+        "complete_description": (
+            "Maximum water depth (surface to seafloor) calculated at each grid location over the "
+            "1-year hindcast period, typically occurring during extreme high tide conditions. "
+            "This metric represents the upper bound of water depth variability at each location "
+            "and defines the maximum expected water column depth."
+        ),
+        "physical_meaning": "Maximum water depth calculated over the year (deepest, typically at high tide)",
+        "intended_usage": "Maximum mooring loads and installation planning",
+        "equation": r"$d_{\max} = \max\left(\left[(h + \zeta_t) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$h$, bathymetry below NAVD88 $[\text{m}]$",
+            r"$\zeta_t$, sea surface elevation above NAVD88 at time $t$ $[\text{m}]$",
+            r"$T$, 1 year of hindcast data (hourly for Alaska locations, half-hourly for others)",
+        ],
+    },
+    # =========================================================================
+    # Surface layer variables
+    # =========================================================================
+    "surface_mean_speed": {
+        "display_name": "Surface Layer Mean Speed",
+        "column_name": "vap_surface_layer_mean_sea_water_speed",
+        "units": "m/s",
+        "one_liner": "Annual average current speed at the surface layer",
+        "documentation_url": "",
+        "complete_description": (
+            "Annual average current speed at the surface layer (sigma level 1) calculated over "
+            "the 1-year hindcast period. This metric characterizes the typical flow conditions "
+            "at the water surface, which is critical for assessing impacts on floating tidal "
+            "devices, navigation safety, vessel operations, and surface loads on mooring systems. "
+            "It also informs operations planning and environmental flow characterization."
+        ),
+        "physical_meaning": "Yearly average current speed at the surface layer (sigma_level_1)",
+        "intended_usage": "Surface current assessment for navigation and floating devices",
+        "equation": r"$\overline{U}_{\text{surface}} = \text{mean}\left(\left[U_{1,t} \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$U_{1,t} = \sqrt{u_{1,t}^2 + v_{1,t}^2}$, velocity magnitude at sigma level 1 (surface) at time $t$ $[\text{m/s}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    "surface_p95_speed": {
+        "display_name": "Surface Layer 95th Percentile Speed",
+        "column_name": "vap_surface_layer_95th_percentile_sea_water_speed",
+        "units": "m/s",
+        "one_liner": "95th percentile current speed at the surface layer",
+        "documentation_url": "",
+        "complete_description": (
+            "The current speed at the surface layer (sigma level 1) that is exceeded 5% of the "
+            "time over the 1-year hindcast period. This statistical metric characterizes the "
+            "near-extreme surface currents that floating tidal energy systems and surface "
+            "infrastructure must withstand during operational conditions. It is used to size "
+            "mooring systems for floating platforms, design surface buoys and markers, and assess "
+            "surface loads on cables and connectors."
+        ),
+        "physical_meaning": "95th percentile of surface layer current speed over the year",
+        "intended_usage": "Surface current design loads for floating systems",
+        "equation": r"$U_{\text{surface},95} = \text{percentile}(95, \left[U_{1,t} \text{ for } t=1,...,T\right])$",
+        "equation_variables": [
+            r"$U_{1,t} = \sqrt{u_{1,t}^2 + v_{1,t}^2}$, velocity magnitude at sigma level 1 (surface) at time $t$ $[\text{m/s}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    "surface_p99_speed": {
+        "display_name": "Surface Layer 99th Percentile Speed",
+        "column_name": "vap_surface_layer_99th_percentile_sea_water_speed",
+        "units": "m/s",
+        "one_liner": "99th percentile current speed at the surface layer",
+        "documentation_url": "",
+        "complete_description": (
+            "The current speed at the surface layer (sigma level 1) that is exceeded 1% of the "
+            "time over the 1-year hindcast period. This metric characterizes extreme surface "
+            "current conditions relevant for safety system design and survivability analysis. "
+            "It informs emergency response planning, operational limits for surface vessels and "
+            "floating devices, and safety margins for surface infrastructure exposed to "
+            "high-velocity surface flows."
+        ),
+        "physical_meaning": "99th percentile of surface layer current speed over the year",
+        "intended_usage": "Extreme surface current events for safety systems",
+        "equation": r"$U_{\text{surface},99} = \text{percentile}(99, \left[U_{1,t} \text{ for } t=1,...,T\right])$",
+        "equation_variables": [
+            r"$U_{1,t} = \sqrt{u_{1,t}^2 + v_{1,t}^2}$, velocity magnitude at sigma level 1 (surface) at time $t$ $[\text{m/s}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    "surface_max_speed": {
+        "display_name": "Surface Layer Maximum Speed",
+        "column_name": "vap_surface_layer_max_sea_water_speed",
+        "units": "m/s",
+        "one_liner": "Absolute maximum surface current speed calculated over the hindcast year",
+        "documentation_url": "",
+        "complete_description": (
+            "Absolute maximum current speed calculated at the surface layer (sigma level 1) during "
+            "the 1-year hindcast period. This metric defines the worst-case surface flow condition "
+            "from the numerical model. It is essential for survival design of floating systems, "
+            "determining maximum loads on surface infrastructure, and ensuring regulatory "
+            "compliance for extreme surface conditions."
+        ),
+        "physical_meaning": "Absolute maximum surface layer current speed observed over the year",
+        "intended_usage": "Ultimate surface current loads for survival analysis",
+        "equation": r"$U_{\text{surface},\max} = \max\left(\left[U_{1,t} \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$U_{1,t} = \sqrt{u_{1,t}^2 + v_{1,t}^2}$, velocity magnitude at sigma level 1 (surface) at time $t$ $[\text{m/s}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    # =========================================================================
+    # Grid resolution
+    # =========================================================================
+    "grid_resolution": {
+        "display_name": "Grid Resolution",
+        "column_name": "vap_grid_resolution",
+        "units": "m",
+        "long_name": "Grid Resolution",
+        # Documentation
+        "one_liner": "Average edge length of triangular model grid cells",
+        "documentation_url": f"{docs['var']}grid-resolution",
+        "complete_description": (
+            "Average edge length of the unstructured triangular model grid cells, indicating "
+            "the spatial scale at which tidal currents are resolved by the FVCOM hydrodynamic model. "
+            "This metric is essential model metadata for assessing spatial uncertainty and "
+            "determining appropriate applications. The unstructured triangular mesh allows variable "
+            "resolution, with finer grids in areas of interest (channels, straits) and coarser "
+            "grids in open water. According to IEC 62600-201 standards [@iec_62600_201], Stage 1 "
+            "reconnaissance-level assessments require grid resolution < 500 m, while Stage 2 "
+            "layout design assessments require grid resolution < 50 m."
+        ),
+        "physical_meaning": "Average edge length of triangular finite volume elements",
+        "intended_usage": "Model accuracy assessment and validation",
+        "equation": r"$\text{Grid Resolution} = \frac{1}{3}(d_1 + d_2 + d_3)$",
+        "equation_variables": [
+            r"$d_1, d_2, d_3$, geodesic distances between triangle vertices $[\text{m}]$",
+        ],
+    },
+    # =========================================================================
+    # Sea surface elevation variables
+    # =========================================================================
+    "mean_surface_elevation": {
+        "display_name": "Mean Sea Surface Elevation",
+        "column_name": "vap_sea_surface_elevation_mean",
+        "units": "m (offset from NAVD88)",
+        "long_name": "Mean Sea Surface Elevation (model MSL)",
+        "one_liner": "Time-averaged sea surface elevation relative to NAVD88",
+        "documentation_url": f"{docs['var']}mean-sea-surface-elevation",
+        "complete_description": (
+            "The time-averaged sea surface height at each grid location relative to the NAVD88 "
+            "vertical datum. This value represents the model's Mean Sea Level (MSL) offset from "
+            "the geodetic datum, which is essential for converting between the model's internal "
+            "reference frame and standard vertical datums. It provides the necessary context for "
+            "interpreting all other elevation and depth variables, ensuring consistency with "
+            "coastal engineering standards and regional sea level observations."
+        ),
+        "physical_meaning": "Time-averaged sea surface elevation (model MSL offset from NAVD88)",
+        "intended_usage": "Vertical datum reference and data quality verification",
+        "equation": r"$\overline{\zeta} = \text{mean}(\zeta_t)$ for $t = 1, ..., T$",
+        "equation_variables": [
+            r"$\zeta_t$, sea surface elevation above NAVD88 at time $t$ $[\text{m}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    "tidal_range": {
+        "display_name": "Tidal Range",
+        "column_name": "vap_tidal_range",
+        "units": "m",
+        "long_name": "Tidal Range (Max - Min Sea Surface Elevation)",
+        "one_liner": "Difference between maximum and minimum sea surface elevation over the hindcast year",
+        "documentation_url": f"{docs['var']}tidal-range",
+        "complete_description": (
+            "Difference between the maximum and minimum sea surface elevation calculated at each "
+            "grid location over the 1-year hindcast period. This metric quantifies the full "
+            "vertical extent of water level variability at a site."
+        ),
+        "physical_meaning": "Maximum minus minimum sea surface elevation over the hindcast year",
+        "intended_usage": "Tidal regime classification and mooring design",
+        "equation": r"$R = \zeta_{\max} - \zeta_{\min} = \max(\zeta_t) - \min(\zeta_t)$",
+        "equation_variables": [
+            r"$\zeta_t$, sea surface elevation at time $t$ $[\text{m}]$",
+            r"$\zeta_{\max}$, maximum sea surface elevation over the year $[\text{m}]$",
+            r"$\zeta_{\min}$, minimum sea surface elevation over the year $[\text{m}]$",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    # =========================================================================
+    # Tidal period variables
+    # =========================================================================
+    "min_tidal_period": {
+        "display_name": "Shortest Tidal Period",
+        "column_name": "vap_min_tidal_period",
+        "units": "hours",
+        "one_liner": "Minimum time duration between successive high tides",
+        "documentation_url": "",
+        "complete_description": (
+            "The minimum time duration between successive high tides calculated during the "
+            "1-year hindcast period. This metric characterizes the fastest tidal cycling at "
+            "the location, which influences operational windows for maintenance and the "
+            "frequency of slack water periods."
+        ),
+        "physical_meaning": "Minimum duration between successive high tides",
+        "intended_usage": "Operational planning and slack water frequency analysis",
+        "equation": r"$T_{\min} = \min(T_1, T_2, ..., T_N)$",
+        "equation_variables": [
+            r"$T_i$, time between successive high tide peaks $i$ and $i+1$ $[\text{hours}]$",
+            r"$N$, number of tidal cycles in the hindcast year",
+        ],
+    },
+    "max_tidal_period": {
+        "display_name": "Longest Tidal Period",
+        "column_name": "vap_max_tidal_period",
+        "units": "hours",
+        "one_liner": "Maximum time duration between successive high tides",
+        "documentation_url": "",
+        "complete_description": (
+            "The maximum time duration between successive high tides calculated during the "
+            "1-year hindcast period. This metric characterizes the longest tidal cycling at "
+            "the location, identifying periods with extended ebb or flood durations that may "
+            "offer longer continuous power generation windows."
+        ),
+        "physical_meaning": "Maximum duration between successive high tides",
+        "intended_usage": "Extended generation window analysis",
+        "equation": r"$T_{\max} = \max(T_1, T_2, ..., T_N)$",
+        "equation_variables": [
+            r"$T_i$, time between successive high tide peaks $i$ and $i+1$ $[\text{hours}]$",
+            r"$N$, number of tidal cycles in the hindcast year",
+        ],
+    },
+    # =========================================================================
+    # Maximum power density
+    # =========================================================================
+    "max_power_density": {
+        "display_name": "Maximum Power Density",
+        "column_name": "vap_water_column_max_sea_water_power_density",
+        "units": "W/m\u00b2",
+        "long_name": "Maximum Power Density",
+        "one_liner": "Absolute maximum depth-averaged power density observed over the hindcast year",
+        "documentation_url": f"{docs['var']}maximum-power-density",
+        "complete_description": (
+            "The absolute highest kinetic energy flux per unit area calculated at any time during "
+            "the 1-year hindcast period. Due to the cubic relationship between velocity and "
+            "power density, this maximum value is highly sensitive to extreme current speed "
+            "events and numerical transients. While it provides an upper bound for peak "
+            "resource conditions, the mean power density and 95th percentile metrics are "
+            "generally more robust for resource characterization and economic analysis."
+        ),
+        "physical_meaning": "Absolute maximum depth-averaged power density calculated over the year",
+        "intended_usage": "Upper bound reference for peak resource conditions",
+        "equation": r"$P_{\max} = \max\left(\left[\text{mean}(P_{1,t}, ..., P_{N_{\sigma},t}) \text{ for } t=1,...,T\right]\right)$",
+        "equation_variables": [
+            r"$P_{i,t} = \frac{1}{2} \rho U_{i,t}^3$, power density with $\rho = 1025$ $[\text{kg/m}^3]$",
+            r"$U_{i,t} = \sqrt{u_{i,t}^2 + v_{i,t}^2}$, velocity magnitude $[\text{m/s}]$",
+            r"$N_{\sigma}$, sigma layers (" + SIGMA_LAYER_COUNT_PHRASE + ")",
+            r"$T$, 1 year of hindcast data",
+        ],
+    },
+    # =========================================================================
+    # Average tidal period
+    # =========================================================================
+    "average_tidal_period": {
+        "display_name": "Average Tidal Period",
+        "column_name": "vap_average_tidal_period",
+        "units": "hours",
+        "long_name": "Average Tidal Period",
+        "one_liner": "Mean period between successive high tides over the hindcast year",
+        "documentation_url": f"{docs['var']}average-tidal-period",
+        "complete_description": (
+            "Mean time between successive high tide peaks at each grid location calculated "
+            "over the 1-year hindcast period, characterizing the dominant tidal frequency. "
+            "This metric indicates whether the tidal regime is semi-diurnal (~12.4 hours), "
+            "diurnal (~24.8 hours), or mixed. The tidal period determines the power generation "
+            "cycle length (slack-to-peak cycles per day) and is relevant for grid integration "
+            "planning, energy storage sizing, and understanding resource intermittency patterns."
+        ),
+        "physical_meaning": "Mean time between successive high tides",
+        "intended_usage": "Tidal regime classification and energy scheduling",
+        "equation": r"$\overline{T}_{\text{tide}} = \text{mean}(T_1, T_2, ..., T_N)$",
+        "equation_variables": [
+            r"$T_i$, time between successive high tide peaks $i$ and $i+1$ $[\text{hours}]$",
+            r"$N$, number of tidal cycles in the hindcast year",
+        ],
+    },
+    # =========================================================================
+    # Distance to shore
+    # =========================================================================
+    "distance_to_shore": {
+        "display_name": "Distance to Shore",
+        "column_name": "vap_distance_to_shore",
+        "units": "NM",
+        "long_name": "Distance to Shore",
+        "one_liner": "Geodesic distance from grid cell center to nearest shoreline",
+        "documentation_url": f"{docs['var']}distance-to-shore",
+        "complete_description": (
+            "Geodesic distance from each grid cell center to the nearest shoreline point, "
+            "calculated using the Global Self-consistent Hierarchical High-resolution Geography "
+            "(GSHHG) shoreline database [@gsshhg_dataset] and reported in nautical miles (NM). "
+            "This metric serves as a practical siting constraint that affects cable cost and grid "
+            "connection feasibility."
+        ),
+        "physical_meaning": "Geodesic distance from grid cell center to nearest shoreline",
+        "intended_usage": "Cable cost estimation and O&M logistics",
+        "equation": r"$d = \text{haversine}(\text{cell center}, \text{nearest shoreline point})$",
+        "equation_variables": [
+            r"$d$, geodesic distance calculated using GSHHG shoreline database $[\text{NM}]$",
+            r"$1 \text{ NM} = 1.852 \text{ km}$",
+        ],
+    },
+    # =========================================================================
+    # Sea surface elevation extremes (sanity check variables)
+    # =========================================================================
+    "sea_surface_elevation_high_tide_max": {
+        "display_name": "Maximum Sea Surface Elevation at High Tide",
+        "column_name": "vap_sea_surface_elevation_high_tide_max",
+        "units": "m (relative to model MSL)",
+        "long_name": "Max Sea Surface Elevation at High Tide",
+        "one_liner": "Highest sea surface elevation observed during high tide over the hindcast year",
+        "documentation_url": f"{docs['var']}max-sea-surface-elevation-at-high-tide",
+        "complete_description": (
+            "Highest sea surface elevation calculated during high tide conditions over the "
+            "1-year hindcast period, relative to the model's mean sea level. This typically "
+            "occurs during spring tides when astronomical tidal forcing is maximized. Note that this value "
+            "represents the maximum within the 1-year hindcast period, not necessarily the "
+            "absolute maximum possible over the full 18.6-year tidal epoch (e.g., King Tides)."
+        ),
+        "physical_meaning": "Highest sea surface elevation at high tide over the year",
+        "intended_usage": "Data quality verification and extreme water level reference",
+        "equation": r"$\zeta_{\text{HT,max}} = \max(\zeta_t | t \in \text{high tide peaks})$",
+        "equation_variables": [
+            r"$\zeta_t$, sea surface elevation relative to model MSL at time $t$ $[\text{m}]$",
+            r"High tide peaks identified from the sea surface elevation time series",
+        ],
+    },
+    "sea_surface_elevation_low_tide_min": {
+        "display_name": "Minimum Sea Surface Elevation at Low Tide",
+        "column_name": "vap_surface_elevation_low_tide_min",
+        "units": "m (relative to model MSL)",
+        "long_name": "Min Sea Surface Elevation at Low Tide",
+        "one_liner": "Lowest sea surface elevation observed during low tide over the hindcast year",
+        "documentation_url": f"{docs['var']}min-sea-surface-elevation-at-low-tide",
+        "complete_description": (
+            "Lowest sea surface elevation calculated during low tide conditions over the "
+            "1-year hindcast period, relative to the model's mean sea level. This typically "
+            "occurs during spring tides when astronomical tidal forcing is maximized. Together with the high tide "
+            "maximum, it defines the bounds of the vertical water level envelope. Note that "
+            "this value represents the minimum within the 1-year hindcast period, not necessarily "
+            "the absolute minimum possible over the full 18.6-year tidal epoch."
+        ),
+        "physical_meaning": "Lowest sea surface elevation at low tide over the year",
+        "intended_usage": "Data quality verification and extreme water level reference",
+        "equation": r"$\zeta_{\text{LT,min}} = \min(\zeta_t | t \in \text{low tide troughs})$",
+        "equation_variables": [
+            r"$\zeta_t$, sea surface elevation relative to model MSL at time $t$ $[\text{m}]$",
+            r"Low tide troughs identified from the sea surface elevation time series",
+        ],
+    },
+    # =========================================================================
+    # Structural / identity columns (included on atlas for data access)
+    # =========================================================================
+    "face_id": {
+        "display_name": "Face ID",
+        "column_name": "face_id",
+        "units": "",
+        "long_name": "Face ID",
+        "one_liner": "Location specific unique integer identifier for each triangular grid element",
+        "documentation_url": f"{docs['var']}face_id",
+        "complete_description": "Location specific unique integer identifier for each triangular grid element",
+    },
+    "center_latitude": {
+        "display_name": "Center Latitude",
+        "column_name": "lat_center",
+        "units": "degrees_north",
+        "long_name": "Center Latitude",
+        "one_liner": "Latitude of the triangular element centroid (WGS84)",
+        "documentation_url": f"{docs['var']}center_latitude",
+        "complete_description": "Latitude of the triangular element centroid (WGS84)",
+    },
+    "center_longitude": {
+        "display_name": "Center Longitude",
+        "column_name": "lon_center",
+        "units": "degrees_east",
+        "long_name": "Center Longitude",
+        "one_liner": "Longitude of the triangular element centroid (WGS84)",
+        "documentation_url": f"{docs['var']}center_longitude",
+        "complete_description": "Longitude of the triangular element centroid (WGS84)",
+    },
+    "full_year_s3_uri": {
+        "display_name": "S3 URI for Full Year Time Series Data",
+        "column_name": "full_year_data_s3_uri",
+        "units": "",
+        "long_name": "S3 URI for Full Year Time Series Data",
+        "one_liner": "direct link (S3 URI) to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals.",
+        "documentation_url": f"{docs['var']}full_year_s3_uri",
+        "complete_description": "direct link (S3 URI) to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals.",
+    },
+    "full_year_https_url": {
+        "display_name": "HTTPS URL for Full Year Time Series Data",
+        "column_name": "full_year_data_https_url",
+        "units": "",
+        "long_name": "HTTPS URL for Full Year Time Series Data",
+        "one_liner": "direct link (HTTPS)  to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals",
+        "documentation_url": f"{docs['var']}full_year_https_url",
+        "complete_description": "direct link (HTTPS)  to download the one-year hindcast time series (parquet) for this location. Includes speed, direction, for all uniform sigma layers at half-hourly (lower 48) or hourly (Alaska) intervals",
+    },
+}
+
+POLYGON_COLUMNS = [
+    "element_corner_1_lat",
+    "element_corner_1_lon",
+    "element_corner_2_lat",
+    "element_corner_2_lon",
+    "element_corner_3_lat",
+    "element_corner_3_lon",
+]
+
+# Atlas columns: display names and metadata live in VARIABLE_REGISTRY (long_name, units)
+ATLAS_COLUMNS = [
+    *POLYGON_COLUMNS,
+    # ── Core Resource Metrics (IEC 62600-201 Stage 1) ──
+    "vap_water_column_mean_sea_water_speed",
+    "vap_water_column_mean_sea_water_power_density",
+    "vap_water_column_95th_percentile_sea_water_speed",
+    "vap_water_column_95th_percentile_sea_water_power_density",
+    # "vap_water_column_max_sea_water_speed",
+    # "vap_water_column_max_sea_water_power_density",
+    # ── Bathymetry & Depth ──
+    "vap_water_column_height_min",
+    "vap_water_column_height_max",
+    "vap_tidal_range",
+    # "vap_sea_floor_depth",
+    "vap_distance_to_shore",
+    # ── Sea Surface Elevation & Tidal Characteristics ──
+    "vap_sea_surface_elevation_high_tide_max",
+    "vap_surface_elevation_low_tide_min",
+    # "vap_sea_surface_elevation_mean",
+    # ── Site Context ──
+    "vap_grid_resolution",
+    # ── Location Identity ──
+    "face_id",
+    "lat_center",
+    "lon_center",
+    # ── Data Access ──
+    "full_year_data_https_url",
+    "full_year_data_s3_uri",
+]
+
+# Derive included_on_atlas from ATLAS_COLUMNS (single source of truth)
+_atlas_column_set_all = set(ATLAS_COLUMNS)
+for _var_entry in VARIABLE_REGISTRY.values():
+    _var_entry["included_on_atlas"] = _var_entry["column_name"] in _atlas_column_set_all
+
+
+dataset_info = (
+    "Source: <DATA_CITATION>, funded by <DOE> <H2O>. "
+    "Modeled by <PNNL>; standardized and released by <NLR>. "
+    "See <DOCUMENTATION> for methodology, citations, and full dataset access. "
+    "Contact <CONTACT_EMAIL> with questions."
+)
+
+
+def _html_link(text, href):
+    if href.startswith("mailto:"):
+        return f"<a href='{href}'>{text}</a>"
+    return f"<a href='{href}' target='_blank' rel='noopener noreferrer'>{text}</a>"
+
+
+_LINK_FORMATTERS = {
+    "text": lambda text, href: text,
+    "markdown": lambda text, href: f"[{text}]({href})",
+    "html": _html_link,
+}
+
+
+def _render(
+    text_spec, keyword_spec, variable_spec, link_fmt, keyword_text_field="full_text"
+):
+    """Render a template by substituting keyword and variable placeholders.
+
+    Keywords are rendered using link_fmt(display_text, href). Variable entries
+    are substituted as plain text. Raises ValueError on unresolved placeholders.
+    """
+    keyword_lookup = {entry["keyword"]: entry for entry in keyword_spec.values()}
+    result = text_spec
+    for key, entry in keyword_lookup.items():
+        result = result.replace(
+            f"<{key}>", link_fmt(entry[keyword_text_field], entry["href"])
+        )
+    # Keys whose values are prose descriptions that should be lowercased mid-sentence
+    _lowercase_mid_sentence = {"one_liner", "complete_description"}
+    for key, value in variable_spec.items():
+        placeholder = f"<{key.upper()}>"
+        val_str = str(value)
+        if placeholder not in result:
+            continue
+        if key in _lowercase_mid_sentence:
+            parts = result.split(placeholder)
+            result = parts[0]
+            for part in parts[1:]:
+                preceding = result.rstrip()
+                if not preceding or preceding[-1] in ".!?\n":
+                    result += val_str + part
+                else:
+                    # Lowercase first char unless the first word is all-caps
+                    # (acronym like "HTTPS", "URI") which must stay as-is.
+                    if not val_str:
+                        result += part
+                        continue
+                    first_word = val_str.split()[0]
+                    if first_word.isupper() and len(first_word) > 1:
+                        result += val_str + part
+                    else:
+                        result += val_str[0].lower() + val_str[1:] + part
+        else:
+            result = result.replace(placeholder, val_str)
+    unresolved = re.findall(r"<[A-Z_]+>", result)
+    if unresolved:
+        raise ValueError(f"Unresolved placeholders: {unresolved}")
+    return result
+
+
+def _render_all_formats(text_spec, keyword_spec, variable_spec):
+    """Render a template to text, markdown, and HTML."""
+    return {
+        fmt: _render(text_spec, keyword_spec, variable_spec, link_fmt)
+        for fmt, link_fmt in _LINK_FORMATTERS.items()
+    }
+
+
+# This goes with each variable on the atlas page
+# Concise, points the user to the right place
+def atlas_variable_spec(variable_spec, keyword_spec):
+    units_part = " [<UNITS>]" if variable_spec.get("units") else ""
+    first_sentence = (
+        f"<DISPLAY_NAME>{units_part} is the <ONE_LINER>. "
+        "For more detail, see <VARIABLE_LINK>."
+    )
+    rest = dataset_info
+    display_lower = variable_spec["display_name"].lower()
+    augmented_keywords = dict(keyword_spec)
+    augmented_keywords["_variable_link"] = {
+        "href": variable_spec["documentation_url"],
+        "full_text": f"complete {display_lower} documentation",
+        "short_text": f"complete {display_lower} documentation",
+        "keyword": "VARIABLE_LINK",
+    }
+    # Text and markdown: single paragraph
+    flat_spec = first_sentence + " " + rest
+    result = {
+        "display_name": variable_spec["display_name"],
+        "text": _render(
+            flat_spec, augmented_keywords, variable_spec, _LINK_FORMATTERS["text"]
+        ),
+        "markdown": _render(
+            flat_spec, augmented_keywords, variable_spec, _LINK_FORMATTERS["markdown"]
+        ),
+    }
+    # HTML: wrap in <div> with first sentence in its own <p> with <br/>
+    html_first = _render(
+        first_sentence, augmented_keywords, variable_spec, _LINK_FORMATTERS["html"]
+    )
+    html_rest = _render(
+        rest, augmented_keywords, variable_spec, _LINK_FORMATTERS["html"]
+    )
+    result["html"] = f"<div><p>{html_first}<br/></p><p>{html_rest}</p></div>"
+    return result
+
+
+def documentation_variable_spec(variable_spec, keyword_spec):
+    units_part = " [<UNITS>]" if variable_spec.get("units") else ""
+    text_spec = (
+        f"<DISPLAY_NAME>{units_part} is the <COMPLETE_DESCRIPTION>. " + dataset_info
+    )
+    # Derive anchor from documentation_url fragment (e.g. "#mean-current-speed" -> "mean-current-speed")
+    doc_url = variable_spec.get("documentation_url", "")
+    anchor = doc_url.split("#")[-1] if "#" in doc_url else ""
+    result = {
+        "display_name": variable_spec["display_name"],
+        "column_name": variable_spec["column_name"],
+        "units": variable_spec.get("units", ""),
+        "one_liner": variable_spec.get("one_liner", ""),
+        "complete_description": variable_spec.get("complete_description", ""),
+        "anchor": anchor,
+        **_render_all_formats(text_spec, keyword_spec, variable_spec),
+    }
+    if "equation" in variable_spec:
+        result["equation"] = variable_spec["equation"]
+    if "equation_variables" in variable_spec:
+        result["equation_variables"] = variable_spec["equation_variables"]
+    return result
+
+
+atlas_variable_specification = {}
+documentation_variable_specification = {}
+
+# Only generate specs for non-polygon columns on the atlas
+_atlas_column_set = set(ATLAS_COLUMNS) - set(POLYGON_COLUMNS)
+
+# Build set of column_names that have color styling
+
+_colored_layer_columns = {
+    VARIABLE_REGISTRY[key]["column_name"]
+    for key in GIS_COLORS_REGISTRY
+    if key in VARIABLE_REGISTRY
+}
+
+# Reverse lookup: column_name -> GIS_COLORS_REGISTRY key
+_col_to_gcr_key = {
+    VARIABLE_REGISTRY[key]["column_name"]: key
+    for key in GIS_COLORS_REGISTRY
+    if key in VARIABLE_REGISTRY
+}
+
+
+def _build_color_spec_for_var(gcr_key):
+    """Build color specification dict from GIS_COLORS_REGISTRY for embedding in JSON.
+
+    Uses the same evenly-spaced colormap sampling as the atlas visualization
+    legend (``capture_color_level_ranges`` in atlas_preview.py):
+    ``cmap(i / (n_colors - 1))`` where n_colors = levels + 1.
+    """
+    import numpy as np
+    from tidal_fvcom.gis_colors_registry import resolve_colormap
+
+    style = GIS_COLORS_REGISTRY[gcr_key]
+    reg = VARIABLE_REGISTRY.get(gcr_key, {})
+    result = {
+        "display_name": reg.get("display_name", gcr_key),
+        "column_name": reg.get("column_name", gcr_key),
+        "units": reg.get("units", ""),
+        "style_type": style["style_type"],
+        "range_min": style["range_min"],
+        "range_max": style["range_max"],
+    }
+    if style["style_type"] == "continuous":
+        cmap = resolve_colormap(style["colormap_name"])
+        n_levels = style["levels"]
+        n_colors = n_levels + 1  # +1 for overflow
+        edges = np.linspace(style["range_min"], style["range_max"], n_levels + 1)
+
+        levels_list = []
+        for i in range(n_colors):
+            rgba = cmap(i / (n_colors - 1))
+            rgb_255 = tuple(int(c * 255) for c in rgba[:3])
+            hex_color = f"#{rgb_255[0]:02x}{rgb_255[1]:02x}{rgb_255[2]:02x}"
+
+            if i < n_levels:
+                levels_list.append(
+                    {
+                        "bin_min": float(edges[i]),
+                        "bin_max": float(edges[i + 1]),
+                        "color": hex_color,
+                    }
+                )
+            else:
+                # Overflow level (≥ range_max)
+                levels_list.append(
+                    {
+                        "bin_min": float(edges[-1]),
+                        "bin_max": None,
+                        "color": hex_color,
+                    }
+                )
+
+        result["colormap_name"] = style["colormap_name"]
+        result["n_levels"] = n_levels
+        result["levels"] = levels_list
+    elif style["style_type"] == "discrete" and "spec_ranges" in style:
+        result["n_levels"] = len(style["spec_ranges"])
+        result["categories"] = {
+            k: {"max": v["max"], "label": v["label"], "color": v["color"]}
+            for k, v in style["spec_ranges"].items()
+        }
+    return result
+
+
+for _var_key, _var_entry in VARIABLE_REGISTRY.items():
+    _col_name = _var_entry["column_name"]
+    if _col_name not in _atlas_column_set:
+        continue
+    if "documentation_url" not in _var_entry:
+        continue
+    spec = atlas_variable_spec(_var_entry, DOCUMENTATION_REGISTRY)
+    if _col_name in _col_to_gcr_key:
+        spec["color_spec"] = _build_color_spec_for_var(_col_to_gcr_key[_col_name])
+    atlas_variable_specification[_col_name] = spec
+    if "complete_description" in _var_entry:
+        documentation_variable_specification[_col_name] = documentation_variable_spec(
+            _var_entry, DOCUMENTATION_REGISTRY
+        )

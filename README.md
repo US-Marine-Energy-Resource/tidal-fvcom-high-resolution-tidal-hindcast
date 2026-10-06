@@ -270,7 +270,7 @@ Please use GitHub issues for bug reports and feature requests. For other inquiri
 
 [Marine Energy Atlas]: https://maps.nlr.gov/marine-energy-atlas
 [OpenEI]: https://openei.org/wiki/Marine_and_Hydrokinetic_Technology_Database
-[WPTO]: https://www.energy.gov/eere/water/water-power-technologies-office
+[H2O]: https://www.energy.gov/cmei/water/hydropower-and-hydrokinetic-office
 [WPTOHindcast]: https://registry.opendata.aws/wpto-pds-us-wave/
 
 <!-- High Performance Computing -->
@@ -299,4 +299,3 @@ Please use GitHub issues for bug reports and feature requests. For other inquiri
 [MHKiT]: https://github.com/MHKiT-Software/MHKiT
 [PRIMRE]: https://primre.org
 [IEA-OES]: https://www.ocean-energy-systems.org
-[ESSI]: https://www.energy.gov/eere/water/energy-storage-systems-integration
