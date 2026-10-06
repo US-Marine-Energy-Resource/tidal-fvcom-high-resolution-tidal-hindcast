@@ -5,7 +5,7 @@ location as a chain of SLURM jobs wired together with ``--dependency=afterok``, 
 a single step, or runs from a step onward. Also reports per-level status so you can
 see what is done and resume from the first incomplete product.
 
-Step / sub-product addresses (see src/run_steps_manager.py for the DAG)::
+Step / sub-product addresses (see tidal_fvcom/run_steps_manager.py for the DAG)::
 
     verify  standardize  partition  vap
     vap_data_products[.point_parquet|.compress|.hsds]
@@ -26,10 +26,10 @@ Usage:
 
 import argparse
 
-from config import config
-from src.cli import validate_location
-from src.slurm import Submitter
-from src import run_steps_manager
+from tidal_fvcom.config import config
+from tidal_fvcom.cli import validate_location
+from tidal_fvcom.slurm import Submitter
+from tidal_fvcom import run_steps_manager
 
 
 def _parse_address(address):

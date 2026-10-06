@@ -51,3 +51,29 @@ Icon
 Network Trash Folder
 Temporary Items
 .apdisk
+
+
+# Tidal FVCOM pipeline: local data, caches, and generated output (kept on disk, not tracked)
+/data/
+/analysis/
+/us_tidal_cache/
+/eda/
+/output/
+/viz/
+/viz_archive/
+/viz_output/
+
+# SLURM job logs (written to the submit dir, i.e. repo root)
+*.out
+*.err
+
+# Tool caches and render artifacts
+.mypy_cache/
+.ruff_cache/
+.pytest_cache/
+.benchmarks/
+.serena/
+*.egg-info/
+*.quarto_ipynb
+*_files/
+*.html
