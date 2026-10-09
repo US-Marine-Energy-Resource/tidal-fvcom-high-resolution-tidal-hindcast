@@ -8,6 +8,11 @@ dynamic = ["version"]
 description = "Processing pipeline for the DOE H2O high resolution tidal (FVCOM) hindcast"
 requires-python = ">=3.11"
 
+[project.urls]
+homepage = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+documentation = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+repository = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+
 [tool.hatch.build.targets.wheel]
 # packages = ["src/tidal_fvcom"]
 packages = ["tidal_fvcom"]
