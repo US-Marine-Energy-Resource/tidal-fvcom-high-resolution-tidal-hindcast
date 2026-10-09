@@ -77,3 +77,6 @@ Temporary Items
 *.quarto_ipynb
 *_files/
 *.html
+# pixi environments
+.pixi/*
+!.pixi/config.toml
