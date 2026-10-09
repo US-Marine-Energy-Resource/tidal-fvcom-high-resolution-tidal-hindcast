@@ -4,9 +4,35 @@ build-backend = "hatchling.build"
 
 [project]
 name = "tidal_fvcom"
-version = "1.1.0"
+dynamic = ["version"]
 description = "Processing pipeline for the DOE H2O high resolution tidal (FVCOM) hindcast"
 requires-python = ">=3.11"
+
+[tool.hatch.build.targets.wheel]
+# packages = ["src/tidal_fvcom"]
+packages = ["tidal_fvcom"]
+
+[tool.hatch.version]
+fallback-version = "0.0.0"
+source = "vcs"
+# tag-pattern = "v(?P<version>\\d+\\.\\d+\\.\\d+)"
+
+[tool.hatch.version.raw-options]
+# Default git command uses "*[0-9]*", which breaks with cX.X.X tags.
+# This spec below forces setuptools_scm to look strictly for vX.X.X tags
+git_describe_command = [
+  "git",
+  "describe",
+  "--dirty",
+  "--tags",
+  "--long",
+  "--match",
+  "v*[0-9]*",
+]
+
+[tool.hatch.build.hooks.vcs]
+# version-file = "src/tidal_fvcom/_version.py"
+version-file = "tidal_fvcom/_version.py"
 
 [tool.setuptools.packages.find]
 include = ["tidal_fvcom*"]
