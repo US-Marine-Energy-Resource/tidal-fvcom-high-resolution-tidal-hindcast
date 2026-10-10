@@ -1,5 +1,8 @@
 # Python
 
+# Dynamic versioning
+_version.py
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
@@ -77,3 +80,6 @@ Temporary Items
 *.quarto_ipynb
 *_files/
 *.html
+# pixi environments
+.pixi/*
+!.pixi/config.toml

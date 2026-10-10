@@ -1,21 +1,144 @@
 [build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling >= 1.27", "hatch-vcs >= 0.5"]
+build-backend = "hatchling.build"
 
 [project]
 name = "tidal_fvcom"
-version = "1.1.0"
+dynamic = ["version"]
 description = "Processing pipeline for the DOE H2O high resolution tidal (FVCOM) hindcast"
-requires-python = ">=3.11"
+readme = "README.md"
+authors = [
+  { name = "Andrew Simms", email = "asimms@nlr.gov" },
+  { name = "Guilherme Castelao", email = "gpimenta@nlr.gov" },
+]
+maintainers = [
+  { name = "Andrew Simms", email = "asimms@nlr.gov" },
+  { name = "Guilherme Castelao", email = "gpimenta@nlr.gov" },
+]
+license = "BSD-3-Clause"
+keywords = ["NLR"]
+requires-python = ">= 3.11"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+dependencies = [
+  "click>=8.0.0",
+  "rich>=14.2.0,<15",
+  "ipython",
+  "matplotlib>=3.11.2,<4",
+  "pandas~=2.2.0",
+  "numpy~=2.1.0",
+  "pyproj~=3.6.0",
+  "xarray==2024.10",
+  "netcdf4~=1.7.0",
+  "pyarrow~=18.1.0",
+  "dask==2024.8",
+]
+[project.optional-dependencies]
+dev = ["ipython>=8.29.0,<9", "pre-commit>=4.0.1,<5"]
+doc = [
+  "myst-parser>=5.0.0,<6",
+  "nbconvert>=7.16.6,<8",
+  "numpydoc>=1.6",
+  "pandoc>=2.3",
+  "pydata-sphinx-theme>=0.16.1,<0.17",
+  "sphinx>=8.2.3,<9",
+  "sphinx-click>=6.1.0,<7",
+  "sphinx-copybutton>=0.5.2,<0.6",
+  "sphinx-tabs>=3.4.5,<4",
+  # "sphinxcontrib-mermaid>=1.0.0,<2",
+  "sphinxcontrib-bibtex>=2.6.5,<3",
+]
+test = [
+  "pytest>=9.0.1,<10",
+  "pytest-cases>=3.9.1,<4",
+  "pytest-cov>=7.0.0,<8",
+  "pytest-mock>=3.15.1,<4",
+  "pytest-profiling>=1.8.1,<2",
+  "pytest-xdist>=3.8.0,<4",
+  # "snakeviz>=2.2.2,<3",
+  "tox>=4.32.0,<5",
+]
+
+[project.urls]
+homepage = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+documentation = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+repository = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+
+[tool.hatch.build.targets.wheel]
+# packages = ["src/tidal_fvcom"]
+packages = ["tidal_fvcom"]
+
+[tool.hatch.version]
+fallback-version = "0.0.0"
+source = "vcs"
+# tag-pattern = "v(?P<version>\\d+\\.\\d+\\.\\d+)"
+
+[tool.hatch.version.raw-options]
+# Default git command uses "*[0-9]*", which breaks with cX.X.X tags.
+# This spec below forces setuptools_scm to look strictly for vX.X.X tags
+git_describe_command = [
+  "git",
+  "describe",
+  "--dirty",
+  "--tags",
+  "--long",
+  "--match",
+  "v*[0-9]*",
+]
+
+[tool.hatch.build.hooks.vcs]
+# version-file = "src/tidal_fvcom/_version.py"
+version-file = "tidal_fvcom/_version.py"
 
 [tool.setuptools.packages.find]
 include = ["tidal_fvcom*"]
 
-[tool.setuptools.package-data]
-tidal_fvcom = ["references/*"]
+# [tool.setuptools.package-data]
+# tidal_fvcom = ["references/*"]
 
 [tool.ruff]
 target-version = "py311"
 
 [tool.ruff.lint]
 ignore = ["F401"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+platforms = ["osx-arm64", "linux-64", "linux-aarch64", "win-64"]
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["build", "dev", "doc", "test"], solve-group = "default" }
+doc = { features = ["doc"], solve-group = "default" }
+test = { features = ["test"], solve-group = "default" }
+build = { features = ["build"], solve-group = "default" }
+
+[tool.pixi.feature.build.tasks]
+build-wheels = { cmd = "uv build --sdist --wheel --out-dir dist/ ." }
+publish-pypi = { cmd = "uv publish", depends-on = ["build-wheels"] }
+
+[tool.pixi.pypi-dependencies]
+tidal_fvcom = { path = ".", editable = true }
+
+[tool.pixi.dependencies]
+python = "~=3.11.0"
+
+[tool.pixi.feature.dev.dependencies]
+ipython = ">=8.29.0,<9"
+pre-commit = ">=4.0.1,<5"
+ruff = ">=0.16.2,<0.17"
+
+[tool.pixi.feature.build.dependencies]
+python-build = ">=1.3.0,<2"
+pkginfo = ">=1.12.1.2,<2"
+uv = ">=0.9.10,<0.10"
