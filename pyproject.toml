@@ -130,6 +130,9 @@ publish-pypi = { cmd = "uv publish", depends-on = ["build-wheels"] }
 [tool.pixi.pypi-dependencies]
 tidal_fvcom = { path = ".", editable = true }
 
+[tool.pixi.dependencies]
+python = "~=3.11.0"
+
 [tool.pixi.feature.dev.dependencies]
 ipython = ">=8.29.0,<9"
 pre-commit = ">=4.0.1,<5"
