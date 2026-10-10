@@ -103,8 +103,8 @@ version-file = "tidal_fvcom/_version.py"
 [tool.setuptools.packages.find]
 include = ["tidal_fvcom*"]
 
-[tool.setuptools.package-data]
-tidal_fvcom = ["references/*"]
+# [tool.setuptools.package-data]
+# tidal_fvcom = ["references/*"]
 
 [tool.ruff]
 target-version = "py311"
