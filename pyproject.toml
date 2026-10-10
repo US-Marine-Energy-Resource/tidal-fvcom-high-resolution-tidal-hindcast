@@ -34,13 +34,13 @@ dependencies = [
   "click>=8.0.0",
   "rich>=14.2.0,<15",
   "ipython",
-  "matplotlib",
-  "pandas==2.2",
-  "numpy==2.1",
-  "pyproj==3.6",
+  "matplotlib>=3.11.2,<4",
+  "pandas~=2.2.0",
+  "numpy~=2.1.0",
+  "pyproj~=3.6.0",
   "xarray==2024.10",
   "netcdf4~=1.7.0",
-  "pyarrow==18.1",
+  "pyarrow~=18.1.0",
   "dask==2024.8",
 ]
 [project.optional-dependencies]
