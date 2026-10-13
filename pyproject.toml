@@ -114,7 +114,8 @@ ignore = ["F401"]
 
 [tool.pixi.workspace]
 channels = ["conda-forge"]
-platforms = ["osx-arm64", "linux-64", "linux-aarch64", "win-64"]
+# linux-64 is the reference platform (Kestrel). osx-arm64 is for local work.
+platforms = ["linux-64", "osx-arm64"]
 
 [tool.pixi.environments]
 default = { solve-group = "default" }
