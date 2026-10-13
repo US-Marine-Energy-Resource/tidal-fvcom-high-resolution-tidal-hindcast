@@ -1,21 +1,132 @@
 [build-system]
-requires = ["setuptools>=61"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling >= 1.27", "hatch-vcs >= 0.5"]
+build-backend = "hatchling.build"
 
 [project]
 name = "tidal_fvcom"
-version = "1.1.0"
+dynamic = ["version"]
 description = "Processing pipeline for the DOE H2O high resolution tidal (FVCOM) hindcast"
-requires-python = ">=3.11"
+readme = "README.md"
+authors = [
+  { name = "Andrew Simms", email = "asimms@nlr.gov" },
+  { name = "Guilherme Castelao", email = "gpimenta@nlr.gov" },
+]
+maintainers = [
+  { name = "Andrew Simms", email = "asimms@nlr.gov" },
+  { name = "Guilherme Castelao", email = "gpimenta@nlr.gov" },
+]
+license = "BSD-3-Clause"
+keywords = ["NLR"]
+requires-python = "==3.11.*"
+classifiers = [
+  "Development Status :: 2 - Pre-Alpha",
+  "Intended Audience :: Science/Research",
+  "Natural Language :: English",
+  "Operating System :: OS Independent",
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3.12",
+  "Programming Language :: Python :: 3.13",
+  "Programming Language :: Python :: 3.14",
+  "Topic :: Software Development :: Libraries :: Application Frameworks",
+]
+# Runtime dependencies are pinned in [tool.pixi.dependencies] and
+# [tool.pixi.pypi-dependencies]. Use pixi to install this package.
+dependencies = []
 
-[tool.setuptools.packages.find]
-include = ["tidal_fvcom*"]
+[project.urls]
+homepage = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+documentation = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
+repository = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
 
-[tool.setuptools.package-data]
-tidal_fvcom = ["references/*"]
+[tool.hatch.build.targets.wheel]
+packages = ["tidal_fvcom"]
+
+[tool.hatch.version]
+fallback-version = "0.0.0"
+source = "vcs"
+
+[tool.hatch.version.raw-options]
+# Default git command uses "*[0-9]*", which breaks with cX.X.X tags.
+# This spec below forces setuptools_scm to look strictly for vX.X.X tags
+git_describe_command = [
+  "git",
+  "describe",
+  "--dirty",
+  "--tags",
+  "--long",
+  "--match",
+  "v*[0-9]*",
+]
+
+[tool.hatch.build.hooks.vcs]
+version-file = "tidal_fvcom/_version.py"
 
 [tool.ruff]
 target-version = "py311"
 
 [tool.ruff.lint]
 ignore = ["F401"]
+
+[tool.pixi.workspace]
+channels = ["conda-forge"]
+# linux-64 is the reference platform (Kestrel). osx-arm64 is for local work.
+platforms = ["linux-64", "osx-arm64"]
+
+[tool.pixi.environments]
+default = { solve-group = "default" }
+dev = { features = ["dev"], solve-group = "default" }
+
+# Exact versions from the Kestrel tidal_fvcom env on 2026-10-13. These are
+# the versions that make the data products. Do not change a pin without a
+# reason, because a change can change the output data.
+[tool.pixi.dependencies]
+python = "==3.11.13"
+numpy = "==2.4.4"
+pandas = "==2.3.2"
+xarray = "==2025.9.0"
+dask = "==2025.10.0"
+fsspec = "==2025.9.0"
+click = "==8.2.1"
+netcdf4 = "==1.7.2"
+h5netcdf = "==1.6.4"
+h5py = "==3.13.0"
+pyarrow = "==21.0.0"
+scipy = "==1.16.2"
+pyproj = "==3.7.2"
+shapely = "==2.1.1"
+geopandas = "==1.0.1"
+timezonefinder = "==6.5.9"
+pytz = "==2025.2"
+geopy = "==2.4.1"
+matplotlib-base = "==3.10.6"
+seaborn = "==0.13.2"
+cmocean = "==4.0.3"
+contextily = "==1.6.2"
+matplotlib-scalebar = "==0.9.0"
+lxml = "==6.0.1"
+citeproc-py = "==0.8.2"
+boto3 = "==1.40.54"
+requests = "==2.32.5"
+urllib3 = "==1.26.20"
+psutil = "==7.0.0"
+
+# These exact versions are not on conda-forge, so they come from PyPI.
+# zarr is here too, because the conda zarr package pulls in a newer numcodecs.
+[tool.pixi.pypi-dependencies]
+tidal_fvcom = { path = ".", editable = true }
+zarr = "==3.1.2"
+numcodecs = "==0.16.2"
+cartopy = "==0.24.1"
+python-sld = "==1.0.10"
+
+# Tools only. These do not change the output data.
+[tool.pixi.feature.dev.dependencies]
+ipython = "==9.5.0"
+pytest = "==8.4.0"
+ruff = ">=0.16.2,<0.17"
+python-build = ">=1.3.0,<2"
+
+[tool.pixi.feature.dev.tasks]
+build = "pyproject-build --wheel --outdir dist ."
+test = "pytest tests/ -v"

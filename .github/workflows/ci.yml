@@ -1,0 +1,33 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  build-and-test:
+    strategy:
+      fail-fast: false
+      matrix:
+        # Same platforms as [tool.pixi.workspace] in pyproject.toml
+        os: [ubuntu-latest, macos-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          # hatch-vcs needs git history to set the version
+          fetch-depth: 0
+
+      # --locked fails if pixi.lock does not match pyproject.toml
+      - uses: prefix-dev/setup-pixi@v0.11.0
+        with:
+          environments: dev
+          locked: true
+          cache: true
+
+      - name: Build package
+        run: pixi run -e dev build
+
+      - name: Run tests
+        run: pixi run -e dev test
