@@ -17,7 +17,7 @@ maintainers = [
 ]
 license = "BSD-3-Clause"
 keywords = ["NLR"]
-requires-python = ">= 3.11"
+requires-python = "==3.11.*"
 classifiers = [
   "Development Status :: 2 - Pre-Alpha",
   "Intended Audience :: Science/Research",
