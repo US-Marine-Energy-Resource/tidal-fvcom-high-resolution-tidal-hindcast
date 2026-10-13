@@ -40,13 +40,11 @@ documentation = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-r
 repository = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
 
 [tool.hatch.build.targets.wheel]
-# packages = ["src/tidal_fvcom"]
 packages = ["tidal_fvcom"]
 
 [tool.hatch.version]
 fallback-version = "0.0.0"
 source = "vcs"
-# tag-pattern = "v(?P<version>\\d+\\.\\d+\\.\\d+)"
 
 [tool.hatch.version.raw-options]
 # Default git command uses "*[0-9]*", which breaks with cX.X.X tags.
@@ -62,14 +60,7 @@ git_describe_command = [
 ]
 
 [tool.hatch.build.hooks.vcs]
-# version-file = "src/tidal_fvcom/_version.py"
 version-file = "tidal_fvcom/_version.py"
-
-[tool.setuptools.packages.find]
-include = ["tidal_fvcom*"]
-
-# [tool.setuptools.package-data]
-# tidal_fvcom = ["references/*"]
 
 [tool.ruff]
 target-version = "py311"
