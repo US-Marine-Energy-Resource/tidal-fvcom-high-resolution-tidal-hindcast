@@ -127,8 +127,48 @@ build = { features = ["build"], solve-group = "default" }
 build-wheels = { cmd = "uv build --sdist --wheel --out-dir dist/ ." }
 publish-pypi = { cmd = "uv publish", depends-on = ["build-wheels"] }
 
+# Exact versions from the Kestrel tidal_fvcom env on 2026-10-13. These are
+# the versions that make the data products. Do not change a pin without a
+# reason, because a change can change the output data.
+[tool.pixi.dependencies]
+python = "==3.11.13"
+numpy = "==2.4.4"
+pandas = "==2.3.2"
+xarray = "==2025.9.0"
+dask = "==2025.10.0"
+fsspec = "==2025.9.0"
+click = "==8.2.1"
+netcdf4 = "==1.7.2"
+h5netcdf = "==1.6.4"
+h5py = "==3.13.0"
+pyarrow = "==21.0.0"
+scipy = "==1.16.2"
+pyproj = "==3.7.2"
+shapely = "==2.1.1"
+geopandas = "==1.0.1"
+timezonefinder = "==6.5.9"
+pytz = "==2025.2"
+geopy = "==2.4.1"
+matplotlib-base = "==3.10.6"
+seaborn = "==0.13.2"
+cmocean = "==4.0.3"
+contextily = "==1.6.2"
+matplotlib-scalebar = "==0.9.0"
+lxml = "==6.0.1"
+citeproc-py = "==0.8.2"
+boto3 = "==1.40.54"
+requests = "==2.32.5"
+urllib3 = "==1.26.20"
+psutil = "==7.0.0"
+
+# These exact versions are not on conda-forge, so they come from PyPI.
+# zarr is here too, because the conda zarr package pulls in a newer numcodecs.
 [tool.pixi.pypi-dependencies]
 tidal_fvcom = { path = ".", editable = true }
+zarr = "==3.1.2"
+numcodecs = "==0.16.2"
+cartopy = "==0.24.1"
+python-sld = "==1.0.10"
 
 [tool.pixi.dependencies]
 python = "~=3.11.0"
