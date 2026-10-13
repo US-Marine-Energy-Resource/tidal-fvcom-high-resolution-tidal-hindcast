@@ -30,44 +30,9 @@ classifiers = [
   "Programming Language :: Python :: 3.14",
   "Topic :: Software Development :: Libraries :: Application Frameworks",
 ]
-dependencies = [
-  "click>=8.0.0",
-  "rich>=14.2.0,<15",
-  "ipython",
-  "matplotlib>=3.11.2,<4",
-  "pandas~=2.2.0",
-  "numpy~=2.1.0",
-  "pyproj~=3.6.0",
-  "xarray==2024.10",
-  "netcdf4~=1.7.0",
-  "pyarrow~=18.1.0",
-  "dask==2024.8",
-]
-[project.optional-dependencies]
-dev = ["ipython>=8.29.0,<9", "pre-commit>=4.0.1,<5"]
-doc = [
-  "myst-parser>=5.0.0,<6",
-  "nbconvert>=7.16.6,<8",
-  "numpydoc>=1.6",
-  "pandoc>=2.3",
-  "pydata-sphinx-theme>=0.16.1,<0.17",
-  "sphinx>=8.2.3,<9",
-  "sphinx-click>=6.1.0,<7",
-  "sphinx-copybutton>=0.5.2,<0.6",
-  "sphinx-tabs>=3.4.5,<4",
-  # "sphinxcontrib-mermaid>=1.0.0,<2",
-  "sphinxcontrib-bibtex>=2.6.5,<3",
-]
-test = [
-  "pytest>=9.0.1,<10",
-  "pytest-cases>=3.9.1,<4",
-  "pytest-cov>=7.0.0,<8",
-  "pytest-mock>=3.15.1,<4",
-  "pytest-profiling>=1.8.1,<2",
-  "pytest-xdist>=3.8.0,<4",
-  # "snakeviz>=2.2.2,<3",
-  "tox>=4.32.0,<5",
-]
+# Runtime dependencies are pinned in [tool.pixi.dependencies] and
+# [tool.pixi.pypi-dependencies]. Use pixi to install this package.
+dependencies = []
 
 [project.urls]
 homepage = "https://github.com/US-Marine-Energy-Resource/tidal-fvcom-high-resolution-tidal-hindcast"
