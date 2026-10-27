@@ -135,6 +135,8 @@ config = {
             "vap_summary_parquet": "<location>/<version>/b4_vap_summary_parquet",
             "vap_atlas_summary_parquet": "<location>/<version>/b5_vap_atlas_summary_parquet",
             "combined_vap_atlas": "all_locations_combined_gis/<version>",
+            "zarr": "<location>/<version>/b1_vap_zarr",
+            "zarr_build": "<location>/<version>/metadata/zarr_build",
             "hsds": "<location>/<version>/hsds",
             "hsds_temp": "<location>/<version>/hsds/individual_temp_files",
             "tracking": "<location>/<version>/metadata/shared",
