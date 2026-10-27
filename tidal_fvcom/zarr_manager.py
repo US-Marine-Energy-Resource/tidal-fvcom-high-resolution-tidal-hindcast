@@ -36,6 +36,7 @@ SPATIAL_DIMS = ("face", "node")
 PLAN_FILENAME = "zarr_build_plan.json"
 COMPLETE_MARKER = "zarr_build_complete.json"
 BLOCK_MARKER_DIR = "blocks"
+PROGRESS_EVERY_FILES = 10
 
 DEFAULT_ZARR_SETTINGS = {
     "zarr_format": 3,
@@ -342,7 +343,7 @@ def create_store(plan, config, engine="h5netcdf", overwrite=True):
         for name, v in plan["variables"].items():
             if v["kind"] == "static":
                 data = ds[name].values
-                root[name][:] = data.astype(str) if v["dtype"] == "str" else data
+                root[name][...] = data.astype(str) if v["dtype"] == "str" else data
 
     for name, v in plan["variables"].items():
         if v["kind"] == "time_only":
@@ -372,19 +373,36 @@ def write_block(plan, task_index, build_dir, engine="h5netcdf"):
             n for n, v in plan["variables"].items()
             if v["kind"] == "time" and v["dims"][-1] == spatial
         ]
-        for name in names:
+        n_files = len(plan["files"])
+        print(
+            f"[zarr] task {task_index}: {len(names)} variables, "
+            f"{spatial} {s}-{e}, {n_files} files"
+        )
+        for vi, name in enumerate(names, start=1):
             v = plan["variables"][name]
+            var_started = time.time()
             shape = (plan["timeline"]["n_time"], *v["shape"][1:-1], e - s)
             dtype = object if v["dtype"] == "str" else _np_dtype(v["dtype"])
             acc = np.full(shape, v["fill_value"], dtype=dtype)
-            for f in plan["files"]:
+            print(f"[zarr] task {task_index}: variable {vi}/{len(names)} {name} {shape}")
+            for fi, f in enumerate(plan["files"], start=1):
                 t0, n = f["time_start"], f["n_time"]
                 with xr.open_dataset(f["path"], engine=engine, decode_times=False) as ds:
                     acc[t0 : t0 + n, ...] = ds[name].isel({spatial: slice(s, e)}).values
+                if fi % PROGRESS_EVERY_FILES == 0 and fi != n_files:
+                    print(
+                        f"[zarr] task {task_index}: {name} read file {fi}/{n_files} "
+                        f"({time.time() - var_started:.0f}s)"
+                    )
             region = (slice(None),) * (len(shape) - 1) + (slice(s, e),)
             root[name][region] = acc
             del acc
             written.append({"variable": name, spatial: [s, e]})
+            print(
+                f"[zarr] task {task_index}: wrote {name} "
+                f"({vi}/{len(names)}, {time.time() - var_started:.0f}s, "
+                f"{time.time() - started:.0f}s total)"
+            )
     marker = _block_marker(build_dir, task_index)
     marker.write_text(
         json.dumps(
