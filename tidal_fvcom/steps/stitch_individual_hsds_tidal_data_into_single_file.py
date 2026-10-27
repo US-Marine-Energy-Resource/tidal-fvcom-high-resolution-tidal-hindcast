@@ -5,6 +5,7 @@ Performs sanity checking on timestamps and ensures data continuity.
 """
 
 import argparse
+import gc
 import json
 from pathlib import Path
 from datetime import datetime
@@ -21,8 +22,58 @@ from tidal_fvcom.nc_manager import calculate_optimal_chunk_sizes
 HDF5_READ_CACHE = config["hdf5_cache"]["read_cache_bytes"]
 HDF5_WRITE_CACHE = config["hdf5_cache"]["stitch_write_cache_bytes"]
 
+# ---------------------------------------------------------------------------
+# Write-cache strategy for the face-block stitch
+#
+# The stitch writes each variable one COMPLETE face-block at a time (the whole
+# time axis for a contiguous range of faces), so every HDF5 chunk is written
+# once, in full. There is no read-modify-write for the chunk cache to absorb,
+# so the old multi-GB write cache bought us nothing here -- the working set per
+# variable (tens of GB) always dwarfed it. We deliberately keep the write cache
+# SMALL (a few dozen chunks) but fix the two knobs that actually matter:
+#   * rdcc_nslots: the chunk-cache hash table. h5py's default of 521 hash-
+#     thrashes once the cache holds more than a few hundred chunks. We set a
+#     prime well above the chunks we keep resident.
+#   * rdcc_w0=1.0: prefer evicting fully-written chunks first (we never revisit
+#     a chunk once its block is written), so the cache never holds dead weight.
+# The cache size is derived from the REAL chunk size via
+# calculate_optimal_chunk_sizes -- the same function that created the datasets.
+# ---------------------------------------------------------------------------
+STITCH_WRITE_RDCC_TARGET_CHUNKS = 128  # keep ~128 chunks resident
+STITCH_WRITE_RDCC_NSLOTS = 12809  # prime > 128 chunks * 100
+STITCH_WRITE_RDCC_W0 = 1.0
+
+# Default RAM budget (GB) for the single face-block accumulator held in memory
+# at a time. Block width is derived from this at runtime, so peak memory is
+# bounded regardless of mesh size (SE Alaska = 1.1M faces, Puget = 1.7M).
+# Overridable via --memory-budget-gb.
+DEFAULT_MEMORY_BUDGET_GB = 32.0
+
 # Global NaN replacement value
 NAN_FILL_VALUE = -999.0
+
+
+def representative_chunk_bytes(file_structure):
+    """
+    Bytes-per-chunk for a representative 2D (time, face) variable, computed with
+    calculate_optimal_chunk_sizes -- the same chunking the datasets were created
+    with. Used to size the write cache. Falls back to the config target size if
+    no 2D time-varying variable is present.
+    """
+    for var_info in file_structure["variable_info"].values():
+        if var_info.get("is_static", False):
+            continue
+        yearly_shape = var_info.get("yearly_shape")
+        if yearly_shape is None or len(yearly_shape) != 2:
+            continue
+        chunks = calculate_optimal_chunk_sizes(
+            shape=yearly_shape,
+            dims=["time", "face"],
+            dtype=var_info["dtype"],
+            config=config,
+        )
+        return int(np.prod(chunks)) * np.dtype(var_info["dtype"]).itemsize
+    return int(config["dataset"]["encoding"]["chunk_spec"]["target_size_mb"] * 1024 * 1024)
 
 # Variables to exclude from final stitched output
 SKIP_VARIABLES = {
@@ -54,6 +105,44 @@ SKIP_VARIABLES = {
     "v_sigma_layer_09",
     "v_sigma_layer_10",
 }
+
+
+def compute_expected_full_year_timeline(location_config):
+    """
+    Compute the complete expected full-year timeline for a location.
+
+    Shared by structure creation and the resume path so both agree on the
+    yearly dimensions without re-creating the output file.
+
+    Returns:
+        tuple: (expected_timeline: pd.DatetimeIndex, expected_time_steps: int)
+    """
+    start_date = pd.to_datetime(location_config["start_date_utc"])
+    delta_t_seconds = location_config["expected_delta_t_seconds"]
+    expected_end_date = (
+        start_date + pd.DateOffset(years=1) - pd.Timedelta(seconds=delta_t_seconds)
+    )
+    expected_timeline = pd.date_range(
+        start=start_date,
+        end=expected_end_date,
+        freq=pd.Timedelta(seconds=delta_t_seconds),
+        tz="UTC",
+    )
+    return expected_timeline, len(expected_timeline)
+
+
+def replace_nans_inplace(data):
+    """
+    Replace NaNs with NAN_FILL_VALUE in place (no copy) for plain float arrays.
+
+    The stitch hot path reads a fresh array from disk each time, so in-place
+    editing is safe and avoids the full-array copy that
+    replace_nans_with_fill_value makes. Non-float / structured arrays are
+    returned unchanged. Returns data for chaining.
+    """
+    if data.dtype.names is None and np.issubdtype(data.dtype, np.floating):
+        np.copyto(data, NAN_FILL_VALUE, where=np.isnan(data))
+    return data
 
 
 def replace_nans_with_fill_value(data, fill_value=NAN_FILL_VALUE):
@@ -363,7 +452,12 @@ def pad_to_full_year(output_file, location_config, file_structure):
 
 
 def stitch_single_b1_file_for_hsds(
-    monthly_dir, output_file, location_name, location_config, perform_checks=True
+    monthly_dir,
+    output_file,
+    location_name,
+    location_config,
+    perform_checks=True,
+    memory_budget_gb=DEFAULT_MEMORY_BUDGET_GB,
 ):
     """
     Stitch together temporal HSDS files into single yearly file
@@ -374,6 +468,7 @@ def stitch_single_b1_file_for_hsds(
     - location_name: Location name for file pattern matching
     - location_config: Location configuration from config.py (needed for padding)
     - perform_checks: Whether to perform sanity checks
+    - memory_budget_gb: RAM budget for one face-block accumulator (bounds peak memory)
     """
     monthly_dir = Path(monthly_dir)
 
@@ -409,7 +504,9 @@ def stitch_single_b1_file_for_hsds(
 
     # Step 4: Stitch data with timestamp mapping (gaps automatically filled)
     print("Step 4: Stitching temporal data with timestamp mapping...")
-    stitch_data_into_yearly_file(output_file, temporal_files, file_structure)
+    stitch_data_into_yearly_file(
+        output_file, temporal_files, file_structure, memory_budget_gb=memory_budget_gb
+    )
 
     # Step 5: Final validation
     if perform_checks:
@@ -753,19 +850,9 @@ def create_yearly_file_structure(
     """Create the structure of the yearly H5 file with meta compound dataset and full year dimensions"""
 
     # Calculate expected full-year dimensions (with padding)
-    start_date = pd.to_datetime(location_config["start_date_utc"])
-    delta_t_seconds = location_config["expected_delta_t_seconds"]
-    expected_end_date = (
-        start_date + pd.DateOffset(years=1) - pd.Timedelta(seconds=delta_t_seconds)
+    expected_timeline, expected_time_steps = compute_expected_full_year_timeline(
+        location_config
     )
-
-    expected_timeline = pd.date_range(
-        start=start_date,
-        end=expected_end_date,
-        freq=pd.Timedelta(seconds=delta_t_seconds),
-        tz="UTC",
-    )
-    expected_time_steps = len(expected_timeline)
 
     print("\nFull year dimensions:")
     print(f"  Expected timesteps (full year): {expected_time_steps}")
@@ -905,37 +992,113 @@ def create_yearly_file_structure(
                 add_fill_value_attr(dataset)
 
 
-def stitch_data_into_yearly_file(output_file, monthly_files, file_structure):
+def _face_block_width(expected_time_steps, itemsize, chunk_faces, n_faces, budget_bytes):
     """
-    Stitch data from monthly files into yearly file with timestamp mapping.
+    Largest face-block width (number of faces) whose full-time accumulator fits
+    the RAM budget, aligned DOWN to the dataset's face-chunk boundary so every
+    block write covers complete chunks. Always at least one chunk wide.
+    """
+    raw = max(1, budget_bytes // (expected_time_steps * itemsize))
+    width = (raw // chunk_faces) * chunk_faces
+    width = max(chunk_faces, width)
+    return int(min(width, n_faces))
 
-    Uses timestamp mapping to write data to correct indices in full-year arrays,
-    automatically handling any gaps (which are pre-filled with NAN_FILL_VALUE).
 
-    Note: Face-only variables are already in meta compound dataset and are not stitched.
-    Only time-varying variables are stitched across temporal chunks.
+def _stitch_2d_variable_blockstreamed(
+    dataset, var_name, per_file_maps, expected_time_steps, budget_bytes
+):
+    """
+    Stream a 2D (time, face) variable into the yearly dataset one face-block at a
+    time: assemble the variable's COMPLETE time axis for a contiguous range of
+    faces in memory, then write that block in a single assignment.
+
+    Because each block is aligned to the face-chunk boundary and spans all
+    timesteps, every HDF5 chunk is written exactly once, in full -- no
+    read-modify-write. Peak memory is one block accumulator (~budget). Each input
+    file is read once per block, so total read volume is 1x. Returns block count.
+    """
+    n_faces = dataset.shape[1]
+    dtype = dataset.dtype
+    itemsize = np.dtype(dtype).itemsize
+    chunk_faces = dataset.chunks[1] if dataset.chunks else n_faces
+
+    block_width = _face_block_width(
+        expected_time_steps, itemsize, chunk_faces, n_faces, budget_bytes
+    )
+    block_starts = list(range(0, n_faces, block_width))
+    acc_gb = expected_time_steps * block_width * itemsize / (1024**3)
+    print(
+        f"      {len(block_starts)} face-block(s) of up to {block_width} faces "
+        f"(~{acc_gb:.1f} GB/block)"
+    )
+
+    for bi, f0 in enumerate(block_starts, start=1):
+        f1 = min(f0 + block_width, n_faces)
+        # Full time axis for this face range; gap timesteps stay at fill value.
+        acc = np.full((expected_time_steps, f1 - f0), NAN_FILL_VALUE, dtype=dtype)
+        for monthly_file, local_actual, expected_idx in per_file_maps:
+            with h5py.File(monthly_file, "r", rdcc_nbytes=HDF5_READ_CACHE) as mh5:
+                data = mh5[var_name][:, f0:f1]
+            replace_nans_inplace(data)
+            acc[expected_idx, :] = data[local_actual, :]
+        # One contiguous, complete-chunk write for the whole block.
+        dataset[:, f0:f1] = acc
+        print(f"        block {bi}/{len(block_starts)}: faces {f0}:{f1} written")
+        del acc
+        gc.collect()
+
+    return len(block_starts)
+
+
+def _stitch_1d_time_variable(dataset, var_name, per_file_maps, expected_time_steps):
+    """Assemble a 1D (time,) variable across all files in RAM and write once."""
+    acc = np.full((expected_time_steps,), NAN_FILL_VALUE, dtype=dataset.dtype)
+    for monthly_file, local_actual, expected_idx in per_file_maps:
+        with h5py.File(monthly_file, "r", rdcc_nbytes=HDF5_READ_CACHE) as mh5:
+            data = mh5[var_name][:]
+        replace_nans_inplace(data)
+        acc[expected_idx] = data[local_actual]
+    dataset[:] = acc
+
+
+def stitch_data_into_yearly_file(
+    output_file, monthly_files, file_structure, memory_budget_gb=DEFAULT_MEMORY_BUDGET_GB
+):
+    """
+    Stitch data from monthly files into the yearly file, one variable at a time,
+    streaming each 2D (time, face) variable in contiguous FACE-BLOCKS.
+
+    Why face-blocks instead of month-by-month: the yearly datasets are chunked by
+    face with each chunk spanning the whole time axis. A month-at-a-time write
+    puts only ~240 of a chunk's ~17,520 timesteps, forcing HDF5 to read-modify-
+    write every chunk on every month (~70x write amplification). Instead we
+    assemble a variable's complete time axis for a range of faces in memory and
+    write it once, so each chunk is written exactly once, in full.
+
+    Peak memory is bounded by memory_budget_gb (one block accumulator),
+    independent of mesh size. Each input file's data is read once (partitioned
+    across blocks). Gaps remain at NAN_FILL_VALUE.
     """
     expected_timeline = file_structure["expected_timeline"]
     expected_time_steps = file_structure["expected_time_steps"]
 
-    # First pass: collect all actual timestamps from temporal files
+    # ---- First pass: per-file timestamps + step counts -> timestamp mapping ----
     print("\nBuilding timestamp mapping...")
     actual_timestamps = []
+    file_time_counts = []
     for monthly_file in monthly_files:
         with h5py.File(monthly_file, "r", rdcc_nbytes=HDF5_READ_CACHE) as monthly_h5:
             time_data = monthly_h5["time_index"][:]
-            # Decode and parse
             if time_data.dtype.kind == "S":
                 time_strings = [t.decode("utf-8") for t in time_data]
             else:
                 time_strings = [str(t) for t in time_data]
-            timestamps = pd.to_datetime(time_strings)
-            actual_timestamps.extend(timestamps)
+            actual_timestamps.extend(pd.to_datetime(time_strings))
+            file_time_counts.append(len(time_data))
 
     actual_timestamps = pd.DatetimeIndex(actual_timestamps)
     print(f"  Collected {len(actual_timestamps)} actual timestamps")
 
-    # Create mapping: expected_idx -> actual_idx
     expected_df = pd.DataFrame(
         {"timestamp": expected_timeline, "expected_idx": range(expected_time_steps)}
     )
@@ -944,18 +1107,51 @@ def stitch_data_into_yearly_file(output_file, monthly_files, file_structure):
     )
     merged_df = expected_df.merge(actual_df, on="timestamp", how="left")
 
-    # Find which expected indices have actual data
     has_data_mask = ~merged_df["actual_idx"].isna()
     expected_indices_with_data = merged_df[has_data_mask]["expected_idx"].values
     actual_indices_for_data = merged_df[has_data_mask]["actual_idx"].values.astype(int)
 
-    gap_count = (~has_data_mask).sum()
+    gap_count = int((~has_data_mask).sum())
     print(f"  Mapped {len(expected_indices_with_data)} timesteps with data")
     if gap_count > 0:
         print(f"  Found {gap_count} gaps (pre-filled with {NAN_FILL_VALUE})")
 
-    with h5py.File(output_file, "a", rdcc_nbytes=HDF5_WRITE_CACHE) as yearly_h5:
-        # Write complete expected timeline to time_index
+    # ---- Precompute, per file, (local rows -> expected year rows) ----
+    # Each input file contributes a contiguous block of global actual indices;
+    # convert those to file-local row indices plus the matching year indices.
+    # Pure-gap files (no mapped data) are skipped.
+    per_file_maps = []  # list of (path, local_actual_idx, expected_idx)
+    actual_offset = 0
+    for monthly_file, n_steps in zip(monthly_files, file_time_counts):
+        file_mask = (actual_indices_for_data >= actual_offset) & (
+            actual_indices_for_data < actual_offset + n_steps
+        )
+        if file_mask.any():
+            local_actual = actual_indices_for_data[file_mask] - actual_offset
+            expected_idx = expected_indices_with_data[file_mask]
+            per_file_maps.append((monthly_file, local_actual, expected_idx))
+        actual_offset += n_steps
+
+    variable_info = file_structure["variable_info"]
+
+    # ---- Size the write cache from the REAL chunk size (see module header) ----
+    chunk_bytes = representative_chunk_bytes(file_structure)
+    write_rdcc_nbytes = STITCH_WRITE_RDCC_TARGET_CHUNKS * chunk_bytes
+    budget_bytes = int(memory_budget_gb * (1024**3))
+    print(
+        f"\nWrite cache: {write_rdcc_nbytes / (1024**2):.0f} MB "
+        f"({STITCH_WRITE_RDCC_TARGET_CHUNKS} chunks x {chunk_bytes / (1024**2):.2f} MB), "
+        f"nslots={STITCH_WRITE_RDCC_NSLOTS}, w0={STITCH_WRITE_RDCC_W0}"
+    )
+
+    with h5py.File(
+        output_file,
+        "a",
+        rdcc_nbytes=write_rdcc_nbytes,
+        rdcc_nslots=STITCH_WRITE_RDCC_NSLOTS,
+        rdcc_w0=STITCH_WRITE_RDCC_W0,
+    ) as yearly_h5:
+        # Write the complete expected timeline to time_index.
         print("\nWriting full year timeline to time_index...")
         expected_time_strings = expected_timeline.strftime(
             "%Y-%m-%d %H:%M:%S+00:00"
@@ -963,64 +1159,33 @@ def stitch_data_into_yearly_file(output_file, monthly_files, file_structure):
         yearly_h5["time_index"][:] = expected_time_strings
         print(f"  ✓ Wrote {expected_time_steps} timestamps")
 
-        # Stitch data from temporal files to correct positions
-        print("\nStitching data to correct time indices...")
-        print(
-            f"Processing {len(file_structure['variable_info'])} time-varying variables"
-        )
+        print("\nStitching data (per-variable, face-block streaming)...")
+        print(f"Processing {len(variable_info)} variables")
+        print(f"Memory budget per block: {memory_budget_gb:.1f} GB")
 
-        # Build cumulative index for reading from temporal files
-        actual_offset = 0
-        for i, monthly_file in enumerate(monthly_files):
-            with h5py.File(
-                monthly_file, "r", rdcc_nbytes=HDF5_READ_CACHE
-            ) as monthly_h5:
-                monthly_time_steps = len(monthly_h5["time_index"])
+        n_vars = len(variable_info)
+        for vi, var_name in enumerate(variable_info.keys(), start=1):
+            dataset = yearly_h5[var_name]
+            print(f"  [{vi}/{n_vars}] {var_name} (shape {dataset.shape})")
 
-                # Find which indices in this chunk
-                chunk_mask = (actual_indices_for_data >= actual_offset) & (
-                    actual_indices_for_data < actual_offset + monthly_time_steps
+            if dataset.ndim == 1:
+                _stitch_1d_time_variable(
+                    dataset, var_name, per_file_maps, expected_time_steps
+                )
+            else:
+                _stitch_2d_variable_blockstreamed(
+                    dataset,
+                    var_name,
+                    per_file_maps,
+                    expected_time_steps,
+                    budget_bytes,
                 )
 
-                if not chunk_mask.any():
-                    print(
-                        f"  Chunk {i + 1}/{len(monthly_files)}: No data to copy (gap)"
-                    )
-                    actual_offset += monthly_time_steps
-                    continue
+        yearly_h5.flush()
 
-                # Get local indices within this chunk
-                chunk_actual_indices = (
-                    actual_indices_for_data[chunk_mask] - actual_offset
-                )
-                chunk_expected_indices = expected_indices_with_data[chunk_mask]
-
-                print(
-                    f"  Chunk {i + 1}/{len(monthly_files)} ({monthly_file.name}): Copying {len(chunk_actual_indices)} timesteps"
-                )
-
-                # Copy data for each variable
-                for var_name, var_info in file_structure["variable_info"].items():
-                    monthly_data = monthly_h5[var_name][:]
-
-                    # Replace NaNs with fill value
-                    monthly_data = replace_nans_with_fill_value(monthly_data)
-
-                    # Write to correct positions in yearly file
-                    if len(monthly_data.shape) == 1:
-                        yearly_h5[var_name][chunk_expected_indices] = monthly_data[
-                            chunk_actual_indices
-                        ]
-                    else:
-                        yearly_h5[var_name][chunk_expected_indices, :] = monthly_data[
-                            chunk_actual_indices, :
-                        ]
-
-                actual_offset += monthly_time_steps
-
-        print(
-            f"\n✓ Stitching complete: {len(expected_indices_with_data)} timesteps written, {gap_count} gaps filled"
-        )
+    print(
+        f"\n✓ Stitching complete: {len(expected_indices_with_data)} timesteps written, {gap_count} gaps filled"
+    )
 
 
 def validate_yearly_file(output_file, file_structure):
@@ -1078,6 +1243,16 @@ def main():
     parser.add_argument(
         "--skip-checks", action="store_true", help="Skip validation checks"
     )
+    parser.add_argument(
+        "--memory-budget-gb",
+        type=float,
+        default=DEFAULT_MEMORY_BUDGET_GB,
+        help=(
+            "RAM budget (GB) for the single in-memory face-block accumulator. "
+            "Larger = fewer, bigger blocks (fewer file opens); smaller = lower "
+            f"peak memory. Default: {DEFAULT_MEMORY_BUDGET_GB:g}."
+        ),
+    )
 
     args = parser.parse_args()
 
@@ -1112,6 +1287,7 @@ def main():
         location_name=args.location,
         location_config=location_config,
         perform_checks=not args.skip_checks,
+        memory_budget_gb=args.memory_budget_gb,
     )
 
     print(f"Stitching complete! Final file: {output_file}")

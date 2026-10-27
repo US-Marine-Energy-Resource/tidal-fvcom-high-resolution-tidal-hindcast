@@ -1,4 +1,0 @@
-mkdocs-material[recommended]
-numpy
-cmocean
-matplotlib

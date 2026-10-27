@@ -103,6 +103,15 @@ config = {
         "read_cache_bytes": None,
         "stitch_write_cache_bytes": None,
     },
+    "zarr": {
+        # Per phase sbatch resources used by run.py (hpc/zarr_store.sbatch)
+        "slurm": {
+            "partition": "shared",
+            "init": {"cpus-per-task": "4", "mem": "32G", "time": "02:00:00"},
+            "write": {"cpus-per-task": "8", "mem": "64G", "time": "08:00:00"},
+            "finalize": {"cpus-per-task": "4", "mem": "32G", "time": "02:00:00"},
+        },
+    },
     "dir": {
         # Data Input and Output Directories
         "dependencies": "data/deps",
@@ -126,6 +135,8 @@ config = {
             "vap_summary_parquet": "<location>/<version>/b4_vap_summary_parquet",
             "vap_atlas_summary_parquet": "<location>/<version>/b5_vap_atlas_summary_parquet",
             "combined_vap_atlas": "all_locations_combined_gis/<version>",
+            "zarr": "<location>/<version>/b1_vap_zarr",
+            "zarr_build": "<location>/<version>/metadata/zarr_build",
             "hsds": "<location>/<version>/hsds",
             "hsds_temp": "<location>/<version>/hsds/individual_temp_files",
             "tracking": "<location>/<version>/metadata/shared",

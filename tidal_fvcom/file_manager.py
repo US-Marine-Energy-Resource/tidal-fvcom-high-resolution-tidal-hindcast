@@ -123,6 +123,19 @@ def get_combined_vap_atlas(config, location):
     return get_output_dirs(config, location)["combined_vap_atlas"]
 
 
+def get_zarr_store_path(config, location, create=True):
+    """Get the b1_vap Zarr store path"""
+    from tidal_fvcom import zarr_manager
+
+    zarr_dir = get_output_dirs(config, location, create=create)["zarr"]
+    return zarr_dir / zarr_manager.zarr_store_name(config, location)
+
+
+def get_zarr_build_dir(config, location, create=True):
+    """Get the Zarr build dir (plan, block markers, complete marker)"""
+    return get_output_dirs(config, location, create=create)["zarr_build"]
+
+
 def get_hsds_output_dir(config, location):
     """Get HSDS output directory for the location"""
     return get_output_dirs(config, location)["hsds"]
