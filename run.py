@@ -7,7 +7,7 @@ see what is done and resume from the first incomplete product.
 
 Step / sub-product addresses (see tidal_fvcom/run_steps_manager.py for the DAG)::
 
-    verify  standardize  partition  vap
+    verify  standardize  partition  vap  zarr
     vap_data_products[.point_parquet|.compress|.hsds]
     summary[.monthly|.yearly|.summary_parquet|.atlas]
     upload

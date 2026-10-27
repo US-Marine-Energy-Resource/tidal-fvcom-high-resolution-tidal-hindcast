@@ -27,6 +27,7 @@ the HSDS convert/stitch sbatch pair, and the summarize array sub-chain.
 """
 
 from dataclasses import dataclass
+from pathlib import Path
 from typing import Callable, Optional
 
 import pandas as pd
@@ -72,6 +73,7 @@ STEP_ORDER = [
     "standardize",
     "partition",
     "vap",
+    "zarr",
     "vap_data_products",
     "summary",
     "upload",
@@ -82,6 +84,7 @@ STEP_DEPENDS_ON = {
     "standardize": ["verify"],
     "partition": ["standardize"],
     "vap": ["partition"],
+    "zarr": ["vap"],
     "vap_data_products": ["vap"],
     "summary": ["vap"],
     "upload": ["vap_data_products", "summary"],
@@ -99,6 +102,7 @@ STEP_LEVELS = {
     "standardize": "a1_std",
     "partition": "a2_std_partition",
     "vap": "b1_vap",
+    "zarr": "b1_vap Zarr store",
     "vap_data_products": "b1_vap-derived products",
     "summary": "b2 / b3 / b4 / b5",
     "upload": "s3 (deployment)",
@@ -320,6 +324,51 @@ def _submit_hsds(ctx, dep_ids):
     return ctx.submitter.submit(stitch_args, label="vap_data_products.hsds:stitch")
 
 
+def _submit_zarr(ctx, dep_ids, subs):
+    """Zarr build: init -> write array (one task per face block) -> finalize."""
+    from tidal_fvcom import zarr_manager
+
+    slurm = ctx.config["zarr"]["slurm"]
+    n_tasks = zarr_manager.task_count(ctx.location_cfg, ctx.config)
+    log_dir = "logs"
+    if not ctx.submitter.dry_run:
+        Path(log_dir).mkdir(exist_ok=True)
+
+    def phase_args(phase, dep):
+        res = slurm[phase]
+        args = []
+        if dep:
+            args.append(dep)
+        args += [
+            f"--export=LOCATION={ctx.location},PHASE={phase}",
+            f"--partition={slurm['partition']}",
+            f"--cpus-per-task={res['cpus-per-task']}",
+            f"--mem={res['mem']}",
+            f"--time={res['time']}",
+            f"--job-name={ctx.location}_zarr_{phase}",
+        ]
+        return args
+
+    init_args = phase_args("init", dependency_arg(dep_ids)) + [
+        f"--output={log_dir}/{ctx.location}_zarr_init_%j.out",
+        "hpc/zarr_store.sbatch",
+    ]
+    init_id = ctx.submitter.submit(init_args, label="zarr:init")
+
+    write_args = phase_args("write", dependency_arg([init_id])) + [
+        f"--array=0-{n_tasks - 1}",
+        f"--output={log_dir}/{ctx.location}_zarr_write_%A_%a.out",
+        "hpc/zarr_store.sbatch",
+    ]
+    write_id = ctx.submitter.submit(write_args, label="zarr:write")
+
+    final_args = phase_args("finalize", dependency_arg([write_id])) + [
+        f"--output={log_dir}/{ctx.location}_zarr_finalize_%j.out",
+        "hpc/zarr_store.sbatch",
+    ]
+    return [ctx.submitter.submit(final_args, label="zarr:finalize")]
+
+
 def _submit_vap_data_products(ctx, dep_ids, subs):
     """Submit the selected b1_vap-derived products (all independent off vap)."""
     selected = subs or SUBPRODUCTS["vap_data_products"]
@@ -510,6 +559,16 @@ def _verify_vap(ctx):
     return [_status("vap", "b1_vap (*.nc)", _count_glob(vap_dir, "*.nc"), expected)]
 
 
+def _verify_zarr(ctx):
+    from tidal_fvcom import zarr_manager
+
+    build_dir = file_manager.get_zarr_build_dir(
+        ctx.config, ctx.location_cfg, create=False
+    )
+    done = (build_dir / zarr_manager.COMPLETE_MARKER).exists()
+    return [_status("zarr", "b1_vap Zarr store (complete marker)", int(done), 1)]
+
+
 def _verify_vap_data_products(ctx):
     config, location_cfg = ctx.config, ctx.location_cfg
     statuses = []
@@ -621,6 +680,7 @@ STEPS = {
         "partition", ["standardize"], [], _submit_partition, _verify_partition
     ),
     "vap": Step("vap", ["partition"], [], _submit_vap, _verify_vap),
+    "zarr": Step("zarr", ["vap"], [], _submit_zarr, _verify_zarr),
     "vap_data_products": Step(
         "vap_data_products",
         ["vap"],
