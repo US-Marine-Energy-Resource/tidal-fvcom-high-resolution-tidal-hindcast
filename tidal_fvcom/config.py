@@ -103,6 +103,15 @@ config = {
         "read_cache_bytes": None,
         "stitch_write_cache_bytes": None,
     },
+    "zarr": {
+        # Per phase sbatch resources used by run.py (hpc/zarr_store.sbatch)
+        "slurm": {
+            "partition": "shared",
+            "init": {"cpus-per-task": "4", "mem": "32G", "time": "02:00:00"},
+            "write": {"cpus-per-task": "8", "mem": "64G", "time": "08:00:00"},
+            "finalize": {"cpus-per-task": "4", "mem": "32G", "time": "02:00:00"},
+        },
+    },
     "dir": {
         # Data Input and Output Directories
         "dependencies": "data/deps",
