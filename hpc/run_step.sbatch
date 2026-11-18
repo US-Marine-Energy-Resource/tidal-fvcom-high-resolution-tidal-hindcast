@@ -26,5 +26,12 @@ if [ "$STEP" = "summary" ] && [ -n "$PRODUCT" ]; then
 else
     python -m tidal_fvcom.steps.run_${STEP} $LOCATION
 fi
+status=$?
+
+# Pass the python exit code to SLURM so a crash shows as FAILED, not COMPLETED
+if [ $status -ne 0 ]; then
+    echo "Workflow step '$STEP' for $LOCATION FAILED with exit code $status"
+    exit $status
+fi
 
 echo "Workflow step '$STEP' for $LOCATION completed."
