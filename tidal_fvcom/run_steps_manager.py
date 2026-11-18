@@ -114,13 +114,20 @@ SUBPRODUCT_LEVELS = {
     "atlas": "b5 atlas geoparquet",
 }
 
-# Per single-node step SLURM resources (time, partition) for run_step.sbatch.
+# Per single-node step SLURM resources for run_step.sbatch. Steps that only set
+# time and partition get a whole standard node. Add cpus and mem to use a shared node.
 SINGLE_NODE_RESOURCES = {
-    "verify": ("12:00:00", "standard"),
-    "standardize": ("12:00:00", "standard"),
-    "partition": ("12:00:00", "standard"),
-    "vap": ("24:00:00", "standard"),
-    "summary": ("4:00:00", "standard"),  # run_summary.py (b4/b5) is light
+    "verify": {"time": "12:00:00", "partition": "standard"},
+    "standardize": {"time": "12:00:00", "partition": "standard"},
+    "partition": {"time": "12:00:00", "partition": "standard"},
+    "vap": {"time": "24:00:00", "partition": "standard"},
+    # run_summary.py (b4/b5) is light on cpu but holds the full face table in memory
+    "summary": {
+        "time": "4:00:00",
+        "partition": "shared",
+        "cpus-per-task": "4",
+        "mem": "64G",
+    },
 }
 
 
@@ -156,7 +163,7 @@ class ProductStatus:
 
 def _submit_run_step(ctx, dep_ids, step, *, product=None, label=None):
     """Submit a single-node in-process step via run_step.sbatch."""
-    time_limit, partition = SINGLE_NODE_RESOURCES[step]
+    res = SINGLE_NODE_RESOURCES[step]
     export = f"LOCATION={ctx.location},STEP={step}"
     if product:
         export += f",PRODUCT={product}"
@@ -169,10 +176,14 @@ def _submit_run_step(ctx, dep_ids, step, *, product=None, label=None):
         f"--export={export}",
         f"--job-name={ctx.location}_{step}",
         f"--output={ctx.location}_{step}_%j.out",
-        f"--time={time_limit}",
-        f"--partition={partition}",
-        "hpc/run_step.sbatch",
+        f"--time={res['time']}",
+        f"--partition={res['partition']}",
     ]
+    if "cpus-per-task" in res:
+        args.append(f"--cpus-per-task={res['cpus-per-task']}")
+    if "mem" in res:
+        args.append(f"--mem={res['mem']}")
+    args.append("hpc/run_step.sbatch")
     return ctx.submitter.submit(args, label=label or step)
 
 
