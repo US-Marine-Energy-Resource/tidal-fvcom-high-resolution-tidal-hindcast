@@ -817,6 +817,35 @@ Elhwa2 ;
             "b1_archive_vap_partition": "1D",  # 1 Day Chunks for archival compressed b1_vap
             "face_count": 1133134,
             "sigma_layers": 9,
+            # Island filter, only used for the b5 atlas data. Faces that match all
+            # enabled rules are removed. Same rule as the atlas web map island filters.
+            "me_atlas_element_filter": {
+                "mode": "remove_if_all",
+                "rules": [
+                    {
+                        "type": "bbox",
+                        "enabled": True,
+                        "west": -131.15,
+                        "south": 54.05,
+                        "east": -130.4,
+                        "north": 54.7,
+                    },
+                    {
+                        "type": "column",
+                        "enabled": True,
+                        "column": "h_center",
+                        "op": "<",
+                        "value": -10.0,
+                    },
+                    {
+                        "type": "column",
+                        "enabled": True,
+                        "column": "vap_water_column_mean_sea_water_speed",
+                        "op": "<=",
+                        "value": 0.0,
+                    },
+                ],
+            },
             "citation": format_references(
                 [
                     "ak_southeast_brand_2025_tidal",
