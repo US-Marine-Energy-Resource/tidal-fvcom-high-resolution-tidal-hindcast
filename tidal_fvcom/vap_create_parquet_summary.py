@@ -10,6 +10,7 @@ import xarray as xr
 
 from shapely.geometry import Point, Polygon, MultiPolygon
 
+from .atlas_element_filter import apply_me_atlas_element_filter
 from . import file_manager, file_name_convention_manager, gis_colors_manager, s3_uri_manager
 from .variable_registry import ATLAS_COLUMNS, POLYGON_COLUMNS
 
@@ -746,7 +747,10 @@ def convert_nc_summary_to_parquet(
         for col in output_df.columns:
             print(f"{col}: {output_df[col].dtype}")
 
-        atlas_df = output_df[get_atlas_columns()].copy()
+        # Only the b5 atlas data is filtered. b4 and combined outputs keep all faces.
+        atlas_df = apply_me_atlas_element_filter(output_df, location)[
+            get_atlas_columns()
+        ].copy()
 
         atlas_output_path = file_manager.get_vap_atlas_summary_parquet_dir(
             config, location
